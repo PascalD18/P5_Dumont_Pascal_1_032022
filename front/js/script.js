@@ -50,17 +50,21 @@ function ajoutListeProduitsHTML(tableauProduits) {
   console.log(tableauProduits)
   tableauProduits.forEach(criteresProduit => {
     //Ajout nouvelle balise 'a' aprés le parent #items
-    var parentListe = document.getElementById("#items");
-    let newElemListe = document.createElement("a");
-    newElemListe.Value="href"
+    var parentListe = document.getElementById("items");
+    var newElemListe = document.createElement("div");
+    //newElemListe.Value="href"
+    //newElemListe.text="Essai"
     
     //newElemListe.innerHTML = "href=../font/product.html"
-    document.getElementById("items").appendChild(newElemListe);
-    newElemListe.innerHTML="Ref=#"
-   
+    parentListe.appendChild(newElemListe);
+    newElemListe.innerHTML="Ref=#";
+
+    var parentListe = document.querySelector("#items>a");
+    console.log(parentListe[0]);
+ 
     
     //Insertion nouvelle balise 'article' dans la balise 'a'
-    var parentListe = document.querySelector("#items>a");
+    var parentListes = document.querySelector("#items>a");
     var newElemListe2 = document.createElement("article");
     parentListe.appendChild(newElemListe);
     //Insertion nouvelle balise 'img' dans la balise 'article'
