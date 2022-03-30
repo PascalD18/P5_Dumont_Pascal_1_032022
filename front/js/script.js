@@ -44,15 +44,18 @@ function requeteCriteresProduit(numId) {
       // Une erreur est survenue
       console.log("Erreur N°" + err)
     });
-};   // Insertion en dynamique de la liste de produits en HTML
+};
+// Insertion en dynamique de la liste de produits en HTML
 function ajoutListeProduitsHTML(tableauProduits) {
   console.log(tableauProduits)
   tableauProduits.forEach(criteresProduit => {
     //Ajout nouvelle balise 'a' aprés le parent #items
     var parentListe = document.querySelector("#items");
-    var newElemListe = document.createElement("a");
-    newElemListe.innerHTML = " href=../font/product.html"
+    var newElemListe = document.createElement("div");
+    
+    newElemListe.innerHTML = "href=../font/product.html"
     parentListe.appendChild(newElemListe);
+    
     //Insertion nouvelle balise 'article' dans la balise 'a'
     var parentListe = document.querySelector("#items>a");
     var newElemListe = document.createElement("article");
@@ -69,11 +72,7 @@ function ajoutListeProduitsHTML(tableauProduits) {
     console.log(criteresProduit.name)
 
   })
-  // espaces "normaux" par &nbsp; ou &#160
 };
-
-
-
 
 /*
   newListe.innerHTML = "Element" + i + "<strong>Fort</Strong>"
@@ -92,11 +91,7 @@ function ajoutListeProduitsHTML(tableauProduits) {
       console.log(elemRemplacement.innerHTML);
   };
 
-
-
-  };
-
     //document
     //.querySelector("div>.titles")
     //.addEventListener("click", requeteProduits);
-
+*/
