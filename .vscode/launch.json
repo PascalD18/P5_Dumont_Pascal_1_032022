@@ -34,36 +34,36 @@
             "request": "launch",
             "name": "CW - product.html",
             "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/product.html"
-        }
+        },
         ////////// Simulation FIREFOX //////////
                 //// index.html ////
         // en LOCAL //
         {
             "type": "firefox",
             "request": "launch",
-            "name": "CL - Index.html",
+            "name": "FL - Index.html",
             "file": "${workspaceFolder}/front/html/index.html"
         },
         // sur le WEB //
         {
-            "type": "pwa-chrome",
+            "type": "firefox",
             "request": "launch",
-            "name": "CW - Index.html",
+            "name": "FW - Index.html",
             "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/index.html"
         },
         //// product.html ////
         // en LOCAL //
         {
-            "type": "pwa-chrome",
+            "type": "firefox",
             "request": "launch",
-            "name": "CL - product.html",
+            "name": "FL - product.html",
             "file": "${workspaceFolder}/front/html/product.html"
         },
         // sur le WEB //
         {
-            "type": "pwa-chrome",
+            "type": "firefox",
             "request": "launch",
-            "name": "CW - product.html",
+            "name": "FW - product.html",
             "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/product.html"
         }
     ]
