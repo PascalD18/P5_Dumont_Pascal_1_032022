@@ -51,31 +51,21 @@ function ajoutListeProduitsHTML(tableauProduits) {
   tableauProduits.forEach(criteresProduit => {
     //Ajout nouvelle balise 'a' aprés le parent #items
     var parentListe = document.getElementById("items");
-    var newElemListe = document.createElement("div");
-    //newElemListe.Value="href"
-    //newElemListe.text="Essai"
-    
-    //newElemListe.innerHTML = "href=../font/product.html"
+    var newElemListe = document.createElement("a");   
     parentListe.appendChild(newElemListe);
-    newElemListe.innerHTML="Ref=#";
-
-    var parentListe = document.querySelector("#items>a");
-    console.log(parentListe[0]);
- 
-    
+    newElemListe.href="../html/product.html";
     //Insertion nouvelle balise 'article' dans la balise 'a'
-    var parentListes = document.querySelector("#items>a");
-    var newElemListe2 = document.createElement("article");
+    var parentListe = document.querySelector("#items>a");
+    var newElemListe = document.createElement("article");
     parentListe.appendChild(newElemListe);
     //Insertion nouvelle balise 'img' dans la balise 'article'
-
+    var nomProduit = criteresProduit.name.replace(" ", '-');
     newElemListe.innerHTML = "<img src =" + criteresProduit.imageUrl + " alt = " + nomProduit + ">";
-    parentListes.appendChild(newElemListe);
-    var newElemListe3 = document.createElement("img");
+    //   var newElemListe = document.createElement("img");
     // insertion aprés la balise <img ... >
-    var parentListes = document.querySelector("#items>a>article>img");
+    //var parentListes = document.querySelector("#items>a>article>img");
 
-    var nomProduit = criteresProduit.name.replace(" ", '&#160');
+    
     console.log(criteresProduit.name)
 
   })
