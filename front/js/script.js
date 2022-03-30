@@ -48,22 +48,26 @@ function requeteCriteresProduit(numId) {
 // Insertion en dynamique de la liste de produits en HTML
 function ajoutListeProduitsHTML(tableauProduits) {
   console.log(tableauProduits)
+
   tableauProduits.forEach(criteresProduit => {
-    //Ajout nouvelle balise 'a' aprés le parent #items
     var parentListe = document.getElementById("items");
-    var newElemListe = document.createElement("a");   
-    parentListe.appendChild(newElemListe);
-    newElemListe.href="../html/product.html";
+    var newBaliseA = document.createElement("a");
+    //Ajout nouvelle balise 'a' aprés le parent #items
+    parentListe.appendChild(newBaliseA);
+    newBaliseA.href="../html/product.html";
     //Insertion nouvelle balise 'article' dans la balise 'a'
-    var parentListe = document.querySelector("#items>a");
-    var newElemListe = document.createElement("article");
-    parentListe.appendChild(newElemListe);
+    var parentListe = newBaliseA;
+    var newBaliseArticle = document.createElement("article");
+    parentListe.appendChild(newBaliseArticle);
     //Insertion nouvelle balise 'img' dans la balise 'article'
-    var nomProduit = criteresProduit.name.replace(" ", '-');
-    newElemListe.innerHTML = "<img src =" + criteresProduit.imageUrl + " alt = " + nomProduit + ">";
-    //   var newElemListe = document.createElement("img");
-    // insertion aprés la balise <img ... >
-    //var parentListes = document.querySelector("#items>a>article>img");
+    nomProduit = criteresProduit.name.replace(" ", '-');
+    newBaliseArticle.innerHTML = "<img src =" + criteresProduit.imageUrl + " alt = " + nomProduit + ">";
+    // insertion nouvelle balise <h3 dans la balise <article
+     var newElemListe = document.createElement("h3");
+    parentListe.appendChild(newElemListe);
+    var parentListe = newBaliseA
+    var newBaliseA = document.createElement("a");
+  
 
     
     console.log(criteresProduit.name)
