@@ -45,19 +45,17 @@ function requeteCriteresProduit(numId){
   });  
 };   // Insertion en dynamique de la liste de produits en HTML
     function ajoutListeProduitsHTML(tableauProduits) {
-    const parentListes = document.querySelector("#items > ul");
+    const parentListes = document.querySelector("#items > a");
 
     console.log(tableauProduits)
     tableauProduits.forEach (criteresProduit => {
-    //Dernier element de la liste avant lequel sera ajouté les autres elements
-      let derElemListe = document.querySelector("#items>ul>li");
-    //Nouvelles balises 'li' de liste à ajouter 
+    //Nouvelles balise 'a' à ajouter 
       let newElemListe = document.createElement("li");
     //Insertion avant la derniére liste
-      parentListes.insertBefore(newElemListe, derElemListe);
-      newElemListe.style.listStyleType = "none";
+      parentListes.appendChild(newElemListe);
       let nomProduit = criteresProduit.name.replace(" ", '&#160');
       newElemListe.innerHTML= "<img src =" + 'criteresProduit.imageUrl' + " alt = " +  nomProduit + ">"
+       + ""
       console.log(criteresProduit.name)
 
     })
