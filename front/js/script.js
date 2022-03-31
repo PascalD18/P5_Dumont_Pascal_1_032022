@@ -9,7 +9,7 @@ fetch("http://localhost:3000/api/products/")
     }
   })
   .then(tableauProduits => {
-    // ajoutListeProduitsHTML(tableauProduits);
+    //ajoutListeProduitsHTML(tableauProduits);
 
   })
   .catch(function (err) {
@@ -17,34 +17,9 @@ fetch("http://localhost:3000/api/products/")
     console.log("Erreur N°" + err);
   });
 
-var i = 0;
-let erreur = "Non";
-
-/*
-while (erreur="Non") {
-    //Nouvelles balises 'li' de liste à ajouter 
-    let newListe = document.createElement("li");
-    newListe.style.listStyleType = "none";
-
-    console.log(tableauProduits)
-    let numId = tableauProduits[i]._id;
-};
-  
-*/
 /////////////////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
-// --- Requete API sur les criteresProduit du produit suivant numId ----   
-function requeteCriteresProduit(numId) {
-  fetch("http://localhost:3000/api/products/" + numId)
-    .then((res) => res.json())
-    .then(function (res) {
-    })
-    .catch(function (err) {
-      // Une erreur est survenue
-      console.log("Erreur N°" + err)
-    });
-};
 // Insertion en dynamique de la liste de produits en HTML
 function ajoutListeProduitsHTML(tableauProduits) {
   console.log(tableauProduits)
