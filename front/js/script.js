@@ -9,7 +9,7 @@ fetch("http://localhost:3000/api/products/")
     }
   })
   .then(tableauProduits => {
-    //ajoutListeProduitsHTML(tableauProduits);
+    ajoutListeProduitsHTML(tableauProduits);
 
   })
   .catch(function (err) {
@@ -39,7 +39,7 @@ function ajoutListeProduitsHTML(tableauProduits) {
     };
     //Ajout nouvelle balise 'a' dans le parent
     parentListe.appendChild(newBaliseA);
-    newBaliseA.href = "../html/product.html";
+    newBaliseA.href = "../html/product.html?id="+criteresProduit._id;
     //Insertion nouvelle balise 'article' dans la balise 'a'
     var parentListe = newBaliseA;
     var newBaliseArticle = document.createElement("article");
