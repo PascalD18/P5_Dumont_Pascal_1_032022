@@ -17,22 +17,35 @@ const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get('id');
 // Requete API sur les criteresProduit du produit suivant N° 'id
 fetch("http://localhost:3000/api/products/" + id)
-.then((res) => res.json())
 .then(function (res) {
-})
+    if (res.ok) {
+      return res.json();
+    }
+  })
 .then(criteresProduit => {
   majElemsProduitHTML(criteresProduit);
 
 });
+/*
+.then(function (res) {
+    if (res.ok) {
+      return res.json();
+    }
+  })
+  .then(tableauProduits => {
+    //ajoutListeProduitsHTML(tableauProduits);
 
+  })
+*/
 
 console.log(id);
 console.log(urlParams);
-console.log(criteresProduit);
+
 /////////////////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
 function majElemsProduitHTML(criteresProduit){
-    document.getElementsByClassName(".item__content__description").innerHTML=criteresProduit.description
+    console.log(criteresProduit.description);
+    var elemDescription = document.getElementById("description").innerHTML=criteresProduit.description
 };
 
