@@ -9,7 +9,7 @@ fetch("http://localhost:3000/api/products/")
     }
   })
   .then(tableauProduits => {
-    ajoutListeProduitsHTML(tableauProduits);
+    // ajoutListeProduitsHTML(tableauProduits);
 
   })
   .catch(function (err) {
