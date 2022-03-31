@@ -14,3 +14,4 @@ fetch("http://localhost:3000/api/products/")
         console.log("Erreur N°" + err);
     });
 console.log("Bonjour");
+console.log(criteresProduit)
