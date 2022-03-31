@@ -37,8 +37,35 @@ while (erreur="Non") {
 // --- Requete API sur les criteresProduit du produit suivant numId ----   
 function requeteCriteresProduit(numId) {
   fetch("http://localhost:3000/api/products/" + numId)
+<<<<<<< HEAD
     .then((res) => res.json())
     .then(function (res) {
+=======
+  .then((res) => res.json())
+  .then(function(res) {
+  })
+   .catch(function(err) {
+    // Une erreur est survenue
+    console.log("Erreur N°"+err)
+  });  
+};   // Insertion en dynamique de la liste de produits en HTML
+    function ajoutListeProduitsHTML(tableauProduits) {
+    const parentListes = document.querySelector("#items > ul");
+
+    console.log(tableauProduits)
+    tableauProduits.forEach (criteresProduit => {
+    //Dernier element de la liste avant lequel sera ajouté les autres elements
+      let derElemListe = document.querySelector("#items>ul>li");
+    //Nouvelles balises 'li' de liste à ajouter 
+      let newElemListe = document.createElement("li");
+    //Insertion avant la derniére liste
+      parentListes.insertBefore(newElemListe, derElemListe);
+      newElemListe.style.listStyleType = "none";
+      let nomProduit = criteresProduit.name.replace(" ", '&#160');
+      newElemListe.innerHTML= "<img src =" + 'criteresProduit.imageUrl' + " alt = " +  nomProduit + ">"
+      console.log(criteresProduit.name)
+
+>>>>>>> parent of 43d0076 (--- Auto-Git Commit ---)
     })
     .catch(function (err) {
       // Une erreur est survenue
