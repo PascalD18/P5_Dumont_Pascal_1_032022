@@ -91,12 +91,6 @@ function ajoutListeProduitsHTML(tableauProduits) {
 /*
   newListe.innerHTML = "Element" + i + "<strong>Fort</Strong>"
 
-  // Liste N°3 en rouge et gros caractere
-  if (i == 3) {
-      newListe.style.fontSize = "40px";
-      newListe.style.color = "red";
-  };
-
   if (i == 4) {
       //Si i = 4, Liste N° 4 remplace balise 'p' par 'div'
       // dans 'derElemListe'
