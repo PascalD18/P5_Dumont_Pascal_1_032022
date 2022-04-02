@@ -4,6 +4,8 @@ const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get('id');
 console.log(id)
 const btnAjoutPanier = document.getElementById("addToCart");
+//const selectQt=document.querySelector("select>#colors");
+localStorage.removeItem("panier");
 // Requete API sur les produitSelect du produit suivant N° 'id
 fetch("http://localhost:3000/api/products/" + id)
     .then(function (res) {
@@ -17,6 +19,7 @@ fetch("http://localhost:3000/api/products/" + id)
         majPanier(produitSelect);
 
 
+
     })
 
 
@@ -26,27 +29,7 @@ fetch("http://localhost:3000/api/products/" + id)
         // Une erreur est survenue
         console.log("Erreur N°" + err);
     });
-//
 
-
-
-
-
-//console.log(produitSelect.price);
-//console.log("panier".prix);
-
-
-
-/*
-console.log(routes.length)
-for ( let i=0; i<= routes.length;i++){
-    console.log("-"+i+"-");
-    console.log(routes[i]);
-};
-for (let i=0; i<= localStorage.length;i++){
-    console.log(localStorage.key(i));
-}
-*/
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
 function majElemsProduitHTML(produitSelect) {
@@ -60,19 +43,35 @@ function majElemsProduitHTML(produitSelect) {
 };
 // Renseigne l'Option des couleurs //
 function majOptionsCouleur(couleursProduitSelect) {
-    var etape = "Début"
-    couleursProduitSelect.forEach(couleur => {
-        var parentElemCouleur = document.getElementById("colors");
+
+    var i,j=0;
+      couleursProduitSelect.forEach(couleur => {
+
         var enfantElemCouleur = document.createElement("option");
-        if (etape = "Option par défaut") {
+        enfantElemCouleur.id = "couleur" + i;
+        console.log(j);
+        if (j==0) {
             // Au début, Ajoute en premier l'option par défaut
+            var premEnfantElemCouleur = document.querySelector("#colors>option");
+            console.log(premEnfantElemCouleur);
+            // premEnfantElemCouleur.remove;
+            var parentElemCouleur = document.getElementById("colors")
             enfantElemCouleur.innerHTML = "--SVP, choisissez une couleur"
-            etape = "Suite";
+            parentElemCouleur.appendChild(enfantElemCouleur);
+            j++;
+            console.log(j)
+            i++;
         }
-        // Puis ajoute la couleur
-        enfantElemCouleur.innerHTML = couleur;
-        parentElemCouleur.appendChild(enfantElemCouleur);
+        //Sinon ajoute
+        else {
+            var parentElemCouleur = document.getElementById("colors")
+            enfantElemCouleur.innerHTML = couleur;
+            parentElemCouleur.appendChild(enfantElemCouleur);
+            i++;
+        };
     });
+
+    console.log(i);
 };
 // MAJ du panier
 function majPanier(produitSelect) {
@@ -80,17 +79,22 @@ function majPanier(produitSelect) {
         event.preventDefault();
         console.log(produitSelect);
         let panierLinea = localStorage.getItem("panier");
-        if (panierLinea == null) {
+        let couleur = document.querySelector("#colors>option>value").innerHTML;
+        let qtProduit = document.querySelector(".item__content__settings__quantity>input").innerHTML;
+        console.log(couleur);
+        console.log(qtProduit);
+        if ((panierLinea == null) && (qtProduit != 0)) {
             alert("Panier vide");
-            let qtProduit=document.getElementById("quantity");
-            let panierJson={"ligne":0,"codeArt":id,"Qt":qtProduit,"couleur":document.querySelector("#colors>option")}
-            let panierLinea=JSON.stringify(panierJson);
-            localStorage.setItem("panier",panierLinea);
+            let panierJson = { "ligne": 0, "codeArt": id, "Qt": qtProduit, "couleur": couleur }
+            let panierLinea = JSON.stringify(panierJson);
+            localStorage.setItem("panier", panierLinea);
             console.log(panierJson);
         }
         else {
             // Si panier non vide
+
             let panierJson = JSON.parse(panierLinea)
+            console.log(panierJson);
             if (verifProduitExist(panierJson) = true) {
                 // Produit déjà existant
                 // ... augmente la Qt
@@ -101,9 +105,5 @@ function majPanier(produitSelect) {
             //      localStorage.setItem("panier", panierLinea);
 
         }
-        });
+    });
 };
-// Recherche si le produit à déjà été selectionné
-function verifProduitExist(panierJson) {
-
-}
