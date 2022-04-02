@@ -1,23 +1,26 @@
-
-
-//function requeteProduits(){
-fetch("http://localhost:3000/api/products/")
+function lecture(){
+fetch("http://localhost:3000/api/products/") 
 
   .then(function (res) {
     if (res.ok) {
       return res.json();
     }
   })
-  .then(tableauProduits => {
-    ajoutListeProduitsHTML(tableauProduits);
+  .then (tableauProduits => {
+    console.log(tableauProduits);
+    return ajoutListeProduitsHTML(tableauProduits);
 
   })
   .catch(function (err) {
     // Une erreur est survenue
     console.log("Erreur N°" + err);
-  });
+  })
+};
+lecture()
+  console.log("Bonjour");
+  console.log(criteresProduit);
 
-/////////////////////////////////////////////////////
+/////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
 // Insertion en dynamique de la liste de produits en HTML
@@ -39,7 +42,7 @@ function ajoutListeProduitsHTML(tableauProduits) {
     };
     //Ajout nouvelle balise 'a' dans le parent
     parentListe.appendChild(newBaliseA);
-    newBaliseA.href = "../html/product.html?id="+criteresProduit._id;
+    newBaliseA.href = "../html/product.html?id=" + criteresProduit._id;
     //Insertion nouvelle balise 'article' dans la balise 'a'
     var parentListe = newBaliseA;
     var newBaliseArticle = document.createElement("article");
@@ -48,17 +51,17 @@ function ajoutListeProduitsHTML(tableauProduits) {
     nomProduit = criteresProduit.name.replace(" ", '_');
     newBaliseArticle.innerHTML = "<img src =" + criteresProduit.imageUrl + " alt = " + nomProduit + ">";
     // insertion nouvelle balise 'h3' dans la balise 'article' (aprés la balise 'img')
-    var parentListe=newBaliseArticle;
+    var parentListe = newBaliseArticle;
     var newElemListe = document.createElement("h3");
     parentListe.appendChild(newElemListe);
     newElemListe.classList.add("productName")
-    newElemListe.innerHTML=nomProduit
+    newElemListe.innerHTML = nomProduit
     // insertion nouvelle balise 'p' dans la balise 'article'
     var newElemListe = document.createElement("p");
     parentListe.appendChild(newElemListe);
     newElemListe.classList.add("productDescription")
-    newElemListe.innerHTML=criteresProduit.description
-    var etape="Suite"
+    newElemListe.innerHTML = criteresProduit.description
+    var etape = "Suite"
 
   })
 };
@@ -68,7 +71,7 @@ function ajoutListeProduitsHTML(tableauProduits) {
 
   if (i == 4) {
       //Si i = 4, Liste N° 4 remplace balise 'p' par 'div'
-      // dans 'derElemListe'
+      // dans 'derElemListe';
       elemRemplacement.innerHTML = "Remplace balise p";
       derElemListe.replaceChild(elemRemplacement, elemARemplacer);
       console.log(elemRemplacement.innerHTML);
