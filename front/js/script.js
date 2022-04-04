@@ -1,4 +1,3 @@
-function lecture(){
 fetch("http://localhost:3000/api/products/") 
 
   .then(function (res) {
@@ -15,10 +14,6 @@ fetch("http://localhost:3000/api/products/")
     // Une erreur est survenue
     console.log("Erreur N°" + err);
   })
-};
-lecture()
-  console.log("Bonjour");
-  console.log(criteresProduit);
 
 /////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
