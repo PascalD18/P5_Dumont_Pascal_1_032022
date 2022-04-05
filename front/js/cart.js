@@ -1,12 +1,12 @@
 // Recuperation du panier avec localStorage
 panierLinea = localStorage.getItem("panier");
 panierJson=JSON.parse(panierLinea);
-AffProduitsPanier(panierJson);
+AffProduitsPanier();
 
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
-function AffProduitsPanier(panierJson){
+function AffProduitsPanier(){
  // Affichage de tous les produits du panier
   var i = 0;
   while (i < panierJson.length){
@@ -21,11 +21,18 @@ function AffProduitsPanier(panierJson){
 function AffItemProduit(itemProduit){
     // Affiche les elements en fonction du panier
     // Création 'article' dans 'section #cart__items"
-    let parent=document.getElementById("cart__items");
-    let enfant=document.createElement("article");
+    parent=document.getElementById("cart__items");
+    enfant=document.createElement("article");
     enfant.classList="cart__item";
+    enfant.classList=`data-id=`+id;
+    //enfant.classList=`data-color=`+couleur;
+
     parent.appendChild(enfant);
-    // Création 
+    // Création balise 'div' du container de l'image dans 'article'
+    parent=document.querySelector("#cart__items>.cart__item");
+    enfant=document.createElement("div");
+    parent.appendChild(enfant);
+
 
     
     
