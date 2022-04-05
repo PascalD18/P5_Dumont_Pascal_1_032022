@@ -42,7 +42,7 @@ function lectureCouleurQt() {
     };
     var option = document.getElementById("quantity");
     qtNonVide=true // Qt considérée comme > 0 par défault
-    qtProduit = option.value;
+    qtProduit = parseInt(option.value);
     if (qtProduit == 0) {
         qtNonVide = false
     };
@@ -134,19 +134,19 @@ function majPanier() {
            // console.log(panierJson);
             if (localStorage?.panier == undefined) {
                 // Si panier vide => MAJ 1er data du panier
-                panierJson[0] = { "codeArt": id, "couleur": couleur, "Qt": qtProduit }
+                panierJson[0] = { "codeArt": id, "couleur": couleur, "qt": qtProduit }
             }
             else {
                 // Si panier non vide
                 verifSiitemProduitDsPanier();
                 if (produitExiste) {
                   // Si le produit existe déjà dans le panier => MAJ qt uniquement
-                    newQt = Number.qtProduit + number.panierJson[itemProduit].qtProduit;
-                    panierJson[itemProduit].qtProduit = newQt;
+                    newQt = qtProduit+ panierJson[itemProduit].qt;
+                    panierJson[itemProduit].qt = newQt;
                 }
                 else {
                   // Si le Produit n'existe pas dans le panier => L'ajoute
-                    panierJson.push = { "codeArt": id, "couleur": couleur, "Qt": qtProduit };
+                    panierJson.push({"codeArt": id, "couleur": couleur, "qt": qtProduit });
                 }
             }
             sauvegardePanier();
@@ -161,13 +161,13 @@ function sauvegardePanier() {
 // Verifie si le produit exit déjà dans le panier
 function verifSiitemProduitDsPanier() {
     // Verifie si le produit selectionné existe déjà dans le panier
-    var i = 0;
-    produitExiste=false // Par défaut, considére le produit inexistant dans panier
-    while (panierJson[i] !== null && produitExiste==false) {
+    var i = 0;continuer=true;
+    produitExiste=false; // Par défaut, considére le produit inexistant dans panier
+    while (i < panierJson.length && produitExiste==false) {
         if ( panierJson[i].codeArt == id && panierJson[i].couleur == couleur ) {
-            itemProduit = i; produitExiste=true
-            i++
-        } 
-    }
-
+            itemProduit = i; produitExiste=true;
+            continuer=false;
+        }
+        i++
+    } 
 };
