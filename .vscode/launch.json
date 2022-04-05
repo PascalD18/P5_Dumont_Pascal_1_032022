@@ -35,6 +35,21 @@
             "name": "CW - product.html",
             "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/product.html"
         },
+                //// cart.html ////
+        // en LOCAL //
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "CL - cart.html",
+            "file": "${workspaceFolder}/front/html/cart.html"
+        },
+        // sur le WEB //
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "CW - cart.html",
+            "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/cart.html"
+        },
         ////////// Simulation FIREFOX //////////
                 //// index.html ////
         // en LOCAL //

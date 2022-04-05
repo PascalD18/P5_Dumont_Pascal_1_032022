@@ -2,13 +2,10 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get('id');
-console.log(id)
+//console.log(id)
 const btnAjoutPanier = document.getElementById("addToCart");
 
-localStorage.removeItem("panier");
-  console.log(localStorage);
-
-
+ //localStorage.removeItem("panier");
 
 
 // Requete API sur les produitSelect du produit suivant N° 'id
@@ -16,23 +13,14 @@ fetch("http://localhost:3000/api/products/" + id)
     .then(function (res) {
         if (res.ok) {
             return res.json();
-        }
+        };
     })
     .then(produitSelect => {
-        console.log(produitSelect);
-        initPanier(panierJson);
-        var panierJson=localStorage.panier;
         majElemsProduitHTML(produitSelect);
-        verifProduitExist(panierJson);
-        majPanier(produitSelect);
-
-
+        initPanier();
+        majPanier();
 
     })
-
-
-    //       localStorage.removeItem("panier");
-
     .catch(function (err) {
         // Une erreur est survenue
         console.log("Erreur N°" + err);
@@ -40,25 +28,51 @@ fetch("http://localhost:3000/api/products/" + id)
 
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
+// Lecture Couleur et Qt
+function lectureCouleurQt() {
+    // Lit la couleur selectionnée
+    var option = document.getElementById("colors");
+    couleur = option.value;
+    couleurSelect=true// Couleur considérée comme selectionnée par défaut
+    nbCars = couleur.length;
+    if (nbCars > 20) {
+        if (couleur.slice(0,5) == "--SVP") {
+            couleurSelect = false;
+        }
+    };
+    var option = document.getElementById("quantity");
+    qtNonVide=true // Qt considérée comme > 0 par défault
+    qtProduit = option.value;
+    if (qtProduit == 0) {
+        qtNonVide = false
+    };
+    if ((couleurSelect == false) && (qtNonVide == false)) {
+        alert("Veuillez selectionner, une couleur et une quantité.");
+    }
+    else if (couleurSelect == false) {
+        alert("Veuillez selectionner une couleur");
+
+    }
+    else if (qtNonVide == false) {
+        alert("Il faut une quantité > 0");
+
+    };
+};
 // Recuperation ou réinisialisation du panier
-function initPanier(){
-    if (localStorage.panier != null) {
-        then (panierJson => {
-      // Récupération si panier déjà en cours
+function initPanier() {
+    if (localStorage?.panier !== undefined) {
+        // Récupération si panier déjà en cours
         localStorage.getItem("panier");
-      //Conversion en format json
-        panierJson=JSON.parse(localStorage.panier);
-        console.log(panierJson);
-        })
+        //Conversion en format json
+        panierJson = JSON.parse(localStorage.panier);
     }
     else {
         // Réinitialise un panier vide
-        var panierJson=[{}];
-        panierJson[0].age=32;
-        let panierLinea=JSON.stringify(panierJson);
-        localStorage.setItem("panier",panierLinea);
+        panierJson = [{}];
+    //    panierLinea = JSON.stringify(panierJson);
+    //    localStorage.setItem("panier", panierLinea);
     }
-    };
+};
 function majElemsProduitHTML(produitSelect) {
     // MAJ du prix
     document.getElementById("price").innerHTML = produitSelect.price;
@@ -93,7 +107,7 @@ function majOptionsCouleur(couleursProduitSelect) {
             i++;
             var enfantElemCouleur = document.createElement("option");
             enfantElemCouleur.id = "couleur" + i;
-            enfantElemCouleur.innerHTML =couleur;
+            enfantElemCouleur.innerHTML = couleur;
             parentElemCouleur.appendChild(enfantElemCouleur);
             i++;
         }
@@ -110,54 +124,50 @@ function majOptionsCouleur(couleursProduitSelect) {
     console.log(i);
 };
 // MAJ du panier
-function majPanier(produitSelect) {
+function majPanier() {
     btnAjoutPanier.addEventListener("click", function (event) {
         event.preventDefault();
-        console.log(produitSelect);
-        let panierLinea = localStorage.getItem("panier");
-        // Lit la couleur selectionnée
-        var option = document.getElementById("colors");
-        var couleur = option.value;
-        var option = document.getElementById("quantity");
-        var qtProduit = option.value;
-        console.log(couleur);
-        console.log(qtProduit);
-        let panierJson=JSON.parse(panierLinea);
-        console.log(panierJson);
-        if ((panierLinea == null) && (qtProduit != 0)) {
-            alert("Panier vide");
-            //panierJson.push(1);
-            let panierJson = { "ligne": 0, "codeArt": id, "Qt": qtProduit, "couleur": couleur }
-            let panierLinea = JSON.stringify(panierJson);
-            localStorage.setItem("panier", panierLinea);
-            console.log(panierJson);
-        }
-        else {
-            // Si panier non vide
-            
-            panierJson = JSON.parse(panierLinea);
-            var newLigne = 1;
-            var newcouleur = couleur;
-            panierJson[1].push("essai");
-            console.log(panierJson);
-            let panierJson = { "ligne": 0, "codeArt": id, "Qt": qtProduit, "couleur": couleur }
-            console.log(panierJson);
-            
-            if (verifProduitExist) {
-                // Produit déjà existant
-                // ... augmente la Qt
-
+        lectureCouleurQt();
+        if (couleurSelect && qtNonVide) {
+            // Si une couleur selectionnée et Qt >0
+           // let panierJson = JSON.parse(panierLinea);
+           // console.log(panierJson);
+            if (localStorage?.panier == undefined) {
+                // Si panier vide => MAJ 1er data du panier
+                panierJson[0] = { "codeArt": id, "couleur": couleur, "Qt": qtProduit }
             }
-            //       let panierJson = { prix: tableau1.price };
-            //      let panierLinea = JSON.stringify(panierJson);
-            //      localStorage.setItem("panier", panierLinea);
-
+            else {
+                // Si panier non vide
+                verifSiitemProduitDsPanier();
+                if (produitExiste) {
+                  // Si le produit existe déjà dans le panier => MAJ qt uniquement
+                    newQt = Number.qtProduit + number.panierJson[itemProduit].qtProduit;
+                    panierJson[itemProduit].qtProduit = newQt;
+                }
+                else {
+                  // Si le Produit n'existe pas dans le panier => L'ajoute
+                    panierJson.push = { "codeArt": id, "couleur": couleur, "Qt": qtProduit };
+                }
+            }
+            sauvegardePanier();
         }
     });
 };
+// Sauvedarde en local du panier
+function sauvegardePanier() {
+    panierLinea = JSON.stringify(panierJson);
+    localStorage.setItem("panier", panierLinea);
+};
 // Verifie si le produit exit déjà dans le panier
-function verifProduitExist(panierJson) {
+function verifSiitemProduitDsPanier() {
+    // Verifie si le produit selectionné existe déjà dans le panier
+    var i = 0;
+    produitExiste=false // Par défaut, considére le produit inexistant dans panier
+    while (panierJson[i] !== null && produitExiste==false) {
+        if ( panierJson[i].codeArt == id && panierJson[i].couleur == couleur ) {
+            itemProduit = i; produitExiste=true
+            i++
+        } 
+    }
 
-    
-    
 };
