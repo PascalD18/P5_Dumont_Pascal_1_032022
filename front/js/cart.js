@@ -1,3 +1,5 @@
+
+
 fetch("http://localhost:3000/api/products/")
 
   .then(function (res) {
@@ -11,7 +13,7 @@ fetch("http://localhost:3000/api/products/")
     panierJson = JSON.parse(panierLinea);
     dataProduits = tableauProduits;
     AffProduitsPanier();
-
+    supprProduit();
   })
   .catch(function (err) {
     // Une erreur est survenue
@@ -25,42 +27,46 @@ fetch("http://localhost:3000/api/products/")
 function AffProduitsPanier() {
   // Affichage de tous les produits du panier
   var i = 0;
-  while (i < panierJson.length) {
+ while (i < panierJson.length) {
+  //  while (i < 2) {
     id = panierJson[i].codeArt;
     couleur = panierJson[i].couleur;
     qtProduit = panierJson[i].qt;
      AffItemProduit(i);
+     
+    //i=panierJson.length
 
-    i=panierJson.length
-
-    // i++
+    i++
   };
 };
 function AffItemProduit() {
   // Affiche les elements en fonction du panier  
   // Si non déjà existant, ajoute l'élement id = 'codeArt'
   // Vérifie si element 'article' avec id= 'codeArt'
-  parentTestId = document.getElementById(id);
-  if (parentTestId == null) {
+  //**parentTestId = document.getElementById("•"+id+"•");
+  //**if (parentTestId == null) {
     // si l'élément 'article' id= 'codeArt' n'existe pas encore
     // l'insert dans l'élément id='cart__item'
-    parent = document.getElementById("cart__items");
-    enfant = document.createElement("article");
-    enfant.id = id;
-    enfant.classList = `cart__item" data-color="` + couleur;
-    parent.appendChild(enfant);
-    parent=document.querySelector("#cart__items article");
-    insereElemsProduitDsElemArticle();
-  }
-  else {
-   // Vérifie si l'element 'article' id=[N° id] existe avec classe 'data-color' = 'couleur'
-   // parent=document.querySelector("#cart__items article>div>img");
-    
-   // console.log(parent.innerHTML);
-  };
+     
+    insereElemsProduitdsSectionCartitems();
+  //** */}
+  //**else {
+   // Vérifie si l'element 'article' id=[N° id] existe avec la même couleur
+   //**parentTestIdCouleur = document.querySelectorAll("#•"+id+"•>div>div>p")
+   //compare 'couleur' du produit avec la couleur contenue dans le D.O.M 
+    //**if (couleur != parentTestIdCouleur.innerHTML){
+    //** */  insereElemsProduitdsSectionCartitems();
+    //** */}
+  //** */};
 
 };
-function insereElemsProduitDsElemArticle(){
+function insereElemsProduitdsSectionCartitems(){
+  parent = document.getElementById("cart__items");
+  enfant = document.createElement("article");
+  enfant.id ="•"+id+"•";
+  enfant.classList = `cart__item" data-color="` + couleur;
+  parent.appendChild(enfant);
+  parent=document.getElementById("•"+id+"•");
   // insert les elements du produit dans l'élement 'article' correspondant à l'id et la couleur du roduit
   enfant = document.createElement("div");
   enfant.classList = "cart__item__img";
@@ -105,10 +111,6 @@ function insereElemsProduitDsElemArticle(){
   enfant.classList="deleteItem";
   enfant.innerHTML="Supprimer";
   parent.appendChild(enfant);
-
-
-
-
 };
   // recherche l'image correspondant au produit dans la base Json 'tableauProduits'
   function rechImageNomPrixProduit(){
@@ -117,11 +119,22 @@ function insereElemsProduitDsElemArticle(){
     if (id == dataProduits[i]._id) {
       imageUrlProduit = dataProduits[i].imageUrl;
       nomProduit = dataProduits[i].name;
-      espcInsecable = /\s/;
-      nomProduit = nomProduit.replace(" ", espcInsecable);
+      nomProduit = nomProduit.replace(" ", "_");
       prixProduit= dataProduits[i].price+",00€";
     }
     i++
   }
+};
+function supprProduit(){
+  // Suppression d'un produit en cliquant sur l'élément suppression correspondant
+    elemSuppression=document.querySelector("p.deleteItem")
+    elemParent=elemSuppression.closest("article")
+    elemSuppression.addEventListener("click", function (event) {
+    event.preventDefault();
+
+
+
+
+  })
 
 };
