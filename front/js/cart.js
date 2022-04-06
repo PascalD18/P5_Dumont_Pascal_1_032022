@@ -11,7 +11,6 @@ fetch("http://localhost:3000/api/products/")
     panierJson = JSON.parse(panierLinea);
     dataProduits = tableauProduits;
     AffProduitsPanier();
-    majDOMdsArticlesProduits();
 
   })
   .catch(function (err) {
@@ -25,6 +24,7 @@ function AffProduitsPanier() {
   // Affichage de tous les produits du panier
   var i = 0;
   while (i < panierJson.length) {
+  //while (i < 2) {
     id = panierJson[i].codeArt;
     couleur = panierJson[i].couleur;
     qtProduit = panierJson[i].qt;
@@ -40,18 +40,9 @@ function affItemArticleProduit() {
     enfant.id = id;
     enfant.classList = `cart__item" data-color="` + couleur;
     parent.appendChild(enfant);
-  }
-  function majDOMdsArticlesProduits(){
-    // Memorise tous les elements parents concernant les arcticles du DOM
-    // correspondat à chaque produits du panier
-     parentsArticlesProduits=document.querySelectorAll("#cart__items>article")
-     var i=0;
-     while (i< panierJson.length){
-      id=panierJson[i].codeArt;couleur=panierJson[i].couleur;
-      parentArticle=parentsArticlesProduits[i];
-        insereElemsProduitDsElemArticle(parentArticle);
-      } 
-     i++
+    parent_1=enfant;
+    insereElemsProduitDsElemArticle();
+  
   };
     // recherche l'image correspondant au produit dans la base Json 'tableauProduits'
     function rechImageNomPrixProduit(){
@@ -67,53 +58,63 @@ function affItemArticleProduit() {
       }
     
     };
-    function insereElemsProduitDsElemArticle(parentArticle){
+    function insereElemsProduitDsElemArticle(){
       // insert les elements du produit dans l'élement 'article' correspondant à l'id et la couleur du roduit
       enfant = document.createElement("div");
       enfant.classList = "cart__item__img";
       rechImageNomPrixProduit();// recupére l'addresse Url de l'image, le Nom du produit, et le prix.
       //insert l'élément' image
       enfant.innerHTML = "<img src =" + imageUrlProduit +  ` alt =` + nomProduit + ">";
-      parentArticle.appendChild(enfant);
+      parent_1.appendChild(enfant);
       enfant=document.createElement("div");
       enfant.classList="cart__item__content";
-      parent.appendChild(enfant); 
-      parent=document.querySelector("#cart__items article>div.cart__item__content");
+      parent_1.appendChild(enfant);
+      
+      //parent_1_1=document.querySelector("#cart__items article>div.cart__item__content");
+      parent_1_1=enfant;
       enfant=document.createElement("div");
       enfant.classList="cart__item__content__description";
-      parent.appendChild(enfant);
-      parent=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__description");
-      enfant=document.createElement("h2");
+      parent_1_1.appendChild(enfant);
+
+      // parent_1_1_1=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__description");
+      parent_1_1_1=enfant;
+      enfant=enfant=document.createElement("h2");
       enfant.innerHTML=nomProduit;
-      parent.appendChild(enfant);
+      parent_1_1_1.appendChild(enfant);
       enfant=document.createElement("p");
       enfant.innerHTML=couleur;
-      parent.appendChild(enfant);
+      parent_1_1_1.appendChild(enfant);
       enfant=document.createElement("p");
       enfant.innerHTML=prixProduit;
-      parent.appendChild(enfant);
-      parent=document.querySelector("#cart__items article>div.cart__item__content");
+      parent_1_1_1.appendChild(enfant);
+      
+     // parent_1_1=document.querySelector("#cart__items article>div.cart__item__content");
       enfant=document.createElement("div");
       enfant.classList="cart__item__content__settings";
-      parent.appendChild(enfant);
-      parent=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings");
+      parent_1_1.appendChild(enfant);
+
+      
+      //parent_1_1_2=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings");
+      parent_1_1_2=enfant;
       enfant=document.createElement("div");
       enfant.classList="cart__item__content__settings__quantity";
-      parent.appendChild(enfant);
-      parent=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings>div.cart__item__content__settings__quantity");
-      parent.innerHTML="<p>Qté : "+qtProduit+"</p>";
-      parent.innerHTML=parent.innerHTML+`<input type="number" classe="itemQuantity" name="itemQuantity" min="1" max="100"value=`+qtProduit+">";
-      parent=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings");
+      parent_1_1_2.appendChild(enfant);
+
+      
+      //parent_1_1_2_1=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings>div.cart__item__content__settings__quantity");
+      parent_1_1_2_1=enfant;
+      parent_1_1_2.innerHTML="<p>Qté : "+qtProduit+"</p>";
+      parent_1_1_2.innerHTML=parent_1_1_2.innerHTML+`<input type="number" classe="itemQuantity" name="itemQuantity" min="1" max="100"value=`+qtProduit+">";
+      //parent_1_1_2=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings");
       enfant=document.createElement("div");
       enfant.classList="cart__item__content__settings__delete";
-      parent.appendChild(enfant);
-      parent=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings>div.cart__item__content__settings__delete");
+      parent_1_1_2.appendChild(enfant);
+      
+      //parent_1_1_2_2=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings>div.cart__item__content__settings__delete");
+      parent_1_1_2_2=enfant;
       enfant=document.createElement("p");
       enfant.classList="deleteItem";
       enfant.innerHTML="Supprimer";
-      parent.appendChild(enfant);
-    
-    
-    
+      parent_1_1_2_2.appendChild(enfant);
     
     };
