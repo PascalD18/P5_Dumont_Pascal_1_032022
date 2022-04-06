@@ -116,7 +116,7 @@ function majOptionsCouleur(couleursProduitSelect) {
         else {
             enfantElemCouleur.innerHTML = couleur;
             console.log(enfantElemCouleur);
-            var parentElemCouleur = document.getElementById("colors")
+            var parentElemCouleur = document.getElementById("colors");
             parentElemCouleur.appendChild(enfantElemCouleur);
             i++;
         };
