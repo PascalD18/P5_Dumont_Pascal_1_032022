@@ -61,18 +61,3 @@ function ajoutListeProduitsHTML(tableauProduits) {
   })
 };
 
-/*
-  newListe.innerHTML = "Element" + i + "<strong>Fort</Strong>"
-
-  if (i == 4) {
-      //Si i = 4, Liste N° 4 remplace balise 'p' par 'div'
-      // dans 'derElemListe';
-      elemRemplacement.innerHTML = "Remplace balise p";
-      derElemListe.replaceChild(elemRemplacement, elemARemplacer);
-      console.log(elemRemplacement.innerHTML);
-  };
-
-    //document
-    //.querySelector("div>.titles")
-    //.addEventListener("click", requeteProduits);
-*/
