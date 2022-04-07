@@ -15,6 +15,7 @@ fetch("http://localhost:3000/api/products/")
     majTotauxQtPrix();
     modifQtProduit();
     suppressionProduit();
+    saisieEmail();
 
   })
   .catch(function (err) {
@@ -132,13 +133,13 @@ function modifQtProduit() {
       couleurDOM = elemProdCorresondant.dataset.color;
       // Modification de la qt du produit corresondant dans 'panierJson'
       var i = 0; continuer = true;
-      qtProduit=item.valueAsNumber;
+      qtProduit = item.valueAsNumber;
       while (i < panierJson.length && continuer == true) {
         if (panierJson[i].codeArt == idDOM && panierJson[i].couleur == couleurDOM) {
           panierJson[i].qt = qtProduit
           // MAJ de la Qt dans le D.O.M
           enfant = event.target.closest("section>article>div>div>div");
-          enfant.children[0].innerHTML="Qté : "+ qtProduit; 
+          enfant.children[0].innerHTML = "Qté : " + qtProduit;
 
           sauvegardePanier();
           continuer = false;
@@ -199,7 +200,7 @@ function majTotauxQtPrix() {
   let totalQt = 0; let totalPrix = 0;
   panierJson.forEach(item => {
     totalQt = totalQt + item.qt;
-  // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
+    // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
     ImageNomprixProduitSvtId(item.codeArt);
     totalPrix = totalPrix + item.qt * prixProduit;
   });
@@ -209,3 +210,23 @@ function majTotauxQtPrix() {
   elemTotalPrix = document.getElementById("totalPrice");
   elemTotalPrix.innerHTML = totalPrix;
 }
+// Verification le la saisie de l'email
+function saisieEmail() {
+  textEmail = document.getElementById("email")
+  textEmail.addEventListener("input", function (event) {
+    event.preventDefault();
+    contenu = event.target.value;
+    // Teste la saisie en cours
+    test = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(contenu);
+    if (test == true) {
+      // Saisie email en cours = valide
+      textEmail.style.color = "green";
+      Saisievalide = true;
+    }
+    else {
+      // Saisie email en cours = non valide
+      textEmail.style.color = "red";
+      saisievalide = false;
+    }
+  });
+};
