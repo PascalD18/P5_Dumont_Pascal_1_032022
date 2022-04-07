@@ -5,7 +5,7 @@ const id = urlParams.get('id');
 //console.log(id)
 const btnAjoutPanier = document.getElementById("addToCart");
 
- //localStorage.removeItem("panier");
+//localStorage.removeItem("panier");
 
 
 // Requete API sur les produitSelect du produit suivant N° 'id
@@ -33,15 +33,15 @@ function lectureCouleurQt() {
     // Lit la couleur selectionnée
     var option = document.getElementById("colors");
     couleur = option.value;
-    couleurSelect=true// Couleur considérée comme selectionnée par défaut
+    couleurSelect = true// Couleur considérée comme selectionnée par défaut
     nbCars = couleur.length;
     if (nbCars > 20) {
-        if (couleur.slice(0,5) == "--SVP") {
+        if (couleur.slice(0, 5) == "--SVP") {
             couleurSelect = false;
         }
     };
     var option = document.getElementById("quantity");
-    qtNonVide=true // Qt considérée comme > 0 par défault
+    qtNonVide = true // Qt considérée comme > 0 par défault
     qtProduit = parseInt(option.value);
     if (qtProduit == 0) {
         qtNonVide = false
@@ -69,8 +69,8 @@ function initPanier() {
     else {
         // Réinitialise un panier vide
         panierJson = [{}];
-    //    panierLinea = JSON.stringify(panierJson);
-    //    localStorage.setItem("panier", panierLinea);
+        //    panierLinea = JSON.stringify(panierJson);
+        //    localStorage.setItem("panier", panierLinea);
     }
 };
 function majElemsProduitHTML(produitSelect) {
@@ -130,23 +130,23 @@ function majPanier() {
         lectureCouleurQt();
         if (couleurSelect && qtNonVide) {
             // Si une couleur selectionnée et Qt >0
-           // let panierJson = JSON.parse(panierLinea);
-           // console.log(panierJson);
+            // let panierJson = JSON.parse(panierLinea);
+            // console.log(panierJson);
             if (localStorage?.panier == undefined) {
                 // Si panier vide => MAJ 1er data du panier
                 panierJson[0] = { "codeArt": id, "couleur": couleur, "qt": qtProduit }
             }
             else {
                 // Si panier non vide
-                verifSiitemProduitDsPanier();
+                verifSiProduitExisteDsPanier();
                 if (produitExiste) {
-                  // Si le produit existe déjà dans le panier => MAJ qt uniquement
-                    newQt = qtProduit+ panierJson[itemProduit].qt;
+                    // Si le produit existe déjà dans le panier => MAJ qt uniquement
+                    newQt = qtProduit + panierJson[itemProduit].qt;
                     panierJson[itemProduit].qt = newQt;
                 }
                 else {
-                  // Si le Produit n'existe pas dans le panier => L'ajoute
-                    panierJson.push({"codeArt": id, "couleur": couleur, "qt": qtProduit });
+                    // Si le Produit n'existe pas dans le panier => L'ajoute
+                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit });
                 }
             }
             sauvegardePanier();
@@ -159,15 +159,15 @@ function sauvegardePanier() {
     localStorage.setItem("panier", panierLinea);
 };
 // Verifie si le produit exit déjà dans le panier
-function verifSiitemProduitDsPanier() {
+function verifSiProduitExisteDsPanier() {
     // Verifie si le produit selectionné existe déjà dans le panier
-    var i = 0;continuer=true;
-    produitExiste=false; // Par défaut, considére le produit inexistant dans panier
-    while (i < panierJson.length && produitExiste==false) {
-        if ( panierJson[i].codeArt == id && panierJson[i].couleur == couleur ) {
-            itemProduit = i; produitExiste=true;
-            continuer=false;
-        }
+    var i = 0; continuer = true;
+    produitExiste = false; // Par défaut, considére le produit inexistant dans panier
+    while (i < panierJson.length && produitExiste == false) {
+            if (panierJson[i].codeArt == id && panierJson[i].couleur == couleur) {
+                itemProduit = i; produitExiste = true;
+                continuer = false;
+            };
         i++
-    } 
+     };
 };

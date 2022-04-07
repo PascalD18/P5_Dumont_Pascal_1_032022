@@ -9,9 +9,12 @@ fetch("http://localhost:3000/api/products/")
     // Recuperation du panier avec localStorage
     panierLinea = localStorage.getItem("panier");
     panierJson = JSON.parse(panierLinea);
-    dataProduits = tableauProduits;
-    affProduitsPanier();
-    majQtProduit();
+    dataURLProduits = tableauProduits; 
+
+   // supprItemsNullDsPanier();
+
+    MajElemsDOMavecPanier();
+    suppressionProduit();
 
 
   })
@@ -22,21 +25,37 @@ fetch("http://localhost:3000/api/products/")
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
-function affProduitsPanier() {
+function MajElemsDOMavecPanier() {
   // Affichage de tous les produits du panier
   var i = 0;
   while (i < panierJson.length) {
-    //while (i < 2) {
-    id = panierJson[i].codeArt;
-    couleur = panierJson[i].couleur;
-    qtProduit = panierJson[i].qt;
-    affItemArticleProduit();
-    majQtProduit();
+    if (panierJson[i] != null){
+    MajElemsDOMparProduit(i);
+  };
     i++
   };
 };
-function affItemArticleProduit() {
-  // Affiche les elements concernant seulement les articles du D.O.M en fonction du panier  
+// recherche l'image correspondant au produit dans la base Json 'dataURLProduis' depuis le serveur
+function rechImageNomPrixProduit() {
+  var i = 0; continuer = true; imageUrlProduit = ""
+  while (i < dataURLProduits.length && imageUrlProduit == "") {
+    if (id == dataURLProduits[i]._id) {
+      imageUrlProduit = dataURLProduits[i].imageUrl;
+      nomProduit = dataURLProduits[i].name;
+      nomProduit = nomProduit.replace(" ", "_");
+      prixProduit = dataURLProduits[i].price + ",00€";
+    }
+    i++
+  }
+};
+// MAJ des elements du D.O.M avec un produit
+function MajElemsDOMparProduit(item) {
+  // Récupére les données à partir du 'panierJson' issu du localStorage
+  id = panierJson[item].codeArt;
+  couleur = panierJson[item].couleur;
+  qtProduit = panierJson[item].qt;
+  // recupére l'addresse Url de l'image, le Nom du produit, et le prix.
+  rechImageNomPrixProduit();
   // l'insertion dans l'élément id='cart__item'
   parent = document.getElementById("cart__items");
   enfant = document.createElement("article");
@@ -44,28 +63,8 @@ function affItemArticleProduit() {
   enfant.classList = `cart__item" data-color="` + couleur;
   parent.appendChild(enfant);
   parent_1 = enfant;
-  insereElemsProduitDsElemArticle();
-
-};
-// recherche l'image correspondant au produit dans la base Json 'tableauProduits'
-function rechImageNomPrixProduit() {
-  var i = 0; continuer = true; imageUrlProduit = ""
-  while (i < dataProduits.length && imageUrlProduit == "") {
-    if (id == dataProduits[i]._id) {
-      imageUrlProduit = dataProduits[i].imageUrl;
-      nomProduit = dataProduits[i].name;
-      nomProduit = nomProduit.replace(" ", "_");
-      prixProduit = dataProduits[i].price + ",00€";
-    }
-    i++
-  }
-
-};
-// insert les elements du produit dans l'élement 'article'
-function insereElemsProduitDsElemArticle() {
   enfant = document.createElement("div");
   enfant.classList = "cart__item__img";
-  rechImageNomPrixProduit();// recupére l'addresse Url de l'image, le Nom du produit, et le prix.
   //insert l'élément' image
   enfant.innerHTML = "<img src =" + imageUrlProduit + ` alt =` + nomProduit + ">";
   parent_1.appendChild(enfant);
@@ -96,7 +95,6 @@ function insereElemsProduitDsElemArticle() {
   enfant.classList = "cart__item__content__settings";
   parent_1_1.appendChild(enfant);
 
-
   //parent_1_1_2=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings");
   parent_1_1_2 = enfant;
   enfant = document.createElement("div");
@@ -105,8 +103,8 @@ function insereElemsProduitDsElemArticle() {
 
   //parent_1_1_2_1=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings>div.cart__item__content__settings__quantity");
   parent_1_1_2_1 = enfant;
-  parent_1_1_2.innerHTML = "<p>Qté : " + qtProduit + "</p>";
-  parent_1_1_2.innerHTML = parent_1_1_2.innerHTML + `<input type="number" classe="itemQuantity" name="itemQuantity" min="1" max="100"value=` + qtProduit + ">";
+  parent_1_1_2_1.innerHTML = "<p>Qté : " + qtProduit + "</p>";
+  parent_1_1_2_1.innerHTML = parent_1_1_2_1.innerHTML + `<input type="number" classe="itemQuantity" name="itemQuantity" min="1" max="100"value=` + qtProduit + ">";
   //parent_1_1_2=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__settings");
   enfant = document.createElement("div");
   enfant.classList = "cart__item__content__settings__delete";
@@ -119,28 +117,53 @@ function insereElemsProduitDsElemArticle() {
   enfant.innerHTML = "Supprimer";
   parent_1_1_2_2.appendChild(enfant);
 };
-function majQtProduit() {
-  // elemsSuppression=document.querySelectorAll("#cart__items article>div>div.cart__item__content__settings>div>p");
+function suppressionProduit() {
+  // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   document.querySelectorAll('.deleteItem').forEach(item => {
     item.addEventListener("click", event => {
       event.preventDefault();
-      var firstItem = 1;
-      while (firstItem == 1) {
-        event.preventDefault();
-        console.log(event.target);
-        test = event.target
-        parentId=test.closest("article").outerHTML;
-        console.log(parentId.length)
-        test1=parentId.indexOf("•");
-        test1_1=parentId.substr(test1+1,5);
+      // Recherche de l'id 'idDOM' et de la couleur 'couleurODM' correspondants dans le D.O.M
 
-        parentCouleur = test.closest("section >article > div").innerHTML;
-        test2 = parentCouleur.indexOf("/h2><p>");
-        
-        parent=parentCouleur.children;
-        firstItem++
-      }
-   })
-    
-  });
+      parentId = event.target.closest("article");
+      idDOM = RechChaineCars(parentId.outerHTML, `id="•`, `•" `);
+      parentCouleur = event.target.closest("section >article > div");
+      couleurDOM = RechChaineCars(parentCouleur.outerHTML, "/h2><p>", "</p><p>");
+      parentId.remove();
+      // Suppresion du produit dans 'panierJson'
+      var i = 0; continuer = true;
+      while (i < panierJson.length && continuer == true) {
+        if (panierJson[i].codeArt == idDOM && panierJson[i].couleur == couleurDOM) {
+          delete panierJson[i];
+          supprItemsNullDsPanier();
+          continuer=false;
+        };
+        i++
+      };
+    });
+  })
+};
+
+function RechChaineCars(contenuChaine, chaineAv, chaineAp) {
+  debut = contenuChaine.indexOf(chaineAv) + chaineAv.length - 1;
+  suiteContenuChaine = contenuChaine.slice(-(contenuChaine.length - debut));
+  fin = suiteContenuChaine.indexOf(chaineAp);
+  return suiteContenuChaine.slice(1, fin);
+}
+// Sauvedarde en local du panier
+function sauvegardePanier() {
+  panierLinea = JSON.stringify(panierJson);
+  localStorage.setItem("panier", panierLinea);
+};
+function supprItemsNullDsPanier() {
+  // Supprime definitivement les items effacés ( = 'null' ) dans le panier 'panierJson'
+  panierLinea = JSON.stringify(panierJson);
+  var i=0;
+  while ( panierLinea.indexOf(`,null`) >0 || panierLinea.indexOf(`null,`) >0 || panierLinea.indexOf(`null`) >0){
+    panierLinea=panierLinea.replace(`,null`,"");
+    panierLinea=panierLinea.replace(`null,`,""); 
+    panierLinea=panierLinea.replace(`null`,"");
+    i++
+  };
+  panierJson = JSON.parse(panierLinea);
+  sauvegardePanier();  
 };
