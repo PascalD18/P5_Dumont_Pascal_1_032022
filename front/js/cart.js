@@ -201,7 +201,7 @@ function majTotauxQtPrix() {
     totalQt = totalQt + item.qt;
   // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
     ImageNomprixProduitSvtId(item.codeArt);
-    totalPrix = totalPrix + totalQt * prixProduit;
+    totalPrix = totalPrix + item.qt * prixProduit;
   });
   // Mise à jour des totaux de Qt et prix dans le D.O.M
   elemTotalQt = document.getElementById("totalQuantity");
