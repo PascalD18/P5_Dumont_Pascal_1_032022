@@ -16,12 +16,22 @@ fetch("http://localhost:3000/api/products/")
     modifQtProduit();
     suppressionProduit();
     saisieEmail();
+    saisieCodePostalEtVille();
+
 
   })
   .catch(function (err) {
     // Une erreur est survenue
     console.log("Erreur N°" + err);
   })
+// Si appui sur la touche 'Entrée' => Declenche une tentative d'envoie de la commande
+document.onkeydown = function (evt) {
+  if (evt.key == 'Enter') {
+    requeteInfoCd();
+  }
+};
+
+
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
@@ -123,11 +133,11 @@ function modifQtProduit() {
   // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   selectQt = document.querySelectorAll('div.cart__item__content__settings__quantity>input')
   selectQt.forEach(item => {
-    item.addEventListener("change", event => {
-      event.preventDefault();
+    item.addEventListener("change", even => {
+      even.prevenDefault();
       // Recherche de l'id 'idDOM' et de la couleur 'couleurODM' correspondants dans le D.O.M
       // Recuperation de l'element du D.O.M correspondant au produit à supprimer
-      elemProdCorresondant = event.target.closest("section>article");
+      elemProdCorresondant = even.target.closest("section>article");
       // Recupération de l'id et de la couleur depuis le D.O.M via le dataset 
       idDOM = elemProdCorresondant.dataset.id;
       couleurDOM = elemProdCorresondant.dataset.color;
@@ -138,7 +148,7 @@ function modifQtProduit() {
         if (panierJson[i].codeArt == idDOM && panierJson[i].couleur == couleurDOM) {
           panierJson[i].qt = qtProduit
           // MAJ de la Qt dans le D.O.M
-          enfant = event.target.closest("section>article>div>div>div");
+          enfant = even.target.closest("section>article>div>div>div");
           enfant.children[0].innerHTML = "Qté : " + qtProduit;
 
           sauvegardePanier();
@@ -153,11 +163,11 @@ function modifQtProduit() {
 function suppressionProduit() {
   // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   document.querySelectorAll('.deleteItem').forEach(item => {
-    item.addEventListener("click", event => {
-      event.preventDefault();
+    item.addEventListener("click", even => {
+      even.preventDefault();
       // Recherche de l'id 'idDOM' et de la couleur 'couleurODM' correspondants dans le D.O.M
       // Recuperation de l'element du D.O.M correspondant au produit à supprimer
-      elemSuppr = event.target.closest("section>article");
+      elemSuppr = even.target.closest("section>article");
       // Recupération de l'id et de la couleur depuis le D.O.M via le dataset 
       idDOM = elemSuppr.dataset.id;
       couleurDOM = elemSuppr.dataset.color;
@@ -212,21 +222,107 @@ function majTotauxQtPrix() {
 }
 // Verification le la saisie de l'email
 function saisieEmail() {
-  textEmail = document.getElementById("email")
-  textEmail.addEventListener("input", function (event) {
-    event.preventDefault();
-    contenu = event.target.value;
+  texteSaisi = document.getElementById("email")
+  texteSaisi.addEventListener("input", function (even) {
+    even.preventDefault();
+    contenu = even.target.value;
     // Teste la saisie en cours
     test = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(contenu);
     if (test == true) {
       // Saisie email en cours = valide
-      textEmail.style.color = "green";
-      Saisievalide = true;
+      even.target.style.color = "green";
+      emailValidel = true;
     }
     else {
       // Saisie email en cours = non valide
-      textEmail.style.color = "red";
-      saisievalide = false;
+      even.target.style.color = "red";
+      emailValide = false;
     }
   });
+  texteSaisi.addEventListener("change", even => {
+    if (emailValide == false) {
+      alert("L'adresse mail n'est pas correcte");
+    };
+  });
 };
+// Verification le la saisie de l'email
+function saisieCodePostalEtVille() {
+  texteSaisi = document.getElementById("city")
+  texteSaisi.addEventListener("input", function (even) {
+    even.preventDefault();
+    // Teste la saisie en cours
+    test = /^[0-9]{5}\s\w+/.test(even.target.value);
+    saisieValide = "";
+    if (test == true) {
+      // Saisie email en cours = valide
+      even.target.style.color = "green";
+      villeValide = true;
+    }
+    else {
+      // Saisie email en cours = non valide
+      even.target.style.color = "red";
+      villeValide = false;
+    }
+  });
+  texteSaisi.addEventListener("change", even => {
+    even.preventDefault();
+    if (villeValide == false) {
+      document.getElementById("cityErrorMsg").innerHTML = "Veuillez saisir en commencant par le N° de code postal + espace,suivi du nom de la ville";
+    }
+    else {
+      document.getElementById("cityErrorMsg").innerHTML = "";
+    };
+  });
+};
+function boutonCd() {
+  BtnCommande = document.getElementById("order")
+  BtnCommande.addEventListener("click", even => {
+    e.preventDefault()
+    requeteInfoCd();
+  })
+}
+
+function requeteInfoCd() {
+  console.log("Reverification + envoie de la commande")
+  // verification des données de contact
+  // Création du tableau de contact 'TableauContactJson'
+  const contact = {
+    lastName: "Dumont",
+    firstName: "Pascal",
+    address: "8 rue du canal",
+    city: "1990 Developole",
+    email: "nomprenom@orange.fr"
+  }
+
+  const tableauProduits = [];
+   panierJson.forEach(item => {
+     idProduit = panierJson.codeArt;
+     
+
+   });
+
+  requeteCd = { contact, panierLinea }
+
+  //envoie de la commande au serveur
+    //e.preventDefault();
+    fetch("http://localhost:3000/api/prod ucts/order", {
+
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      //body: JSON.stringify({ value: document.getElementById("value").value })
+
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then(function (value) {
+
+        console.log("N° commande : " + value.postData.text)
+      });
+  }
+
