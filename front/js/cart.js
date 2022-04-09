@@ -285,44 +285,60 @@ function boutonCd() {
 function requeteInfoCd() {
   console.log("Reverification + envoie de la commande")
   // verification des données de contact
-  // Création du tableau de contact 'TableauContactJson'
-  const contact = {
-    lastName: "Dumont",
-    firstName: "Pascal",
-    address: "8 rue du canal",
-    city: "1990 Developole",
-    email: "nomprenom@orange.fr"
-  }
 
-  const tableauProduits = [];
-   panierJson.forEach(item => {
-     idProduit = panierJson.codeArt;
-     
+  // Création du tablleau array 'produxtsID'
 
-   });
+  let productsID = [];
+  panierJson.forEach(produit => {
+    productsID.push(produit.codeArt);
+  });
 
-  requeteCd = { contact, panierLinea }
+  // Création du tableau 'order' à envoyer en POST
+  //const order = {};
+  order = {
+    contact: {
+      firstName: "Pascal",
+      lastName: "Dumont",
+      address: "8 rue du canal",
+      city: "1990 Developole",
+      email: "nomprenom@orange.fr"
+    },
+    products: productsID
+  };
+  //envoie de l'info commande 'order' au serveur
 
-  //envoie de la commande au serveur
-    //e.preventDefault();
-    fetch("http://localhost:3000/api/prod ucts/order", {
+  fetch("http://localhost:3000/api/products/order", {
 
-      method: "POST",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      //body: JSON.stringify({ value: document.getElementById("value").value })
+    method: "POST",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(order),
+  })
+    .then((response) => {
+      if (response.ok) {
+        //test=JSON.stringify(response.json())
+        return response.json();
 
+      }
     })
-      .then(function (res) {
-        if (res.ok) {
-          return res.json();
-        }
-      })
-      .then(function (value) {
+    .catch(function (err) {
+      // Une erreur est survenue
+      console.log("Erreur N°" + err);
+    })
 
-        console.log("N° commande : " + value.postData.text)
-      });
-  }
+
+  fetch("http://localhost:3000/api/products/order")
+   .then((resp) => {
+    if (resp.ok) {
+      respjson = resp.json();
+       return respjson;
+
+    } else {
+      alert("erreur")
+    }
+  })
+
+}
 
