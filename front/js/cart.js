@@ -1,29 +1,44 @@
-fetch("http://localhost:3000/api/products/")
+//fetch("http://localhost:3000/api/products/")
 
-  .then(function (res) {
-    if (res.ok) {
-      return res.json();
-    }
-  })
-  .then(tableauProduits => {
-    // Recuperation du panier avec localStorage
-    panierLinea = localStorage.getItem("panier");
-    panierJson = JSON.parse(panierLinea);
-    dataURLProduits = tableauProduits;
+//  .then(function (res) {
+//    if (res.ok) {
+//      return res.json();
+//    }
+//  })
+//  .then(tableauProduits => {
+//    // Recuperation du panier avec localStorage
+//    panierLinea = localStorage.getItem("panier");
+//    panierJson = JSON.parse(panierLinea);
+//    dataURLProduits = tableauProduits;
 
-    MajElemsDOMavecPanier();
-    majTotauxQtPrix();
-    modifQtProduit();
-    suppressionProduit();
-    saisieEmail();
-    saisieCodePostalEtVille();
+//    MajElemsDOMavecPanier();
+//    majTotauxQtPrix();
+//    modifQtProduit();
+//    suppressionProduit();
+//    saisieEmail();
+//    saisieCodePostalEtVille();
+//  })
+//  .catch(function (err) {
+//    // Une erreur est survenue
+//    console.log("Erreur N°" + err);
+//  })
 
 
-  })
-  .catch(function (err) {
-    // Une erreur est survenue
-    console.log("Erreur N°" + err);
-  })
+// Récupére la base de donnée des produits avec le locaStorage
+// Récupération si panier déjà en cours
+  // dataURLProduits=[{}];
+   //bddProduitsLinea= localStorage.getItem("bddProduits");
+   bddProduitsLinea=localStorage.getItem("bddProduits");
+   dataURLProduits = JSON.parse(bddProduitsLinea);
+// Récupére le panier
+   panierLinea = localStorage.getItem("panier");
+   panierJson = JSON.parse(panierLinea);
+  MajElemsDOMavecPanier();
+  majTotauxQtPrix();
+   modifQtProduit();
+   suppressionProduit();
+   saisieEmail();
+   saisieCodePostalEtVille();
 // Si appui sur la touche 'Entrée' => Declenche une tentative de requete
   document.onkeydown = function (evt) {
   if (evt.key == 'Enter') {
@@ -309,7 +324,6 @@ function requeteInfoCd() {
   //envoie de l'info commande 'order' au serveur
 
   fetch("http://localhost:3000/api/products/order", {
-
     method: "POST",
     headers: {
       'Accept': 'application/json',
@@ -328,18 +342,6 @@ function requeteInfoCd() {
       // Une erreur est survenue
       console.log("Erreur N°" + err);
     })
-
-
-  //fetch("http://localhost:3000/api/products/order")
-   //.then((resp) => {
-   // if (resp.ok) {
-   //   respjson = resp.json();
-   //    return respjson;
-
-   // } else {
-  //    alert("erreur ligne 339")
- //   }
- // })
 
 }
 

@@ -7,7 +7,9 @@ fetch("http://localhost:3000/api/products/")
   })
   .then (tableauProduits => {
     console.log(tableauProduits);
+    sauveBddProduits(tableauProduits);
     return ajoutListeProduitsHTML(tableauProduits);
+
 
   })
   .catch(function (err) {
@@ -60,4 +62,9 @@ function ajoutListeProduitsHTML(tableauProduits) {
 
   })
 };
+function sauveBddProduits(tableauProduits){
+// Sauvegarde la base de donnés de tous les produits
+   bddProduitsLinea = JSON.stringify(tableauProduits);
+   localStorage.setItem("bddProduits", bddProduitsLinea); 
+}
 

@@ -6,6 +6,7 @@ const id = urlParams.get('id');
 const btnAjoutPanier = document.getElementById("addToCart");
 
 //localStorage.removeItem("panier");
+ 
 
 
 // Requete API sur les produitSelect du produit suivant N° 'id
@@ -28,7 +29,7 @@ fetch("http://localhost:3000/api/products/" + id)
 
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
-// Lecture Couleur et Qt
+// Lecture Couleur et Qt depuis de D.O.M
 function lectureCouleurQt() {
     // Lit la couleur selectionnée
     var option = document.getElementById("colors");
@@ -69,8 +70,6 @@ function initPanier() {
     else {
         // Réinitialise un panier vide
         panierJson = [{}];
-        //    panierLinea = JSON.stringify(panierJson);
-        //    localStorage.setItem("panier", panierLinea);
     }
 };
 function majElemsProduitHTML(produitSelect) {
