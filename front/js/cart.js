@@ -24,8 +24,8 @@ fetch("http://localhost:3000/api/products/")
     // Une erreur est survenue
     console.log("Erreur N°" + err);
   })
-// Si appui sur la touche 'Entrée' => Declenche une tentative d'envoie de la commande
-document.onkeydown = function (evt) {
+// Si appui sur la touche 'Entrée' => Declenche une tentative de requete
+  document.onkeydown = function (evt) {
   if (evt.key == 'Enter') {
     requeteInfoCd();
   }
@@ -134,7 +134,7 @@ function modifQtProduit() {
   selectQt = document.querySelectorAll('div.cart__item__content__settings__quantity>input')
   selectQt.forEach(item => {
     item.addEventListener("change", even => {
-      even.prevenDefault();
+      even.preventDefault();
       // Recherche de l'id 'idDOM' et de la couleur 'couleurODM' correspondants dans le D.O.M
       // Recuperation de l'element du D.O.M correspondant au produit à supprimer
       elemProdCorresondant = even.target.closest("section>article");
@@ -305,6 +305,7 @@ function requeteInfoCd() {
     },
     products: productsID
   };
+   
   //envoie de l'info commande 'order' au serveur
 
   fetch("http://localhost:3000/api/products/order", {
@@ -329,16 +330,16 @@ function requeteInfoCd() {
     })
 
 
-  fetch("http://localhost:3000/api/products/order")
-   .then((resp) => {
-    if (resp.ok) {
-      respjson = resp.json();
-       return respjson;
+  //fetch("http://localhost:3000/api/products/order")
+   //.then((resp) => {
+   // if (resp.ok) {
+   //   respjson = resp.json();
+   //    return respjson;
 
-    } else {
-      alert("erreur")
-    }
-  })
+   // } else {
+  //    alert("erreur ligne 339")
+ //   }
+ // })
 
 }
 
