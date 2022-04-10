@@ -1,50 +1,40 @@
-//fetch("http://localhost:3000/api/products/")
-
-//  .then(function (res) {
-//    if (res.ok) {
-//      return res.json();
-//    }
-//  })
-//  .then(tableauProduits => {
-//    // Recuperation du panier avec localStorage
-//    panierLinea = localStorage.getItem("panier");
-//    panierJson = JSON.parse(panierLinea);
-//    dataURLProduits = tableauProduits;
-
-//    MajElemsDOMavecPanier();
-//    majTotauxQtPrix();
-//    modifQtProduit();
-//    suppressionProduit();
-//    saisieEmail();
-//    saisieCodePostalEtVille();
-//  })
-//  .catch(function (err) {
-//    // Une erreur est survenue
-//    console.log("Erreur N°" + err);
-//  })
-
-
 // Récupére la base de donnée des produits avec le locaStorage
-// Récupération si panier déjà en cours
-  // dataURLProduits=[{}];
-   //bddProduitsLinea= localStorage.getItem("bddProduits");
-   bddProduitsLinea=localStorage.getItem("bddProduits");
-   dataURLProduits = JSON.parse(bddProduitsLinea);
+// Récupération de la bdd de tous les produits
+bddProduitsLinea = localStorage.getItem("bddProduits");
+dataURLProduits = JSON.parse(bddProduitsLinea);
 // Récupére le panier
-   panierLinea = localStorage.getItem("panier");
-   panierJson = JSON.parse(panierLinea);
-  MajElemsDOMavecPanier();
-  majTotauxQtPrix();
-   modifQtProduit();
-   suppressionProduit();
-   saisieEmail();
-   saisieCodePostalEtVille();
+panierLinea = localStorage.getItem("panier");
+panierJson = JSON.parse(panierLinea);
+MajElemsDOMavecPanier();
+majTotauxQtPrix();
+modifQtProduit();
+suppressionProduit();
+saisieEmail();
+saisieCodePostalEtVille();
+//désactivation de la touche 'Entrée
 // Si appui sur la touche 'Entrée' => Declenche une tentative de requete
-  document.onkeydown = function (evt) {
-  if (evt.key == 'Enter') {
+document.onkeydown = function (evt) {
+   let btnCommande=document.getElementById("order");
+  if (evt.key == 'Enter' && (btnCommande.Focus())) {
+     console.log("Entre sur btn Commande")
     requeteInfoCd();
   }
 };
+
+
+// Si appui sur la touche 'Entrée'
+//function testeSiEnterEnfoncé() {
+//  var btnCd = document.getElementById("order");
+//  if (document.hasFocus()) {
+//   $(document).keydown(function (event) {
+//      if (event.which === 40) {
+//        console.log('keydown pressed')
+//      }
+//    });
+//  }
+
+// => Declenche une tentative de requete pour element specifice du D.O.M
+
 
 
 //////////////////////////////////////////////////////
@@ -320,7 +310,7 @@ function requeteInfoCd() {
     },
     products: productsID
   };
-   
+
   //envoie de l'info commande 'order' au serveur
 
   fetch("http://localhost:3000/api/products/order", {
@@ -331,17 +321,46 @@ function requeteInfoCd() {
     },
     body: JSON.stringify(order),
   })
-    .then((response) => {
+    .then(function (response) {
       if (response.ok) {
-        //test=JSON.stringify(response.json())
-        return response.json();
-
+        response = response.json();
       }
+      return response.url
+
     })
     .catch(function (err) {
       // Une erreur est survenue
       console.log("Erreur N°" + err);
     })
 
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const id = urlParams.get('id');
+
 }
 
+//fetch("http://localhost:3000/api/products/")
+
+//  .then(function (res) {
+//    if (res.ok) {
+//      return res.json();
+//    }
+//  })
+//  .then(tableauProduits => {
+//    // Recuperation du panier avec localStorage
+//    panierLinea = localStorage.getItem("panier");
+//    panierJson = JSON.parse(panierLinea);
+//    dataURLProduits = tableauProduits;
+
+//    MajElemsDOMavecPanier();
+//    majTotauxQtPrix();
+//    modifQtProduit();
+//    suppressionProduit();
+//    saisieEmail();
+//    saisieCodePostalEtVille();
+//  })
+//  .catch(function (err) {
+//    // Une erreur est survenue
+//    console.log("Erreur N°" + err);
+//  })
