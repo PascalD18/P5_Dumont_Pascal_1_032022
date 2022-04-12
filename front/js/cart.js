@@ -10,18 +10,19 @@ actionBtnCd()
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
-function initBdds(){
-// Récupére la base de donnée des produits avec le locaStorage
-// Récupération de la bdd de tous les produits
-bddProduitsLinea = localStorage.getItem("bddProduits");
-dataURLProduits = JSON.parse(bddProduitsLinea);
-// Récupére le panier
-panierLinea = localStorage.getItem("panier");
-panierJson = JSON.parse(panierLinea);
+function initBdds() {
+  // Récupére la base de donnée des produits avec le locaStorage
+  // Récupération de la bdd de tous les produits
+  bddProduitsLinea = localStorage.getItem("bddProduits");
+  dataURLProduits = JSON.parse(bddProduitsLinea);
+  // Récupére le panier
+  panierLinea = localStorage.getItem("panier");
+  panierJson = JSON.parse(panierLinea);
 };
 function MajElemsDOMavecPanier() {
   // Affichage de tous les produits du panier
   var i = 0;
+
   while (i < panierJson.length) {
     if (panierJson[i] != null) {
       MajElemsDOMparProduit(i);
@@ -206,50 +207,50 @@ function majTotauxQtPrix() {
 }
 // Verification de la saisie d'un Prenom ou Nom'
 function saisiePrenom() {
-  prenomValide=false;// Saisie non valide par défaut
+  prenomValide = false;// Saisie non valide par défaut
   texteSaisi = document.getElementById("firstName")
   texteSaisi.addEventListener("input", function (even) {
     even.preventDefault();
-   //Efface le message d'erreur à chaque saisie de caractére
-     document.getElementById("firstNameErrorMsg").innerHTML = "";
+    //Efface le message d'erreur à chaque saisie de caractére
+    document.getElementById("firstNameErrorMsg").innerHTML = "";
     // Teste le caractere saisi
     nomValide = /^[A-Z]{1}[a-z]*/g.test(even.target.value);
     if (prenomValide == true) {
-    // Si OK => Colore la saisie en vert
+      // Si OK => Colore la saisie en vert
       even.target.style.color = "green";
     }
     else {
-    // Si non OK => Colore la saisie en rouge
+      // Si non OK => Colore la saisie en rouge
       even.target.style.color = "red";
     }
   });
   texteSaisi.addEventListener("change", even => {
-     even.preventDefault();
+    even.preventDefault();
     if (emailValide == false) {
       document.getElementById("firstNameErrorMsg").innerHTML = "Le Prenom doit commencer par 1 majuscule et ne comporter que des lettres";
     };
   });
 };
 function saisieNom() {
-  nomValide=false;// Saisie non valide par défaut
+  nomValide = false;// Saisie non valide par défaut
   texteSaisi = document.getElementById("lastName")
   texteSaisi.addEventListener("input", function (even) {
     even.preventDefault();
-   //Efface le message d'erreur à chaque saisie de caractére
-     document.getElementById("lastNameErrorMsg").innerHTML = "";
+    //Efface le message d'erreur à chaque saisie de caractére
+    document.getElementById("lastNameErrorMsg").innerHTML = "";
     // Teste le caractere saisi
     nomValide = /^[A-Z]{1}[a-z]*/g.test(even.target.value);
     if (prenomValide == true) {
-    // Si OK => Colore la saisie en vert
+      // Si OK => Colore la saisie en vert
       even.target.style.color = "green";
     }
     else {
-    // Si non OK => Colore la saisie en rouge
+      // Si non OK => Colore la saisie en rouge
       even.target.style.color = "red";
     }
   });
   texteSaisi.addEventListener("change", even => {
-     even.preventDefault();
+    even.preventDefault();
     if (emailValide == false) {
       document.getElementById("lastNameErrorMsg").innerHTML = "Le Nom doit commencer par 1 majuscule et ne comporter que des lettres";
     };
@@ -257,7 +258,7 @@ function saisieNom() {
 };
 // Verification le la saise du N° code Postal + Non de la ville
 function saisieCodePostalEtVille() {
-  villeValide=false; // Saisie non valide par défaut
+  villeValide = false; // Saisie non valide par défaut
   texteSaisi = document.getElementById("city")
   texteSaisi.addEventListener("input", function (even) {
     even.preventDefault();
@@ -266,12 +267,12 @@ function saisieCodePostalEtVille() {
     // Teste le caractére saisi ( 5 chiffres + espace + lettres)
     villeValide = /^[0-9]{5}\s\w+/g.test(even.target.value);
     if (villeValide) {
-     //Si OK => Colore en vert la saisie
+      //Si OK => Colore en vert la saisie
       even.target.style.color = "green";
       villeValide = true;
     }
     else {
-    //Si non OK => Colore en rouge la saisie
+      //Si non OK => Colore en rouge la saisie
       even.target.style.color = "red";
     }
   });
@@ -280,13 +281,13 @@ function saisieCodePostalEtVille() {
     even.preventDefault();
     if (villeValide == false) {
       document.getElementById("cityErrorMsg").innerHTML =
-       "Veuillez saisir en commencant par le N° de code postal ( 5 chiffres ) + 1 espace, suivi du nom de la ville";
+        "Veuillez saisir en commencant par le N° de code postal ( 5 chiffres ) + 1 espace, suivi du nom de la ville";
     }
   });
 };
 // Verification de la saisie de l'email
 function saisieEmail() {
-  emailValide=false; // Saisie non valide par défaut
+  emailValide = false; // Saisie non valide par défaut
   texteSaisi = document.getElementById("email")
   texteSaisi.addEventListener("input", function (even) {
     even.preventDefault();
@@ -295,11 +296,11 @@ function saisieEmail() {
     // Teste le caractére saisi
     emailValide = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(even.target.value);
     if (emailValide) {
-    //Si OK => Colore en vert la saisie
+      //Si OK => Colore en vert la saisie
       even.target.style.color = "green";
     }
     else {
-    //Si non OK => Colore en rouge
+      //Si non OK => Colore en rouge
       even.target.style.color = "red";
     }
   });
@@ -310,80 +311,84 @@ function saisieEmail() {
       document.getElementById("emailErrorMsg").innerHTML = "Saisie email incorrecte";
     }
     else {
-      email=document.getElementById("emailErrorMsg").innerHTML;
+      email = document.getElementById("emailErrorMsg").innerHTML;
     }
   });
 };
-function actionBtnCd(){
+function actionBtnCd() {
   btnCommande = document.getElementById("order");
-  btnCommande.addEventListener("keypress",even => {
+  btnCommande.addEventListener("keypress", even => {
     even.preventDefault();
-      requeteInfoCd();
-    })
-  btnCommande.addEventListener("click", even => {
+    requeteInfoCd();
+  })
+  btnCommande.addEventListener("submit", even => {
     even.preventDefault();
     requeteInfoCd();
   });
 };
 function requeteInfoCd() {
-  if (saisiesValides) {
+  saisiesValides();
+  if (validationSaisies) {
     console.log("Saisie validées");
+
+
+    // Création du tableasu array 'produts'
+
+    let productsID = [];
+    panierJson.forEach(produit => {
+      productsID.push(produit.codeArt);
+
+    });
+
+    // Création du tableau 'order' à envoyer en POST
+    //const order = {};
+    order = {
+      "contact": {
+        firstName: "Pascal",
+        lastName: "Dumont",
+        address: "8 rue du canal",
+        city: "1990 Developole",
+        email: "nomprenom@orange.fr"
+      },
+      "products": productsID
+    };
+
+
+
+    orderLinear = JSON.stringify(order)
+
+    //envoie de l'info commande 'order' au serveur
+
+    fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(order),
+    })
+      .then(function (response) {
+        if (response.ok) {
+          return response.json();
+        }
+      })
+      .then(response => {
+        orderID = response.orderId;
+        window.location.href = "../html/confirmation.html?orderID=" + orderID
+      })
+      .catch(function (err) {
+        // Une erreur est survenue
+        console.log("Erreur N°" + err);
+      })
   }
-  
-  // verification des données de contact
-
-  // Création du tableasu array 'produts'
-
-  let productsID = [];
-  panierJson.forEach(produit => {
-    productsID.push(produit.codeArt);
-  });
-
-  // Création du tableau 'order' à envoyer en POST
-  //const order = {};
-  order = {
-    "contact" : {
-      firstName : "Pascal",
-      lastName: "Dumont",
-      address : "8 rue du canal",
-      city: "1990 Developole",
-      email: "nomprenom@orange.fr"
-    },
-    "products" : productsID
-  };
-
-
-
-  orderLinear=JSON.stringify(order)
-
-  //envoie de l'info commande 'order' au serveur
-
-  fetch("http://localhost:3000/api/products/order", {
-    method: "POST",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(order),
-  })
-    .then(function (response) {
-      if (response.ok) {
-        return response.json();
-      }
-    })
-     .then (response => {
-         orderID=response.orderId;
-        window.location.href="../html/confirmation.html?orderID="+orderID
-     })
-    .catch(function (err) {
-      // Une erreur est survenue
-      console.log("Erreur N°" + err);
-    })
-}
-// Verification des saisies effectuées
-function saisiesValides (){
- saisiesValides=false; // Saisies non validées par défaut
-if (prenomValide && nomValide && emailValide) {
-  saisiesValides=true;
-}
+  else {
+    alert(" la saisie du formulaire n'est pas valide.")
+  }
 };
+// Verification des saisies effectuées
+function saisiesValides() {
+  validationSaisies = false; // Saisies non validées par défaut
+  if (prenomValide && nomValide && emailValide) {
+    validationSaisies = true;
+  }
+}
