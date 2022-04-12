@@ -1,32 +1,63 @@
+//localStorage.removeItem("panier");
+
 // Valeur de controle par default
-initBdds();
+initialisation();
+neutraliseToucheEntree();
+if (panierVide ==false) {
 MajElemsDOMavecPanier();
 majTotauxQtPrix();
 modifQtProduit();
-suppressionProduit();
+suppressionProduit(); 
+};
+saisiePrenom();
+saisieNom();
+saisieCodePostalEtVille();
 saisieEmail();
 saisieCodePostalEtVille();
 actionBtnCd()
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
-function initBdds() {
+function neutraliseToucheEntree() {
+  document.addEventListener("keypress", even => {
+    if (even.key == "Enter") {
+      even.preventDefault();
+    }
+
+  });
+};
+function initialisation() {
+
+  // Initialise l'état de la saisie
+  prenomValide = false; nomValide = false; addressValide = false; villeValide = false;
+  emailValide = false;
+
   // Récupére la base de donnée des produits avec le locaStorage
   // Récupération de la bdd de tous les produits
-  bddProduitsLinea = localStorage.getItem("bddProduits");
-  dataURLProduits = JSON.parse(bddProduitsLinea);
-  // Récupére le panier
-  panierLinea = localStorage.getItem("panier");
-  panierJson = JSON.parse(panierLinea);
+  if (localStorage.bddProduits != null) {
+    bddProduitsLinea = localStorage.getItem("bddProduits");
+    dataURLProduits = JSON.parse(bddProduitsLinea);
+  };
+  // Réinitialise ou récupére le panier existant
+  if (localStorage?.panier == undefined) {
+    // Si le panier n'est pas initialisé
+    // Réinitialise un panier vide
+     panierJson = [{}]; panierVide=true;
+     panierLinea = JSON.stringify(panierJson);
+     localStorage.setItem("panier", panierLinea);
+  }
+  else {
+    panierVide=false
+    panierLinea = localStorage.getItem("panier");
+    panierJson = JSON.parse(panierLinea);
+  };
 };
 function MajElemsDOMavecPanier() {
   // Affichage de tous les produits du panier
   var i = 0;
-
+  
   while (i < panierJson.length) {
-    if (panierJson[i] != null) {
       MajElemsDOMparProduit(i);
-    };
     i++
   };
 };
@@ -207,14 +238,13 @@ function majTotauxQtPrix() {
 }
 // Verification de la saisie d'un Prenom ou Nom'
 function saisiePrenom() {
-  prenomValide = false;// Saisie non valide par défaut
   texteSaisi = document.getElementById("firstName")
   texteSaisi.addEventListener("input", function (even) {
     even.preventDefault();
     //Efface le message d'erreur à chaque saisie de caractére
     document.getElementById("firstNameErrorMsg").innerHTML = "";
     // Teste le caractere saisi
-    nomValide = /^[A-Z]{1}[a-z]*/g.test(even.target.value);
+    prenomValide = /^[A-Z]{1}[a-z]*/g.test(even.target.value);
     if (prenomValide == true) {
       // Si OK => Colore la saisie en vert
       even.target.style.color = "green";
@@ -226,13 +256,12 @@ function saisiePrenom() {
   });
   texteSaisi.addEventListener("change", even => {
     even.preventDefault();
-    if (emailValide == false) {
+    if (prenomValide == false) {
       document.getElementById("firstNameErrorMsg").innerHTML = "Le Prenom doit commencer par 1 majuscule et ne comporter que des lettres";
     };
   });
 };
 function saisieNom() {
-  nomValide = false;// Saisie non valide par défaut
   texteSaisi = document.getElementById("lastName")
   texteSaisi.addEventListener("input", function (even) {
     even.preventDefault();
@@ -240,7 +269,7 @@ function saisieNom() {
     document.getElementById("lastNameErrorMsg").innerHTML = "";
     // Teste le caractere saisi
     nomValide = /^[A-Z]{1}[a-z]*/g.test(even.target.value);
-    if (prenomValide == true) {
+    if (nomValide == true) {
       // Si OK => Colore la saisie en vert
       even.target.style.color = "green";
     }
@@ -251,14 +280,38 @@ function saisieNom() {
   });
   texteSaisi.addEventListener("change", even => {
     even.preventDefault();
-    if (emailValide == false) {
+    if (nomValide == false) {
       document.getElementById("lastNameErrorMsg").innerHTML = "Le Nom doit commencer par 1 majuscule et ne comporter que des lettres";
     };
   });
 };
-// Verification le la saise du N° code Postal + Non de la ville
+// Verification de l'adresse'
+function saisieAdresse() {
+  texteSaisi = document.getElementById("adresse")
+  texteSaisi.addEventListener("input", function (even) {
+    even.preventDefault();
+    //Efface le message d'erreur à chaque saisie de caractére
+    document.getElementById("firstNameErrorMsg").innerHTML = "";
+    // Teste le caractere saisi
+    nomValide = /\w+/g.test(even.target.value);
+    if (adresseValide == true) {
+      // Si OK => Colore la saisie en vert
+      even.target.style.color = "green";
+    }
+    else {
+      // Si non OK => Colore la saisie en rouge
+      even.target.style.color = "red";
+    }
+  });
+  texteSaisi.addEventListener("change", even => {
+    even.preventDefault();
+    if (adresseValide == false) {
+      document.getElementById("firstNameErrorMsg").innerHTML = "Le Prenom doit commencer par 1 majuscule et ne comporter que des lettres";
+    };
+  });
+};
+// Verification le la saise du N° code Postal + Nom de la ville
 function saisieCodePostalEtVille() {
-  villeValide = false; // Saisie non valide par défaut
   texteSaisi = document.getElementById("city")
   texteSaisi.addEventListener("input", function (even) {
     even.preventDefault();
@@ -287,7 +340,6 @@ function saisieCodePostalEtVille() {
 };
 // Verification de la saisie de l'email
 function saisieEmail() {
-  emailValide = false; // Saisie non valide par défaut
   texteSaisi = document.getElementById("email")
   texteSaisi.addEventListener("input", function (even) {
     even.preventDefault();
@@ -321,7 +373,7 @@ function actionBtnCd() {
     even.preventDefault();
     requeteInfoCd();
   })
-  btnCommande.addEventListener("submit", even => {
+  btnCommande.addEventListener("click", even => {
     even.preventDefault();
     requeteInfoCd();
   });
@@ -390,5 +442,5 @@ function saisiesValides() {
   validationSaisies = false; // Saisies non validées par défaut
   if (prenomValide && nomValide && emailValide) {
     validationSaisies = true;
-  }
-}
+  };
+};

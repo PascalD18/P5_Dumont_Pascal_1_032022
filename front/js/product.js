@@ -72,6 +72,7 @@ function initPanier() {
     else {
         // Réinitialise un panier vide
         panierJson = [{}];
+        sauvegardePanier();
     }
 };
 function majElemsProduitHTML(produitSelect) {
@@ -147,10 +148,16 @@ function majPanier() {
                 }
                 else {
                     // Si le Produit n'existe pas dans le panier => L'ajoute
-                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit });
+                    if (panierJson.length == 1) {
+                        panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit }];
+                    }
+                    else {
+                        panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit });
+                    };
                 }
             }
             sauvegardePanier();
+            window.location.href = "../html/cart.html"
         }
     });
 };
