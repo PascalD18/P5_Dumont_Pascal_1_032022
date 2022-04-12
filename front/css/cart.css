@@ -15,7 +15,7 @@ h2 {
 /************/
 /*Cart Items*/
 /************/
-.cart__item {
+.cart__item{
 	display: flex;
 	justify-content: space-around;
 	border-top: 1px solid white;
@@ -90,7 +90,8 @@ h2 {
 /*******/
 .cart__order {
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
+	align-items: center;
 	margin-top: 90px;
 }
 .cart__order__form {
@@ -133,6 +134,7 @@ h2 {
 .cart__order__form__submit input:hover {
 	box-shadow: rgb(42 18 206 / 90%) 0 0 22px 6px;
 }
+
 
 
 

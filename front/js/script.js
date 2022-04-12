@@ -59,7 +59,6 @@ function ajoutListeProduitsHTML(tableauProduits) {
     newElemListe.classList.add("productDescription")
     newElemListe.innerHTML = criteresProduit.description
     var etape = "Suite"
-
   })
 };
 function sauveBddProduits(tableauProduits){

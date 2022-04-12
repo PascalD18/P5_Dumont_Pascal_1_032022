@@ -6,7 +6,7 @@ const id = urlParams.get('id');
 const btnAjoutPanier = document.getElementById("addToCart");
 
 //localStorage.removeItem("panier");
- 
+
 
 
 // Requete API sur les produitSelect du produit suivant N° 'id
@@ -17,9 +17,11 @@ fetch("http://localhost:3000/api/products/" + id)
         };
     })
     .then(produitSelect => {
-        majElemsProduitHTML(produitSelect);
-        initPanier();
-        majPanier();
+        if (produitSelect != undefined) {
+            majElemsProduitHTML(produitSelect);
+            initPanier();
+            majPanier();
+        }
 
     })
     .catch(function (err) {
@@ -163,10 +165,10 @@ function verifSiProduitExisteDsPanier() {
     var i = 0; continuer = true;
     produitExiste = false; // Par défaut, considére le produit inexistant dans panier
     while (i < panierJson.length && produitExiste == false) {
-            if (panierJson[i].codeArt == id && panierJson[i].couleur == couleur) {
-                itemProduit = i; produitExiste = true;
-                continuer = false;
-            };
+        if (panierJson[i].codeArt == id && panierJson[i].couleur == couleur) {
+            itemProduit = i; produitExiste = true;
+            continuer = false;
+        };
         i++
-     };
+    };
 };
