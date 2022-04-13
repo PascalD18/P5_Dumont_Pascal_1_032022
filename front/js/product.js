@@ -2,12 +2,9 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get('id');
-//console.log(id)
 const btnAjoutPanier = document.getElementById("addToCart");
 
 //localStorage.removeItem("panier");
-
-
 
 // Requete API sur les produitSelect du produit suivant N° 'id
 fetch("http://localhost:3000/api/products/" + id)
@@ -86,14 +83,11 @@ function majElemsProduitHTML(produitSelect) {
 };
 // Renseigne l'Option des couleurs //
 function majOptionsCouleur(couleursProduitSelect) {
-
-    var i = 0;
-    var j = 0;
+    var i  = 0;var j = 0;
     couleursProduitSelect.forEach(couleur => {
 
         var enfantElemCouleur = document.createElement("option");
         enfantElemCouleur.id = "couleur" + i;
-        console.log(j);
         if (j == 0) {
             // Au début, Ajoute en premier l'option par défaut
 
@@ -104,9 +98,7 @@ function majOptionsCouleur(couleursProduitSelect) {
             var parentElemCouleur = document.getElementById("colors")
             enfantElemCouleur.innerHTML = "--SVP, choisissez une couleur"
             parentElemCouleur.appendChild(enfantElemCouleur);
-            j++;
-            console.log(j)
-            i++;
+            j++; i++;
             var enfantElemCouleur = document.createElement("option");
             enfantElemCouleur.id = "couleur" + i;
             enfantElemCouleur.innerHTML = couleur;
@@ -116,14 +108,11 @@ function majOptionsCouleur(couleursProduitSelect) {
         //Sinon ajoute
         else {
             enfantElemCouleur.innerHTML = couleur;
-            console.log(enfantElemCouleur);
             var parentElemCouleur = document.getElementById("colors")
             parentElemCouleur.appendChild(enfantElemCouleur);
             i++;
         };
     });
-
-    console.log(i);
 };
 // MAJ du panier
 function majPanier() {
@@ -132,8 +121,6 @@ function majPanier() {
         lectureCouleurQt();
         if (couleurSelect && qtNonVide) {
             // Si une couleur selectionnée et Qt >0
-            // let panierJson = JSON.parse(panierLinea);
-            // console.log(panierJson);
             if (localStorage?.panier == undefined) {
                 // Si panier vide => MAJ 1er data du panier
                 panierJson[0] = { "codeArt": id, "couleur": couleur, "qt": qtProduit }
@@ -147,14 +134,9 @@ function majPanier() {
                     panierJson[itemProduit].qt = newQt;
                 }
                 else {
-                    // Si le Produit n'existe pas dans le panier => L'ajoute
-                    if (panierJson.length == 1) {
-                        panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit }];
-                    }
-                    else {
-                        panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit });
-                    };
-                }
+                  // Si le Produit n'existe pas dans le panier => L'ajoute
+                   panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit });
+                };
             }
             sauvegardePanier();
             window.location.href = "../html/cart.html"

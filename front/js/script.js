@@ -6,9 +6,9 @@ fetch("http://localhost:3000/api/products/")
     }
   })
   .then (tableauProduits => {
-    console.log(tableauProduits);
     sauveBddProduits(tableauProduits);
-    return ajoutListeProduitsHTML(tableauProduits);
+    //return  
+    ajoutListeProduitsHTML(tableauProduits);
   })
   .catch(function (err) {
     // Une erreur est survenue
@@ -20,7 +20,6 @@ fetch("http://localhost:3000/api/products/")
 /////////////////////////////////////////////////////
 // Insertion en dynamique de la liste de produits en HTML
 function ajoutListeProduitsHTML(tableauProduits) {
-  console.log(tableauProduits)
   var etape = "Départ"
   tableauProduits.forEach(criteresProduit => {
     if (etape = "Départ") {

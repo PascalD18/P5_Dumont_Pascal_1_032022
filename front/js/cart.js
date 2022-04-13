@@ -29,9 +29,8 @@ function neutraliseToucheEntree() {
 function initialisation() {
 
   // Initialise l'état de la saisie
-  prenomValide = false; nomValide = false; addressValide = false; villeValide = false;
-  emailValide = false;
-
+  prenomValide = false; nomValide = false; adresseValide = false;
+   villeValide = false; emailValide = false;
   // Récupére la base de donnée des produits avec le locaStorage
   // Récupération de la bdd de tous les produits
   if (localStorage.bddProduits != null) {
@@ -381,7 +380,6 @@ function actionBtnCd() {
 function requeteInfoCd() {
   saisiesValides();
   if (validationSaisies) {
-    console.log("Saisie validées");
 
 
     // Création du tableasu array 'produts'
@@ -440,7 +438,7 @@ function requeteInfoCd() {
 // Verification des saisies effectuées
 function saisiesValides() {
   validationSaisies = false; // Saisies non validées par défaut
-  if (prenomValide && nomValide && emailValide) {
+  if (prenomValide && nomValide && villeValide && emailValide) {
     validationSaisies = true;
   };
 };
