@@ -92,12 +92,9 @@ function MajElemsDOMparProduit(item) {
   parent_1 = enfant;
   enfant = document.createElement("div");
   enfant.classList = "cart__item__img";
-  //insert l'élément' image avec bordure correspondant à la couleur ** //+ ` />`
-
+  //insert l'élément' image avec bordure correspondant à la couleur
   bordureProduitSvtCouleur(couleur)
-
   enfant.innerHTML = "<img src =" + imageUrlProduit + ` alt =` + nomProduit + defBordureImage
-
   parent_1.appendChild(enfant);
   enfant = document.createElement("div");
   enfant.classList = "cart__item__content"
