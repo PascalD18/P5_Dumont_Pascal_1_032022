@@ -3,11 +3,11 @@
 // Valeur de controle par default
 initialisation();
 neutraliseToucheEntree();
-if (panierVide ==false) {
-MajElemsDOMavecPanier();
-majTotauxQtPrix();
-modifQtProduit();
-suppressionProduit(); 
+if (panierVide == false) {
+  MajElemsDOMavecPanier();
+  majTotauxQtPrix();
+  modifQtProduit();
+  suppressionProduit();
 };
 saisiePrenom();
 saisieNom();
@@ -30,7 +30,7 @@ function initialisation() {
 
   // Initialise l'état de la saisie
   prenomValide = false; nomValide = false; adresseValide = false;
-   villeValide = false; emailValide = false;
+  villeValide = false; emailValide = false;
   // Récupére la base de donnée des produits avec le locaStorage
   // Récupération de la bdd de tous les produits
   if (localStorage.bddProduits != null) {
@@ -41,12 +41,12 @@ function initialisation() {
   if (localStorage?.panier == undefined) {
     // Si le panier n'est pas initialisé
     // Réinitialise un panier vide
-     panierJson = [{}]; panierVide=true;
-     panierLinea = JSON.stringify(panierJson);
-     localStorage.setItem("panier", panierLinea);
+    panierJson = [{}]; panierVide = true;
+    panierLinea = JSON.stringify(panierJson);
+    localStorage.setItem("panier", panierLinea);
   }
   else {
-    panierVide=false
+    panierVide = false
     panierLinea = localStorage.getItem("panier");
     panierJson = JSON.parse(panierLinea);
   };
@@ -54,14 +54,14 @@ function initialisation() {
 function MajElemsDOMavecPanier() {
   // Affichage de tous les produits du panier
   var i = 0;
-  
+
   while (i < panierJson.length) {
-      MajElemsDOMparProduit(i);
+    MajElemsDOMparProduit(i);
     i++
   };
 };
 // recherche l'image correspondant au produit dans la base Json 'dataURLProduis' depuis le serveur
-function ImageNomprixProduitSvtId(id) {
+function ImageNomPrixProduitSvtId(id) {
   var i = 0; continuer = true; imageUrlProduit = ""
   while (i < dataURLProduits.length && imageUrlProduit == "") {
     if (id == dataURLProduits[i]._id) {
@@ -80,7 +80,7 @@ function MajElemsDOMparProduit(item) {
   couleur = panierJson[item].couleur;
   qtProduit = panierJson[item].qt;
   // recupére l'addresse Url de l'image, le Nom du produit, et le prix.
-  ImageNomprixProduitSvtId(id);
+  ImageNomPrixProduitSvtId(id);
   // l'insertion dans l'élément id='cart__item'
   parent = document.getElementById("cart__items");
   enfant = document.createElement("article");
@@ -92,19 +92,21 @@ function MajElemsDOMparProduit(item) {
   parent_1 = enfant;
   enfant = document.createElement("div");
   enfant.classList = "cart__item__img";
-  //insert l'élément' image
-  enfant.innerHTML = "<img src =" + imageUrlProduit + ` alt =` + nomProduit + ">";
+  //insert l'élément' image avec bordure correspondant à la couleur ** //+ ` />`
+
+  bordureProduitSvtCouleur(couleur)
+
+  enfant.innerHTML = "<img src =" + imageUrlProduit + ` alt =` + nomProduit + defBordureImage
+
   parent_1.appendChild(enfant);
   enfant = document.createElement("div");
-  enfant.classList = "cart__item__content";
+  enfant.classList = "cart__item__content"
   parent_1.appendChild(enfant);
-
   //parent_1_1=document.querySelector("#cart__items article>div.cart__item__content");
   parent_1_1 = enfant;
   enfant = document.createElement("div");
   enfant.classList = "cart__item__content__description";
   parent_1_1.appendChild(enfant);
-
   // parent_1_1_1=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__description");
   parent_1_1_1 = enfant;
   enfant = enfant = document.createElement("h2");
@@ -175,6 +177,26 @@ function modifQtProduit() {
     });
   });
 };
+function bordureProduitSvtCouleur() {
+  // ajoute la bordure de l'image pour completer la modification du D.O.M
+  if (couleur.includes("/")) {
+    //Si 'couleur' contient '/' => Cas produit bicolor
+    //Définition 1ére couleur
+    posiSep = couleur.indexOf("/");
+    premCouleur = couleur.substring(0, posiSep)
+    // Définition couleur suivante
+    couleurSvt = couleur.substring(posiSep + 1, couleur.length)
+    defBordureImage = ` style= "border-style: solid; border-right-color: `+ premCouleur +`; border-left-color: `+ premCouleur + `;
+     border-top-color: `+ couleurSvt + `; border-bottom-color: `+ couleurSvt + `; border-width: 15px;`
+  }
+  else {
+    // 1 bordure continue si couleur unique
+    defBordureImage = ` style= "border: solid ` + couleur + `; border-width: 15px;`
+  }
+
+  defBordureImage = defBordureImage + ` padding: 10px;" />`
+
+};
 function suppressionProduit() {
   // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   document.querySelectorAll('.deleteItem').forEach(item => {
@@ -226,7 +248,7 @@ function majTotauxQtPrix() {
   panierJson.forEach(item => {
     totalQt = totalQt + item.qt;
     // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
-    ImageNomprixProduitSvtId(item.codeArt);
+    ImageNomPrixProduitSvtId(item.codeArt);
     totalPrix = totalPrix + item.qt * prixProduit;
   });
   // Mise à jour des totaux de Qt et prix dans le D.O.M
