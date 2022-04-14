@@ -13,6 +13,8 @@ fetch("http://localhost:3000/api/products/")
   .catch(function (err) {
     // Une erreur est survenue
     console.log("Erreur N°" + err);
+    alert("l'erreur" + err + " est survenue sur le serveur. Nous faisons notre possible pour remédier à ce probléme.N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.")
+
   })
 
 /////////////////////////////////////////
