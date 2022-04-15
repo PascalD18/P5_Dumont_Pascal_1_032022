@@ -36,7 +36,7 @@ function initialisation() {
     dataURLProduits = JSON.parse(bddProduitsLinea);
   };
   // Réinitialise ou récupére le panier existant
-  if (localStorage.panier == undefined) {
+  if (localStorage.panier == undefined | localStorage.panier == "[]") {
     // Si le panier n'existe pas encore
     // Retour à la page d'acceuil
     alert("Le panier est vide, veuillez sélectionner un produit.")
