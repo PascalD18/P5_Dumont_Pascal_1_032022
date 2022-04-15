@@ -39,6 +39,7 @@ function initialisation() {
   if (localStorage.panier == undefined | localStorage.panier == "[]") {
     // Si le panier n'existe pas encore
     // Retour à la page d'acceuil
+    panierVide=true;
     alert("Le panier est vide, veuillez sélectionner un produit.")
     window.location.href = "../html/index.html"
   }
@@ -213,6 +214,9 @@ function suppressionProduit() {
           continuer = false;
         };
         i++
+        if (panierJson.length == 0){
+          window.location.href = "../html/index.html"
+        }
       };
       majTotauxQtPrix();
     });
