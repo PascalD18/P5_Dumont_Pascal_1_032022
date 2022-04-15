@@ -36,12 +36,11 @@ function initialisation() {
     dataURLProduits = JSON.parse(bddProduitsLinea);
   };
   // Réinitialise ou récupére le panier existant
-  if (localStorage?.panier == undefined) {
-    // Si le panier n'est pas initialisé
-    // Réinitialise un panier vide
-    panierJson = [{}]; panierVide = true;
-    panierLinea = JSON.stringify(panierJson);
-    localStorage.setItem("panier", panierLinea);
+  if (localStorage.panier == undefined) {
+    // Si le panier n'existe pas encore
+    // Retour à la page d'acceuil
+    alert("Le panier est vide, veuillez sélectionner un produit.")
+    window.location.href = "../html/index.html"
   }
   else {
     panierVide = false
