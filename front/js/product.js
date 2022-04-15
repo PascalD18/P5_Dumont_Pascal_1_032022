@@ -33,7 +33,7 @@ fetch("http://localhost:3000/api/products/" + id)
 ////////////////////// FONCTIONS ////////////////////;
 // Lecture Couleur et Qt depuis de D.O.M
 function lectureCouleurQt() {
-    couleurSelect=false;qtProduit=false; // Initialisation par défaut
+    couleurSelect = false; qtProduit = false; // Initialisation par défaut
     // Lit la couleur selectionnée
     var option = document.getElementById("colors");
     couleur = option.value;
@@ -64,17 +64,17 @@ function lectureCouleurQt() {
 };
 // Recuperation ou réinitialisation du panier
 function initPanier() {
-    if (localStorage.panier !== undefined) {
+    if (localStorage.panier != 'undefined') {
         // Récupération si panier déjà en cours
         localStorage.getItem("panier");
         //Conversion en format json
         panierJson = JSON.parse(localStorage.panier);
     }
-  //  else {
-  //      // Réinitialise un panier vide
-   //     panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit }];
-  //      sauvegardePanier();
-   // }
+    //  else {
+    //      // Réinitialise un panier vide
+    //     panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit }];
+    //      sauvegardePanier();
+    // }
 };
 function majElemsProduitHTML(produitSelect) {
     // MAJ du prix
@@ -88,9 +88,9 @@ function majElemsProduitHTML(produitSelect) {
 };
 // Renseigne l'Option des couleurs //
 function majOptionsCouleur(couleursProduitSelect) {
-    var i  = 0;var j = 0;
-    couleursProduitSelect.forEach(couleur => {sauvegardePanier
-
+    var i = 0; var j = 0;
+    couleursProduitSelect.forEach(couleur => {
+        //sauvegardePanier();
         var enfantElemCouleur = document.createElement("option");
         enfantElemCouleur.id = "couleur" + i;
         if (j == 0) {
@@ -119,15 +119,20 @@ function majOptionsCouleur(couleursProduitSelect) {
         };
     });
 };
- // Gestion affichage bouton panier en fonction état panier
- function affElemPanier(){
-     // Initialise l'élément <a: 'panier'
-     elemPanier=document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
-     if ( localStorage.panier.length == 2){
-        // si le panier est vide => N'affiche pas le bonton du panier
-        elemPanier.style.display="none";       
-   } 
- }
+// Gestion affichage bouton panier en fonction état panier
+function affElemPanier() {
+    // Initialise l'élément <a: 'panier'
+    elemPanier = document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
+    if (localStorage.panier == 'undefined') {
+        if (localStorage.panier == 'undefined' | localStorage.panier.length == 2) {
+            // si le panier est vide => N'affiche pas le bonton du panier
+            elemPanier.style.display = "none";
+        }
+        else {
+            elemPanier.style.display=""
+        }
+    }
+}
 // MAJ du panier
 function majPanier() {
     btnAjoutPanier.addEventListener("click", function (event) {
@@ -135,9 +140,9 @@ function majPanier() {
         lectureCouleurQt();
         if (couleurSelect && qtNonVide) {
             // Si une couleur selectionnée et Qt >0
-            if (localStorage.panier == undefined) {
+            if (localStorage.panier == 'undefined') {
                 // Si panier vide => MAJ 1er data du panier
-                panierJson=[{ "codeArt": id, "couleur": couleur, "qt": qtProduit }]
+                panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit }]
             }
             else {
                 // Si panier non vide
@@ -148,8 +153,8 @@ function majPanier() {
                     panierJson[itemProduit].qt = newQt;
                 }
                 else {
-                 // Sinon, ajoute le produit
-                   panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit });
+                    // Sinon, ajoute le produit
+                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit });
                 };
             }
             sauvegardePanier();

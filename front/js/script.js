@@ -1,16 +1,17 @@
 //localStorage.removeItem("panier");
 //localStorage.removeItem("bddProduits");
 
-fetch("http://localhost:3000/api/products/") 
+fetch("http://localhost:3000/api/products/")
 
   .then(function (res) {
     if (res.ok) {
       return res.json();
     }
   })
-  .then (tableauProduits => {
+  .then(tableauProduits => {
     sauveBddProduits(tableauProduits);
     ajoutListeProduitsHTML(tableauProduits);
+    affElemPanier();
   })
   .catch(function (err) {
     // Une erreur est survenue
@@ -18,7 +19,6 @@ fetch("http://localhost:3000/api/products/")
     alert("l'erreur" + err + " est survenue sur le serveur. Nous faisons notre possible pour remédier à ce probléme.N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.")
 
   })
-
 /////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
@@ -62,9 +62,22 @@ function ajoutListeProduitsHTML(tableauProduits) {
     var etape = "Suite"
   })
 };
-function sauveBddProduits(tableauProduits){
-// Sauvegarde la base de donnés de tous les produits
-   bddProduitsLinea = JSON.stringify(tableauProduits);
-   localStorage.setItem("bddProduits", bddProduitsLinea); 
+// Gestion affichage bouton panier en fonction état panier
+function affElemPanier() {
+  // Initialise l'élément <a: 'panier'
+  elemPanier = document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
+  if (localStorage.panier == 'undefined') {
+    if (localStorage.panier == 'undefined' | localStorage.panier.length == 2) {
+      // si le panier est vide => N'affiche pas le bonton du panier
+      elemPanier.style.display = "none";
+    }
+    else{
+      elemPanier.style.display = "";
+    }
+  };
 }
-
+function sauveBddProduits(tableauProduits) {
+  // Sauvegarde la base de donnés de tous les produits
+  bddProduitsLinea = JSON.stringify(tableauProduits);
+  localStorage.setItem("bddProduits", bddProduitsLinea);
+}
