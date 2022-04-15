@@ -84,6 +84,7 @@ function majElemsProduitHTML(produitSelect) {
     // MAJ des options de couleur
     var couleursProduitSelect = produitSelect.colors;
     majOptionsCouleur(couleursProduitSelect);
+    affElemPanier();
 };
 // Renseigne l'Option des couleurs //
 function majOptionsCouleur(couleursProduitSelect) {
@@ -118,6 +119,15 @@ function majOptionsCouleur(couleursProduitSelect) {
         };
     });
 };
+ // Gestion affichage bouton panier en fonction état panier
+ function affElemPanier(){
+     // Initialise l'élément <a: 'panier'
+     elemPanier=document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
+     if ( localStorage.panier.length == 2){
+        // si le panier est vide => N'affiche pas le bonton du panier
+        elemPanier.style.display="none";       
+   } 
+ }
 // MAJ du panier
 function majPanier() {
     btnAjoutPanier.addEventListener("click", function (event) {
