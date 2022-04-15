@@ -4,77 +4,91 @@
     // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        ////////// Simulation GOOGLE CHROME //////////
-        //// index.html ////
-        // en LOCAL //
+        {
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "name": "Launch index.html",
+            "file": "${workspaceFolder}/front/html/index.html"
+        },
+        {
+            "name": "Launch index.html",
+            "type": "firefox",
+            "request": "attach"
+        },
+        {
+            "name": "Launch WebExtension",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "addonPath": "${workspaceFolder}/front/html/index.html"
+        },
         {
             "type": "pwa-chrome",
             "request": "launch",
             "name": "CL - Index.html",
             "file": "${workspaceFolder}/front/html/index.html"
         },
-        // sur le WEB //
         {
             "type": "pwa-chrome",
             "request": "launch",
             "name": "CW - Index.html",
             "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/index.html"
         },
-        //// product.html ////
-        // en LOCAL //
         {
             "type": "pwa-chrome",
             "request": "launch",
             "name": "CL - product.html",
             "file": "${workspaceFolder}/front/html/product.html"
         },
-        // sur le WEB //
         {
             "type": "pwa-chrome",
             "request": "launch",
             "name": "CW - product.html",
             "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/product.html"
         },
-                //// cart.html ////
-        // en LOCAL //
         {
             "type": "pwa-chrome",
             "request": "launch",
             "name": "CL - cart.html",
             "file": "${workspaceFolder}/front/html/cart.html"
         },
-        // sur le WEB //
         {
             "type": "pwa-chrome",
             "request": "launch",
             "name": "CW - cart.html",
             "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/cart.html"
         },
-        ////////// Simulation FIREFOX //////////
-                //// index.html ////
-        // en LOCAL //
         {
             "type": "firefox",
             "request": "launch",
             "name": "FL - Index.html",
-            "file": "${workspaceFolder}/front/html/index.html"
+            "file": "${workspaceFolder}/front/html/index.html",
+            "pathMappings": [
+                {
+                    "url": "file:///C:/Users/PASCAL%20D/Formation%20Web/Cours%20OpenClasserooms/P5_Construisez%20un%20site%20e-commerce%20en%20JavaScript",
+                    "path": "c:/Users/PASCAL D/Formation Web/Cours OpenClasserooms/P5_Construisez un site e-commerce en JavaScript"
+                },
+            ]
         },
-        // sur le WEB //
         {
             "type": "firefox",
             "request": "launch",
             "name": "FW - Index.html",
-            "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/index.html"
+            "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/index.html",
+            "pathMappings": [
+                {
+                    "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022",
+                    "path": "${workspaceFolder}"
+                }
+            ]
         },
-        //// product.html ////
-        // en LOCAL //
         {
             "type": "firefox",
             "request": "launch",
             "name": "FL - product.html",
             "file": "${workspaceFolder}/front/html/product.html"
         },
-        // sur le WEB //
         {
             "type": "firefox",
             "request": "launch",

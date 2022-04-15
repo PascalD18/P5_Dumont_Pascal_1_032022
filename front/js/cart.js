@@ -1,5 +1,3 @@
-//localStorage.removeItem("panier");
-
 // Valeur de controle par default
 initialisation();
 neutraliseToucheEntree();

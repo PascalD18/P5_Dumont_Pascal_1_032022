@@ -1,3 +1,6 @@
+//localStorage.removeItem("panier");
+//localStorage.removeItem("bddProduits");
+
 fetch("http://localhost:3000/api/products/") 
 
   .then(function (res) {
@@ -7,7 +10,6 @@ fetch("http://localhost:3000/api/products/")
   })
   .then (tableauProduits => {
     sauveBddProduits(tableauProduits);
-    //return  
     ajoutListeProduitsHTML(tableauProduits);
   })
   .catch(function (err) {
