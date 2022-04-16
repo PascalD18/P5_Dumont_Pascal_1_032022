@@ -66,16 +66,19 @@ function ajoutListeProduitsHTML(tableauProduits) {
 function affElemPanier() {
   // Initialise l'élément <a: 'panier'
   elemPanier = document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
-  if (localStorage.panier == 'undefined') {
-    if (localStorage.panier == 'undefined' | localStorage.panier.length == 2) {
-      // si le panier est vide => N'affiche pas le bonton du panier
-      elemPanier.style.display = "none";
-    }
-    else{
-      elemPanier.style.display = "";
-    }
+  if (localStorage.panier == undefined) {
+    // si le panier est in'existant => N'affiche pas le lien du panier
+    elemPanier.style.display = "none";
+  }
+  else if (localStorage.panier.length == 2) {
+    // Si le panier est existant mais vide => N'affiche pas le lien du panier
+    elemPanier.style.display = "none";
+  }
+  else {
+    // Sinon remet le lien du panier
+    elemPanier.style.display = "";
   };
-}
+};
 function sauveBddProduits(tableauProduits) {
   // Sauvegarde la base de donnés de tous les produits
   bddProduitsLinea = JSON.stringify(tableauProduits);

@@ -64,18 +64,15 @@ function lectureCouleurQt() {
 };
 // Recuperation ou réinitialisation du panier
 function initPanier() {
-    if (localStorage.panier != 'undefined') {
-        // Récupération si panier déjà en cours
-        localStorage.getItem("panier");
-        //Conversion en format json
-        panierJson = JSON.parse(localStorage.panier);
+    if (localStorage.panier != undefined) {
+        recupPanier()
     }
-    //  else {
-    //      // Réinitialise un panier vide
-    //     panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit }];
-    //      sauvegardePanier();
-    // }
-};
+function recupPanier(){
+  // Récupération si panier déjà en cours
+   localStorage.getItem("panier");
+  //Conversion en format json
+   panierJson = JSON.parse(localStorage.panier);
+}
 function majElemsProduitHTML(produitSelect) {
     // MAJ du prix
     document.getElementById("price").innerHTML = produitSelect.price;
@@ -123,15 +120,18 @@ function majOptionsCouleur(couleursProduitSelect) {
 function affElemPanier() {
     // Initialise l'élément <a: 'panier'
     elemPanier = document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
-    if (localStorage.panier == 'undefined') {
-        if (localStorage.panier == 'undefined' | localStorage.panier.length == 2) {
-            // si le panier est vide => N'affiche pas le bonton du panier
-            elemPanier.style.display = "none";
-        }
-        else {
-            elemPanier.style.display=""
-        }
-    }
+    if (localStorage.panier == undefined) {
+        // si le panier est in'existant => N'affiche pas le lien du panier
+        elemPanier.style.display = "none";
+      }
+      else if (localStorage.panier.length == 2) {
+        // Si le panier est existant mais vide => N'affiche pas le lien du panier
+        elemPanier.style.display = "none";
+      }
+      else {
+        // Sinon remet le lien du panier
+        elemPanier.style.display = "";
+      };
 }
 // MAJ du panier
 function majPanier() {
@@ -140,8 +140,8 @@ function majPanier() {
         lectureCouleurQt();
         if (couleurSelect && qtNonVide) {
             // Si une couleur selectionnée et Qt >0
-            if (localStorage.panier == 'undefined') {
-                // Si panier vide => MAJ 1er data du panier
+            if (localStorage.panier == undefined) {
+                // Si panier inexistant => MAJ 1er data du panier
                 panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit }]
             }
             else {
