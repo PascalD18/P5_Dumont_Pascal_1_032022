@@ -65,13 +65,12 @@ function lectureCouleurQt() {
 // Recuperation ou réinitialisation du panier
 function initPanier() {
     if (localStorage.panier != undefined) {
-        recupPanier()
+
+        // Récupération si panier déjà en cours
+        localStorage.getItem("panier");
+        //Conversion en format json
+        panierJson = JSON.parse(localStorage.panier);
     }
-function recupPanier(){
-  // Récupération si panier déjà en cours
-   localStorage.getItem("panier");
-  //Conversion en format json
-   panierJson = JSON.parse(localStorage.panier);
 }
 function majElemsProduitHTML(produitSelect) {
     // MAJ du prix
@@ -83,6 +82,7 @@ function majElemsProduitHTML(produitSelect) {
     majOptionsCouleur(couleursProduitSelect);
     affElemPanier();
 };
+
 // Renseigne l'Option des couleurs //
 function majOptionsCouleur(couleursProduitSelect) {
     var i = 0; var j = 0;
@@ -123,15 +123,15 @@ function affElemPanier() {
     if (localStorage.panier == undefined) {
         // si le panier est in'existant => N'affiche pas le lien du panier
         elemPanier.style.display = "none";
-      }
-      else if (localStorage.panier.length == 2) {
+    }
+    else if (localStorage.panier.length == 2) {
         // Si le panier est existant mais vide => N'affiche pas le lien du panier
         elemPanier.style.display = "none";
-      }
-      else {
+    }
+    else {
         // Sinon remet le lien du panier
         elemPanier.style.display = "";
-      };
+    };
 }
 // MAJ du panier
 function majPanier() {
@@ -163,7 +163,7 @@ function majPanier() {
         // Ne fait rien si aucune couleur sélectionnée  et/ou Qt = 0
     });
 };
-// Sauvedarde en local du panier
+// Sauvegarde en local du panier
 function sauvegardePanier() {
     panierLinea = JSON.stringify(panierJson);
     localStorage.setItem("panier", panierLinea);
