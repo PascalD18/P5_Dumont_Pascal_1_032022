@@ -1,12 +1,12 @@
 // Valeur de controle par default
 initialisation();
 neutraliseToucheEntree();
-if (panierVide == false) {
+//if (panierVide == false) {
   MajElemsDOMavecPanier();
   majTotauxQtPrix();
   modifQtProduit();
   suppressionProduit();
-};
+//};
 saisiePrenom();
 saisieNom();
 saisieCodePostalEtVille();
@@ -35,19 +35,19 @@ function initialisation() {
     bddProduitsLinea = localStorage.getItem("bddProduits");
     dataURLProduits = JSON.parse(bddProduitsLinea);
   };
-  // Réinitialise ou récupére le panier existant
-  if (localStorage.panier == undefined | localStorage.panier == "[]") {
-    // Si le panier n'existe pas encore
-    // Retour à la page d'acceuil
-    panierVide=true;
-    alert("Le panier est vide, veuillez sélectionner un produit.")
-    window.location.href = "../html/index.html"
-  }
-  else {
-    panierVide = false
+//  // Réinitialise ou récupére le panier existant
+//  if (localStorage.panier == undefined | localStorage.panier == "[]") {
+//    // Si le panier n'existe pas encore
+//    // Retour à la page d'acceuil
+//    panierVide=true;
+//    alert("Le panier est vide, veuillez sélectionner un produit.")
+//    window.location.href = "../html/index.html"
+//  }
+//  else {
+//    panierVide = false
     panierLinea = localStorage.getItem("panier");
     panierJson = JSON.parse(panierLinea);
-  };
+//  };
 };
 function MajElemsDOMavecPanier() {
   // Affichage de tous les produits du panier
