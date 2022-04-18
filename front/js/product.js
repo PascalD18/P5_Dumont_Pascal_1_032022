@@ -2,8 +2,13 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get('id');
+// Identifie dans le D.O.M le bouton 'Ajouter au panier'
 const btnAjoutPanier = document.getElementById("addToCart");
-
+// Identifie la selection de la Qt
+selectQt = document.getElementById("quantity");
+selectCouleur=document.getElementById("colors");
+qtNonVide = false;couleurSelect = false;
+affBtnAjoutPanier();
 //localStorage.removeItem("panier");
 
 // Requete API sur les produitSelect du produit suivant N° 'id
@@ -16,6 +21,8 @@ fetch("http://localhost:3000/api/products/" + id)
     .then(produitSelect => {
         if (produitSelect != undefined) {
             majElemsProduitHTML(produitSelect);
+            modifQt();
+            choixCouleur();
             initPanier();
             majPanier();
         }
@@ -31,36 +38,53 @@ fetch("http://localhost:3000/api/products/" + id)
 
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
-// Lecture Couleur et Qt depuis de D.O.M
-function lectureCouleurQt() {
-    couleurSelect = false; qtProduit = false; // Initialisation par défaut
-    // Lit la couleur selectionnée
-    var option = document.getElementById("colors");
-    couleur = option.value;
-    couleurSelect = true// Couleur considérée comme selectionnée par défaut
-    nbCars = couleur.length;
-    if (nbCars > 20) {
-        if (couleur.slice(0, 5) == "--SVP") {
-            couleurSelect = false;
-        }
-    };
-    var option = document.getElementById("quantity");
-    qtNonVide = true // Qt considérée comme > 0 par défault
-    qtProduit = parseInt(option.value);
-    if (qtProduit == 0) {
-        qtNonVide = false
-    };
-    if ((couleurSelect == false) && (qtNonVide == false)) {
-        alert("Veuillez selectionner, une couleur et une quantité.");
-    }
-    else if (couleurSelect == false) {
-        alert("Veuillez selectionner une couleur");
-
+// Affiche ou non le bouton 'Ajout au panier'
+function affBtnAjoutPanier() {
+    if (couleurSelect == false) {
+        // Si aucune couleur n'est selectionnée et/ou QT = 0
+        // => Masque le bouton 'd'ajout au panier
+        btnAjoutPanier.style.display = "none";
     }
     else if (qtNonVide == false) {
-        alert("Il faut une quantité > 0");
-
-    };
+        // Sinon affiche le bouton
+        btnAjoutPanier.style.display = "none";
+    }
+    else {
+        btnAjoutPanier.style.display = "";
+    }
+};
+// Selection d'une couleur
+function choixCouleur() {
+    // Lit la couleur selectionnée
+    selectCouleur.addEventListener("change", function (event) {
+        event.preventDefault();
+        couleur = selectCouleur.value;
+        nbCars = couleur.length;
+        if (nbCars > 20) {
+            if (couleur.slice(0, 5) == "--SVP") {
+                couleurSelect = false;
+            }
+        }
+        else {
+            couleurSelect = true 
+          }
+        affBtnAjoutPanier();
+    });
+};
+// Modification Qt
+function modifQt() {
+    selectQt.addEventListener("change", function (event) {
+        event.preventDefault();
+         // Qt considérée comme > 0 par défault
+        qtProduit = parseInt(selectQt.value);
+        if (qtProduit == 0) {
+            qtNonVide = false
+        }
+        else {
+            qtNonVide = true
+        };
+        affBtnAjoutPanier();
+    });
 };
 // Recuperation ou réinitialisation du panier
 function initPanier() {
@@ -80,7 +104,7 @@ function majElemsProduitHTML(produitSelect) {
     // MAJ des options de couleur
     var couleursProduitSelect = produitSelect.colors;
     majOptionsCouleur(couleursProduitSelect);
-    affElemPanier();
+    affLienPanier();
 };
 
 // Renseigne l'Option des couleurs //
@@ -117,8 +141,8 @@ function majOptionsCouleur(couleursProduitSelect) {
     });
 };
 // Gestion affichage bouton panier en fonction état panier
-function affElemPanier() {
-    // Initialise l'élément <a: 'panier'
+function affLienPanier() {
+    // Définie dans le D.O.M le lien 'panier'
     elemPanier = document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
     if (localStorage.panier == undefined) {
         // si le panier est in'existant => N'affiche pas le lien du panier
@@ -137,7 +161,6 @@ function affElemPanier() {
 function majPanier() {
     btnAjoutPanier.addEventListener("click", function (event) {
         event.preventDefault();
-        lectureCouleurQt();
         if (couleurSelect && qtNonVide) {
             // Si une couleur selectionnée et Qt >0
             if (localStorage.panier == undefined) {

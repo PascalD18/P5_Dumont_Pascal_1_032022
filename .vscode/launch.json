@@ -32,6 +32,12 @@
         {
             "type": "pwa-chrome",
             "request": "launch",
+            "name": "CL - Index2.html",
+            "file": "${workspaceFolder}/front/html/index2.html"
+        },
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
             "name": "CW - Index.html",
             "url": "https://pascald18.github.io/P5_Dumont_Pascal_1_032022/front/html/index.html"
         },
@@ -68,7 +74,7 @@
                 {
                     "url": "file:///C:/Users/PASCAL%20D/Formation%20Web/Cours%20OpenClasserooms/P5_Construisez%20un%20site%20e-commerce%20en%20JavaScript",
                     "path": "c:/Users/PASCAL D/Formation Web/Cours OpenClasserooms/P5_Construisez un site e-commerce en JavaScript"
-                },
+                }
             ]
         },
         {
