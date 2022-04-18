@@ -38,7 +38,7 @@ fetch("http://localhost:3000/api/products/" + id)
 
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
-// Affiche ou non le bouton 'Ajout au panier'
+// Affiche ou non le bouton 'Ajout au  panier'
 function affBtnAjoutPanier() {
     if (couleurSelect == false) {
         // Si aucune couleur n'est selectionnée et/ou QT = 0
