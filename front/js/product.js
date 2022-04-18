@@ -42,7 +42,7 @@ fetch("http://localhost:3000/api/products/" + id)
 function affBtnAjoutPanier() {
     if (couleurSelect == false) {
         // Si aucune couleur n'est selectionnée et/ou QT = 0
-        // => Masque le bouton 'd'ajout au  panier
+        // => Masque le bouton 'd'ajout au panier
         btnAjoutPanier.style.display = "none";
     }
     else if (qtNonVide == false) {
