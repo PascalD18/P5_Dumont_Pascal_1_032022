@@ -24,7 +24,7 @@ fetch("http://localhost:3000/api/products/" + id)
             modifQt();
             choixCouleur();
             initPanier();
-            majPanier();
+            majPanier(produitSelect);
         }
         else {
             alert("La page 'products.html', ne peut-être ouverte directement.Il faut avoir selectionner un produit avec la page d'acceuil.")
@@ -89,7 +89,6 @@ function modifQt() {
 // Recuperation ou réinitialisation du panier
 function initPanier() {
     if (localStorage.panier != undefined) {
-
         // Récupération si panier déjà en cours
         localStorage.getItem("panier");
         //Conversion en format json
@@ -158,14 +157,15 @@ function affLienPanier() {
     };
 }
 // MAJ du panier
-function majPanier() {
+function majPanier(produitSelect) {
     btnAjoutPanier.addEventListener("click", function (event) {
         event.preventDefault();
-        if (couleurSelect && qtNonVide) {
+         premLettreNomprodEnMaj(produitSelect.name);
+       // if (couleurSelect && qtNonVide) {
             // Si une couleur selectionnée et Qt >0
             if (localStorage.panier == undefined) {
                 // Si panier inexistant => MAJ 1er data du panier
-                panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit }]
+                panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": nomProduit }]
             }
             else {
                 // Si panier non vide
@@ -177,17 +177,26 @@ function majPanier() {
                 }
                 else {
                     // Sinon, ajoute le produit
-                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit });
+                    
+                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": nomProduit });
                 };
             }
             sauvegardePanier();
             window.location.href = "../html/cart.html"
-        }
-        // Ne fait rien si aucune couleur sélectionnée  et/ou Qt = 0
+      //  }
+        // Ne fait rien si aucune coulanier();eur sélectionnée  et/ou Qt = 0
     });
 };
 // Sauvegarde en local du panier
 function sauvegardePanier() {
+   //Trie dans l'ordre alphabétique des noms des produits
+    panierJson.sort(function (a, b) {
+    if (a.nomProd < b.nomProd) {
+      return -1;
+     } else {
+     return 1;
+     }
+   });
     panierLinea = JSON.stringify(panierJson);
     localStorage.setItem("panier", panierLinea);
 };
@@ -203,4 +212,16 @@ function verifSiProduitExisteDsPanier() {
         };
         i++
     };
+};
+// Mets la premiere lettre de la 2éme partie du nom de produit en majuscule
+function premLettreNomprodEnMaj(nomProd){
+  // recherche la lettre 'premLettreMaj' à mettre en majuscule  
+  posiSep = nomProd.indexOf(" ");
+  premLettreMaj=nomProd.substring(posiSep+1,posiSep+2);
+// La mets systématiquement en majuscule
+  premLettreMaj=premLettreMaj.toUpperCase();
+// Reconstitue le nom complet
+ debNom = nomProd.substring(posiSep+1,0);
+ finNom = nomProd.substring(nomProd.length,posiSep+2);
+ nomProduit=debNom+premLettreMaj+finNom;
 };

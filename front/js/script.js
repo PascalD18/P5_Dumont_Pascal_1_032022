@@ -58,11 +58,11 @@ function ajoutListeProduitsHTML(tableauProduits) {
     var parentListe = newBaliseA;
     var newBaliseArticle = document.createElement("article");
     parentListe.appendChild(newBaliseArticle);
-    //Insertion nouvelle balise 'img' dans la balise 'article'
-    nomProduit = criteresProduit.name.replace(" ", '_');
-    newBaliseArticle.innerHTML = "<img src =" + criteresProduit.imageUrl + " alt = " + nomProduit + ">";
+    //Remplace l'espace contenu dans le nom du produit par ' '
+    // pour que la balise soit correctement dénifie avec ' alt = "[nom du produit]" >'
+    nomProduit=criteresProduit.name;
+    newBaliseArticle.innerHTML = "<img src =" + criteresProduit.imageUrl + ` alt = "` + nomProduit + `" >`;
     // insertion nouvelle balise 'h3' dans la balise 'article' (aprés la balise 'img')
-    var parentListe = newBaliseArticle;
     var newElemListe = document.createElement("h3");
     parentListe.appendChild(newElemListe);
     newElemListe.classList.add("productName")
@@ -94,6 +94,34 @@ function affElemPanier() {
 };
 function sauveBddProduits(tableauProduits) {
   // Sauvegarde la base de donnés de tous les produits
+  // Mettre une majuscule à chaque début de nom de canapé
+  // exemple : Kanap orthosie devient 'Kanap Orthosie
+    tableauProduits.forEach(nomProd => {
+      premLettreNomprodEnMaj(nomProd.name);
+      nomProd.name=nomProduit;
+      
+    });
+  //Trie dans l'ordre alphabétique des noms des produits
+    tableauProduits.sort(function (a, b) {
+      if (a.name < b.name) {
+        return -1;
+      } else {
+        return 1;
+      }
+   });
+  // Sauvegarde l'objet 'bddProduits' aprés triage de la propriété 'name' dans l'ordre alphabétique
   bddProduitsLinea = JSON.stringify(tableauProduits);
   localStorage.setItem("bddProduits", bddProduitsLinea);
 }
+// Mets la premiere lettre de la 2éme partie du nom de produit en majuscule
+function premLettreNomprodEnMaj(nomProd){
+  // recherche la lettre 'premLettreMaj' à mettre en majuscule  
+  posiSep = nomProd.indexOf(" ");
+  premLettreMaj=nomProd.substring(posiSep+1,posiSep+2);
+// La mets systématiquement en majuscule
+  premLettreMaj=premLettreMaj.toUpperCase();
+// Reconstitue le nom complet
+ debNom = nomProd.substring(posiSep+1,0);
+ finNom = nomProd.substring(nomProd.length,posiSep+2);
+ nomProduit=debNom+premLettreMaj+finNom;
+};

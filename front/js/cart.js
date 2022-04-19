@@ -1,12 +1,10 @@
 // Valeur de controle par default
 initialisation();
 neutraliseToucheEntree();
-//if (panierVide == false) {
-  MajElemsDOMavecPanier();
-  majTotauxQtPrix();
-  modifQtProduit();
-  suppressionProduit();
-//};
+MajElemsDOMavecPanier();
+majTotauxQtPrix();
+modifQtProduit();
+suppressionProduit();
 saisiePrenom();
 saisieNom();
 saisieCodePostalEtVille();
@@ -35,20 +33,20 @@ function initialisation() {
     bddProduitsLinea = localStorage.getItem("bddProduits");
     dataURLProduits = JSON.parse(bddProduitsLinea);
   };
-//  // Réinitialise ou récupére le panier existant
-//  if (localStorage.panier == undefined | localStorage.panier == "[]") {
-//    // Si le panier n'existe pas encore
-//    // Retour à la page d'acceuil
-//    panierVide=true;
-//    alert("Le panier est vide, veuillez sélectionner un produit.")
-//    window.location.href = "../html/index.html"
-//  }
-//  else {
-//    panierVide = false
+
+  // Récupére le panier existant
     panierLinea = localStorage.getItem("panier");
     panierJson = JSON.parse(panierLinea);
-//  };
 };
+  //Trie dans l'ordre alphabétique des noms des produits du panier
+  panierJson.sort(function (a, b) {
+    if (a.name < b.name) {
+      return -1;
+    } else {
+      return 1;
+    }
+ });
+
 function MajElemsDOMavecPanier() {
   // Affichage de tous les produits du panier
   var i = 0;
@@ -64,8 +62,8 @@ function ImageNomPrixProduitSvtId(id) {
   while (i < dataURLProduits.length && imageUrlProduit == "") {
     if (id == dataURLProduits[i]._id) {
       imageUrlProduit = dataURLProduits[i].imageUrl;
-      nomProduit = dataURLProduits[i].name;
-      nomProduit = nomProduit.replace(" ", "_");
+     // nomProduit = dataURLProduits[i].name;
+    //  nomProduit = nomProduit.replace(" ", "_");
       prixProduit = dataURLProduits[i].price;
     }
     i++
@@ -92,7 +90,7 @@ function MajElemsDOMparProduit(item) {
   enfant.classList = "cart__item__img";
   //insert l'élément' image avec bordure correspondant à la couleur
   bordureProduitSvtCouleur(couleur)
-  enfant.innerHTML = "<img src =" + imageUrlProduit + ` alt =` + nomProduit + defBordureImage
+  enfant.innerHTML = "<img src =" + imageUrlProduit + ` alt =` + panierJson[item].nomProd + defBordureImage
   parent_1.appendChild(enfant);
   enfant = document.createElement("div");
   enfant.classList = "cart__item__content"
@@ -105,7 +103,7 @@ function MajElemsDOMparProduit(item) {
   // parent_1_1_1=document.querySelector("#cart__items article>div.cart__item__content>div.cart__item__content__description");
   parent_1_1_1 = enfant;
   enfant = enfant = document.createElement("h2");
-  enfant.innerHTML = nomProduit;
+  enfant.innerHTML = panierJson[item].nomProd;
   parent_1_1_1.appendChild(enfant);
   enfant = document.createElement("p");
   enfant.innerHTML = couleur;
@@ -400,35 +398,12 @@ function actionBtnCd() {
 function requeteInfoCd() {
   saisiesValides();
   if (validationSaisies) {
-
-
     // Création du tableasu array 'produts'
-
     let productsID = [];
     panierJson.forEach(produit => {
-      productsID.push(produit.codeArt);
-
+    productsID.push(produit.codeArt);
     });
-
-    // Création du tableau 'order' à envoyer en POST
-    //const order = {};
-    order = {
-      "contact": {
-        firstName: "Pascal",
-        lastName: "Dumont",
-        address: "8 rue du canal",
-        city: "1990 Developole",
-        email: "nomprenom@orange.fr"
-      },
-      "products": productsID
-    };
-
-
-
-    orderLinear = JSON.stringify(order)
-
     //envoie de l'info commande 'order' au serveur
-
     fetch("http://localhost:3000/api/products/order", {
       method: "POST",
       headers: {
