@@ -58,9 +58,11 @@ function affEtatBtnAjoutPanier() {
     if (couleurSelect == true && qtNonVide == true) {
         // Si aucune couleur n'est selectionnée et/ou QT = 0
          btnAjoutPanier.style.backgroundColor="black";
+         btnAjoutPanier.classList="yesHover"
     }
     else {
         btnAjoutPanier.style.backgroundColor="grey";
+        btnAjoutPanier.classList="noHover"
     }
 };
 // Selection d'une couleur
