@@ -8,9 +8,8 @@ const btnAjoutPanier = document.getElementById("addToCart");
 selectQt = document.getElementById("quantity");
 selectCouleur=document.getElementById("colors");
 qtNonVide = false;couleurSelect = false;
-affBtnAjoutPanier();
 //localStorage.removeItem("panier");
-
+affEtatBtnAjoutPanier();
 // Requete API sur les produitSelect du produit suivant N° 'id
 fetch("http://localhost:3000/api/products/" + id)
     .then(function (res) {
@@ -39,23 +38,34 @@ fetch("http://localhost:3000/api/products/" + id)
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
 // Affiche ou non le bouton 'Ajout au  panier'
-function affBtnAjoutPanier() {
-    if (couleurSelect == false) {
+function affMessSaisieProduit() {
+    if (couleurSelect == false && qtNonVide == true) {
         // Si aucune couleur n'est selectionnée et/ou QT = 0
         // => Masque le bouton 'd'ajout au panier
-        btnAjoutPanier.style.display = "none";
+        //btnAjoutPanier.value = "disabled";
+        alert("Il faut selectionner une couleur");
     }
-    else if (qtNonVide == false) {
+    else if (qtNonVide == false && couleurSelect == true) {
         // Sinon affiche le bouton
-        btnAjoutPanier.style.display = "none";
+       alert("La quantité doit être > 0")
+    }
+    else if (couleurSelect == false && qtNonVide == false) {
+        alert("Il faut selectionner une couleur et La quantité doit être > 0")
+    }
+};
+// Affiche ou non le bouton 'Ajout au  panier'
+function affEtatBtnAjoutPanier() {
+    if (couleurSelect == true && qtNonVide == true) {
+        // Si aucune couleur n'est selectionnée et/ou QT = 0
+         btnAjoutPanier.style.backgroundColor="black";
     }
     else {
-        btnAjoutPanier.style.display = "";
+        btnAjoutPanier.style.backgroundColor="grey";
     }
 };
 // Selection d'une couleur
 function choixCouleur() {
-    // Lit la couleur selectionnée
+     // Lit la couleur selectionnée
     selectCouleur.addEventListener("change", function (event) {
         event.preventDefault();
         couleur = selectCouleur.value;
@@ -68,7 +78,7 @@ function choixCouleur() {
         else {
             couleurSelect = true 
           }
-        affBtnAjoutPanier();
+          affEtatBtnAjoutPanier();
     });
 };
 // Modification Qt
@@ -83,7 +93,7 @@ function modifQt() {
         else {
             qtNonVide = true
         };
-        affBtnAjoutPanier();
+        affEtatBtnAjoutPanier();
     });
 };
 // Recuperation ou réinitialisation du panier
@@ -160,12 +170,12 @@ function affLienPanier() {
 function majPanier(produitSelect) {
     btnAjoutPanier.addEventListener("click", function (event) {
         event.preventDefault();
-         premLettreNomprodEnMaj(produitSelect.name);
-       // if (couleurSelect && qtNonVide) {
+         //premLettreNomprodEnMaj(produitSelect.name);
+       if (couleurSelect && qtNonVide) {
             // Si une couleur selectionnée et Qt >0
             if (localStorage.panier == undefined) {
                 // Si panier inexistant => MAJ 1er data du panier
-                panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": nomProduit }]
+                panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": produitSelect.name }]
             }
             else {
                 // Si panier non vide
@@ -178,13 +188,15 @@ function majPanier(produitSelect) {
                 else {
                     // Sinon, ajoute le produit
                     
-                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": nomProduit });
+                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": produitSelect.name });
                 };
             }
             sauvegardePanier();
             window.location.href = "../html/cart.html"
-      //  }
-        // Ne fait rien si aucune coulanier();eur sélectionnée  et/ou Qt = 0
+        }
+        else {
+            affMessSaisieProduit();
+        }
     });
 };
 // Sauvegarde en local du panier

@@ -1,12 +1,5 @@
 //localStorage.removeItem("panier");
 //localStorage.removeItem("bddProduits");
-// Storage.clear;
-if (localStorage.test != undefined) {
-  // Récupération si bdd déjà en cours
-  testLinea = localStorage.getItem("test");
-  //Conversion en format json 
-  testJson = JSON.parse(testLinea);
-}
 
 fetch("http://localhost:3000/api/products/")
 
@@ -17,9 +10,6 @@ fetch("http://localhost:3000/api/products/")
   })
   .then(tableauProduits => {
     sauveBddProduits(tableauProduits);
-
-    //window.location.href = "../html/index2.html";
-
     ajoutListeProduitsHTML(tableauProduits);
     affElemPanier();
 
