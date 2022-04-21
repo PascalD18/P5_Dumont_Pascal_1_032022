@@ -175,6 +175,15 @@ main {
 	white-space: normal;
 }
 
+.yesHover:hover {
+	box-shadow: rgba(42, 18, 206, 0.9) 0 0 22px 6px;
+	color:white;
+}
+
+.noHover{
+	box-shadow: none;
+}
+
 
 
 

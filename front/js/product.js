@@ -6,8 +6,8 @@ const id = urlParams.get('id');
 const btnAjoutPanier = document.getElementById("addToCart");
 // Identifie la selection de la Qt
 selectQt = document.getElementById("quantity");
-selectCouleur=document.getElementById("colors");
-qtNonVide = false;couleurSelect = false;
+selectCouleur = document.getElementById("colors");
+qtNonVide = false; couleurSelect = false;
 //localStorage.removeItem("panier");
 affEtatBtnAjoutPanier();
 // Requete API sur les produitSelect du produit suivant N° 'id
@@ -47,7 +47,7 @@ function affMessSaisieProduit() {
     }
     else if (qtNonVide == false && couleurSelect == true) {
         // Sinon affiche le bouton
-       alert("La quantité doit être > 0")
+        alert("La quantité doit être > 0")
     }
     else if (couleurSelect == false && qtNonVide == false) {
         alert("Il faut selectionner une couleur et La quantité doit être > 0")
@@ -57,17 +57,27 @@ function affMessSaisieProduit() {
 function affEtatBtnAjoutPanier() {
     if (couleurSelect == true && qtNonVide == true) {
         // Si aucune couleur n'est selectionnée et/ou QT = 0
-         btnAjoutPanier.style.backgroundColor="black";
-         btnAjoutPanier.classList="yesHover"
+        btnAjoutPanier.style.backgroundColor = "#2c3e50";
+        btnAjoutPanier.classList = "yesHover";
+        btnAjoutPanier.title = "";
     }
     else {
-        btnAjoutPanier.style.backgroundColor="grey";
-        btnAjoutPanier.classList="noHover"
+        btnAjoutPanier.style.backgroundColor = "grey";
+        btnAjoutPanier.classList = "noHover";
+        if (qtNonVide==true) {
+            btnAjoutPanier.title = "Selectionner une couleur";
+        }
+        else if (couleurSelect==true) {
+            btnAjoutPanier.title = "Selectionner une Qt >0";
+        }
+        else if (couleurSelect == false && qtNonVide == false) {
+            btnAjoutPanier.title = "Selectionner une couleur et Qt >0";
+        }
     }
 };
 // Selection d'une couleur
 function choixCouleur() {
-     // Lit la couleur selectionnée
+    // Lit la couleur selectionnée
     selectCouleur.addEventListener("change", function (event) {
         event.preventDefault();
         couleur = selectCouleur.value;
@@ -78,16 +88,16 @@ function choixCouleur() {
             }
         }
         else {
-            couleurSelect = true 
-          }
-          affEtatBtnAjoutPanier();
+            couleurSelect = true
+        }
+        affEtatBtnAjoutPanier();
     });
 };
 // Modification Qt
 function modifQt() {
     selectQt.addEventListener("change", function (event) {
         event.preventDefault();
-         // Qt considérée comme > 0 par défault
+        // Qt considérée comme > 0 par défault
         qtProduit = parseInt(selectQt.value);
         if (qtProduit == 0) {
             qtNonVide = false
@@ -172,8 +182,8 @@ function affLienPanier() {
 function majPanier(produitSelect) {
     btnAjoutPanier.addEventListener("click", function (event) {
         event.preventDefault();
-         //premLettreNomprodEnMaj(produitSelect.name);
-       if (couleurSelect && qtNonVide) {
+        //premLettreNomprodEnMaj(produitSelect.name);
+        if (couleurSelect && qtNonVide) {
             // Si une couleur selectionnée et Qt >0
             if (localStorage.panier == undefined) {
                 // Si panier inexistant => MAJ 1er data du panier
@@ -189,7 +199,7 @@ function majPanier(produitSelect) {
                 }
                 else {
                     // Sinon, ajoute le produit
-                    
+
                     panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": produitSelect.name });
                 };
             }
@@ -203,14 +213,14 @@ function majPanier(produitSelect) {
 };
 // Sauvegarde en local du panier
 function sauvegardePanier() {
-   //Trie dans l'ordre alphabétique des noms des produits
+    //Trie dans l'ordre alphabétique des noms des produits
     panierJson.sort(function (a, b) {
-    if (a.nomProd < b.nomProd) {
-      return -1;
-     } else {
-     return 1;
-     }
-   });
+        if (a.nomProd < b.nomProd) {
+            return -1;
+        } else {
+            return 1;
+        }
+    });
     panierLinea = JSON.stringify(panierJson);
     localStorage.setItem("panier", panierLinea);
 };
@@ -228,14 +238,14 @@ function verifSiProduitExisteDsPanier() {
     };
 };
 // Mets la premiere lettre de la 2éme partie du nom de produit en majuscule
-function premLettreNomprodEnMaj(nomProd){
-  // recherche la lettre 'premLettreMaj' à mettre en majuscule  
-  posiSep = nomProd.indexOf(" ");
-  premLettreMaj=nomProd.substring(posiSep+1,posiSep+2);
-// La mets systématiquement en majuscule
-  premLettreMaj=premLettreMaj.toUpperCase();
-// Reconstitue le nom complet
- debNom = nomProd.substring(posiSep+1,0);
- finNom = nomProd.substring(nomProd.length,posiSep+2);
- nomProduit=debNom+premLettreMaj+finNom;
+function premLettreNomprodEnMaj(nomProd) {
+    // recherche la lettre 'premLettreMaj' à mettre en majuscule  
+    posiSep = nomProd.indexOf(" ");
+    premLettreMaj = nomProd.substring(posiSep + 1, posiSep + 2);
+    // La mets systématiquement en majuscule
+    premLettreMaj = premLettreMaj.toUpperCase();
+    // Reconstitue le nom complet
+    debNom = nomProd.substring(posiSep + 1, 0);
+    finNom = nomProd.substring(nomProd.length, posiSep + 2);
+    nomProduit = debNom + premLettreMaj + finNom;
 };
