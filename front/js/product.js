@@ -182,12 +182,12 @@ function affLienPanier() {
 function majPanier(produitSelect) {
     btnAjoutPanier.addEventListener("click", function (event) {
         event.preventDefault();
-        //premLettreNomprodEnMaj(produitSelect.name);
+        nomProd=premLettreNomprodEnMaj(produitSelect.name);
         if (couleurSelect && qtNonVide) {
             // Si une couleur selectionnée et Qt >0
             if (localStorage.panier == undefined) {
                 // Si panier inexistant => MAJ 1er data du panier
-                panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": produitSelect.name }]
+                panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": nomProd }]
             }
             else {
                 // Si panier non vide
@@ -200,7 +200,7 @@ function majPanier(produitSelect) {
                 else {
                     // Sinon, ajoute le produit
 
-                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": produitSelect.name });
+                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": nomProd });
                 };
             }
             sauvegardePanier();
@@ -248,4 +248,5 @@ function premLettreNomprodEnMaj(nomProd) {
     debNom = nomProd.substring(posiSep + 1, 0);
     finNom = nomProd.substring(nomProd.length, posiSep + 2);
     nomProduit = debNom + premLettreMaj + finNom;
+    return nomProduit;
 };
