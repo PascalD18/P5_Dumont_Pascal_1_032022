@@ -263,7 +263,7 @@ function saisiePrenom() {
     //Efface le message d'erreur à chaque saisie de caractére
     document.getElementById("firstNameErrorMsg").innerHTML = "";
     // Teste le caractere saisi
-    prenomValide = /(^[A-Z]){1}([a-z]*)\D$/g.test(even.target.value);
+    prenomValide = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g.test(even.target.value);
     prenom = even.target.value;
     if (prenomValide == true) {
       // Si OK => Colore la saisie en vert
@@ -284,7 +284,7 @@ function saisieNom() {
     //Efface le message d'erreur à chaque saisie de caractére
     document.getElementById("lastNameErrorMsg").innerHTML = "";
     // Teste le caractere saisi
-    nomValide = /(^[A-Z]){1}([a-z]*)\D$/g.test(even.target.value);
+    nomValide = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g.test(even.target.value);
     nom = even.target.value;
     if (nomValide == true) {
       // Si OK => Colore la saisie en vert
