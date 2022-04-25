@@ -387,7 +387,7 @@ function affMessErrSaisiesNonValides(texteSaisi) {
     // Verifie saisie du prénom
     if (texteSaisi.id == "firstName") {
       if (prenomValide == false) {
-        document.getElementById("firstNameErrorMsg").innerHTML = "Saisie du prénom incorrecte.Commencer par une lettre majuscule, en ne saisissant que des lettres.";
+        document.getElementById("firstNameErrorMsg").innerHTML = "Saisie du prénom incorrecte.Commencer par une lettre majuscule, puis que des lettres minuscules.";
       }
       else {
         document.getElementById("firstNameErrorMsg").innerHTML = "";
@@ -396,7 +396,7 @@ function affMessErrSaisiesNonValides(texteSaisi) {
     // Verifie saisie du Nom
     if (texteSaisi.id == "lastName") {
       if (nomValide == false) {
-        document.getElementById("lastNameErrorMsg").innerHTML = "Saisie du nom incorrecte.Commencer par une lettre majuscule, en ne saisissant que des lettres.";
+        document.getElementById("lastNameErrorMsg").innerHTML = "Saisie du nom incorrecte.Commencer par une lettre majuscule, puis que des lettres minuscules.";
       }
       else {
         document.getElementById("lastNameErrorMsg").innerHTML = "";
