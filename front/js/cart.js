@@ -1,68 +1,157 @@
-// Valeur de controle par default
+// Variables globales
+btnCommande = document.getElementById("order");
 initialisation();
-neutraliseToucheEntree();
+//neutraliseToucheEntree();
 MajElemsDOMavecPanier();
 majTotauxQtPrix();
 modifQtProduit();
 suppressionProduit();
-controlSaisiesFormulaire();
-saisiePrenom();
-saisieNom();
-saisieAdresse();
-saisieCodePostalEtVille();
-saisieEmail();
-saisieCodePostalEtVille();
+controlSaisieFormulaire();
+controlValidationSaisiesFormulaire();
 actionBtnCd()
-affBtnCd()
+majAffBtCd()
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
 function neutraliseToucheEntree() {
+  document.addEventListener("keypress", even => {
+    even.preventDefault();
+    controlValidationSaisiesFormulaire()
+  });
+}
+// A chaque sortie de focus
+// Vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
+function controlValidationSaisiesFormulaire() {
   document.addEventListener("focusout", even => {
     even.preventDefault();
-    if (even.target.id != undefined) {
-      
-      // Appui sur touche 'Tab'
-      // Vérifie 
-      focused = document.querySelectorAll("div.cart__order__form__question>input");
-      //.querySelectorAll('div.cart__item__content__settings__quantity>input')
-      focused.forEach(item => {
-        item.addEventListener("input", even2 => {
-          even2.preventDefault();
-          test = even2.target.value;
-          if (test == "") {
-            console.log("Vide");
-          }
-          else {
-            console.log("non vide");
-          }
-        });
-      });
-      console.log("action")
-      key.target
+    elemFocusPerdu = even.target;
+    idElemFocusPerdu = even.target.id;
+    if (idElemFocusPerdu != undefined && idElemFocusPerdu != '') {
+      //Vérifie uniquement les saisies du formulaire qui ont perdu le focus
+      if (idElemFocusPerdu == "firstName" || idElemFocusPerdu == "lastName") {
+        compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
+        contenuPrenom=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, contenuPrenom, compRegex) == false) {
+        //Si saisie 'Prenom' ou 'Nom' non valide => Affiche le message d'erreur
+          elemMessErrSaisie.innerText =
+          "Saisie du prénom incorrecte.Le prénom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
+        }
+        else {
+        // Sinon, efface le message d'erreur 
+          elemMessErrSaisie.innerText = "";
+        }
+        majAffBtCd();
+      }
+      if (idElemFocusPerdu == "lastName") {
+        compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
+        contenuNom=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, contenuNom, compRegex) == false) {
+        //Si saisie 'Prenom' ou 'Nom' non valide => Affiche le message d'erreur
+          elemMessErrSaisie.innerText =
+          "Saisie du nom incorrecte.Le prénom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
+        }
+        else {
+        // Sinon, efface le message d'erreur 
+          elemMessErrSaisie.innerText = "";
+        }
+        majAffBtCd();
+      }
+      if (idElemFocusPerdu == "address") {
+        compRegex = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g;
+        contenuAdresse=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, contenuAdresse, compRegex) == false) {
+        //Si saisie 'Adresse' non valide => Affiche le message d'erreur
+          elemMessErrSaisie.innerText =
+            "Saisie adresse incorrecte.Eviter les caractéres spéciaux suivants : <>?%¤!$#²*§£µ€\^[]{}~";
+        }
+        else {
+        // Sinon, efface le message d'erreur 
+          elemMessErrSaisie.innerText= "";
+        }
+        majAffBtCd();
+      }
+      if (idElemFocusPerdu == "city") {
+        compRegex = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g;
+        contenuVille=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, contenuVille, compRegex) == false) {
+          //Si saisie 'Ville' non valide => Affiche le message d'erreur
+          elemMessErrSaisie.innerText =
+            "Saisie de la ville incorrecte.La ville doit commencer par son N° de code postal (5 chiffres),puis espace, puis le nom de la ville doit être du même type que 'Prénom' ou 'Nom";
+        }
+        else {
+          // Sinon, efface le message d'erreur 
+          elemMessErrSaisie.innerText = "";
+        }
+        majAffBtCd();
+      }
+      if (idElemFocusPerdu == "email") {
+        compRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        contenuEmail=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, contenuEmail, compRegex) == false) {
+          //Si saisie 'Email' non valide => Affiche le message d'erreur
+          elemMessErrSaisie.innerText =
+            "Saisie email incorrecte.Commence par 2 groupes de lettres et/ou chiffres, séparés par '@', puis se termine avec '.' puis 2 ou 3 letrres.";
+        }
+        else {
+          // Sinon, efface le message d'erreur 
+          elemMessErrSaisie.innerText = "";
+        }
+        majAffBtCd();
+      }
     }
   });
 };
-function controlSaisiesFormulaire() {
-  // Controle les saisie des champs de saisie dans le formulaire
-  confirmationSaisie = document.querySelector("cart__order__form__question input");
-  if (!confirmationSaisie == null) {
-    confirmationSaisie.addEventListener("focusout", even => {
-      even.preventDefault();
-      console.log(even.target.id)
-    });
-  }
- // confirmationSaisie.forEach(item => {
- //   item.addEventListener("focusout", even => {
-  //    even.preventDefault();
-  //    console.log(even.target.id)
- //   });
- // });
+// Controle les sasies dans les champs du formulaire
+function controlSaisieFormulaire() {
+  document.addEventListener("input", even => {
+    //Saisie d'un digit dans un element 'input'
+    even.preventDefault();
+    //Identification de l'élement en cours de saisie
+    elemSaisieInput = even.target;
+    idElemSaisieInput = elemSaisieInput.id;
+    if (idElemSaisieInput != undefined && idElemSaisieInput != '') {
+      if (idElemSaisieInput == "firstName" || idElemSaisieInput == "lastName") {
+        // Saisie 'Prénom' ou 'Nom'
+        // Teste la sasie avec la méthode regex
+        compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
+        contenuPrenom=elemSaisieInput.value;
+        valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex)
+      }
+      else if (idElemSaisieInput == "address") {
+        compRegex = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g;
+        valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex);
+      }
+      else if (idElemSaisieInput == "city") {
+        compRegex = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g;
+        valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex);
+      }
+      else if (idElemSaisieInput == "email") {
+        compRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex);
+      };
+    };
+  });
 }
+// Verifie la saisie avec la methode regex
+function valideSvtRegex(elem, contenuSaisie, compRegex) {
+  //Par défaut, efface le message d'erreur correspondant
+  elemMessErrSaisie = document.getElementById(elem.id + "ErrorMsg");
+  elemMessErrSaisie.innerText="";
+  // Teste le caractere saisi
+  if (compRegex.test(contenuSaisie) || contenuSaisie == "") {
+    // Si OK => Colore la saisie en vert
+    elem.style.color = "green";
+    return true;
+  }
+  else {
+    // Si non OK avec une saisie non vide => Colore la saisie en rouge
+    elem.style.color = "red";
+    return false;
+  };
+};
 
 function initialisation() {
-
-  //Définie l'etat des saisie non valides par défaut
+//Définie l'etat des saisie non valides par défaut
   prenomValide = false; nomValide = false; adresseValide = false;
   villeValide = false; emailValide = false;
   //Initialise les saisies
@@ -78,16 +167,16 @@ function initialisation() {
   // Récupére le panier existant
   panierLinea = localStorage.getItem("panier");
   panierJson = JSON.parse(panierLinea);
-};
-//Trie dans l'ordre alphabétique des noms des produits du panier
-panierJson.sort(function (a, b) {
-  if (a.name < b.name) {
-    return -1;
-  } else {
-    return 1;
-  }
-});
 
+  //Trie dans l'ordre alphabétique des noms des produits du panier
+  panierJson.sort(function (a, b) {
+    if (a.name < b.name) {
+      return -1;
+    } else {
+      return 1;
+    }
+  });
+};
 function MajElemsDOMavecPanier() {
   // Affichage de tous les produits du panier
   var i = 0;
@@ -293,124 +382,8 @@ function majTotauxQtPrix() {
   elemTotalPrix = document.getElementById("totalPrice");
   elemTotalPrix.innerHTML = totalPrix;
 }
-// Verification de la saisie du Prenom
-function saisiePrenom() {
-  elemChampSaisie = document.getElementById("firstName")
-  elemChampSaisie.addEventListener("input", function (even) {
-    even.preventDefault();
-    //Efface le message d'erreur à chaque saisie de caractére
-    document.getElementById("firstNameErrorMsg").innerHTML = "";
-    // Teste le caractere saisi
-    contenuPrenom = even.target.value;
-    prenomValide = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g.test(contenuPrenom);
-    if (prenomValide == true) {
-      // Si OK => Colore la saisie en vert
-      even.target.style.color = "green";
-    }
-    else {
-      // Si non OK => Colore la saisie en rouge
-      even.target.style.color = "red";
-    }
-    affBtnCd();
-    affMessErrSaisiesNonValides(elemChampSaisie, contenuPrenom);
-  });
-  elemChampSaisie.addEventListener("change", function (even) {
-    even.preventDefault();
-    console.log("change");
-    affMessErrSaisiesNonValides(elemChampSaisie, contenuPrenom)
-  });
-
-};
-function saisieNom() {
-  elemChampSaisie = document.getElementById("lastName")
-  elemChampSaisie.addEventListener("input", function (even) {
-    even.preventDefault();
-    //Efface le message d'erreur à chaque saisie de caractére
-    document.getElementById("lastNameErrorMsg").innerHTML = "";
-    // Teste le caractere saisi
-    contenuNom = even.target.value;
-    nomValide = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g.test(contenuNom);
-    if (nomValide == true) {
-      // Si OK => Colore la saisie en vert
-      even.target.style.color = "green";
-    }
-    else {
-      // Si non OK => Colore la saisie en rouge
-      even.target.style.color = "red";
-    }
-    affBtnCd();
-  });
-  affMessErrSaisiesNonValides(elemChampSaisie)
-};
-// Verification de l'adresse'
-function saisieAdresse() {
-  elemChampSaisie = document.getElementById("address")
-  elemChampSaisie.addEventListener("input", function (even) {
-    even.preventDefault();
-    //Efface le message d'erreur à chaque saisie de caractére
-    document.getElementById("addressErrorMsg").innerHTML = "";
-    // Teste le caractere saisi
-    contenuAdresse = even.target.value;
-    adresseValide = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g.test(contenuAdresse);
-    if (adresseValide == true) {
-      // Si OK => Colore la saisie en vert
-      even.target.style.color = "green";
-    }
-    else {
-      // Si non OK => Colore la saisie en rouge
-      even.target.style.color = "red";
-    }
-    affBtnCd();
-  });
-  affMessErrSaisiesNonValides(elemChampSaisie)
-};
-// Verification le la saise du N° code Postal + Nom de la ville
-function saisieCodePostalEtVille() {
-  elemChampSaisie = document.getElementById("city")
-  elemChampSaisie.addEventListener("input", function (even) {
-    even.preventDefault();
-    //Efface le message d'erreur à chaque saisie de caractére
-    document.getElementById("cityErrorMsg").innerHTML = "";
-    // Teste le caractére saisi ( 5 chiffres + espace + lettres)
-    contenuVille = even.target.value;
-    villeValide = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g.test(contenuVille);
-    if (villeValide) {
-      //Si OK => Colore en vert la saisie
-      even.target.style.color = "green";
-      villeValide = true;
-    }
-    else {
-      //Si non OK => Colore en rouge la saisie
-      even.target.style.color = "red";
-    }
-    affBtnCd();
-  });
-  affMessErrSaisiesNonValides(elemChampSaisie)
-};
-// Verification de la saisie de l'email
-function saisieEmail() {
-  elemChampSaisie = document.getElementById("email")
-  elemChampSaisie.addEventListener("input", function (even) {
-    even.preventDefault();
-    //Efface le message d'erreur à chaque saisie de caractére
-    document.getElementById("emailErrorMsg").innerHTML = "";
-    // Teste le caractére saisi
-    contenuEmail = even.target.value;
-    emailValide = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(contenuEmail);
-    if (emailValide) {
-      //Si OK => Colore en vert la saisie
-      even.target.style.color = "green";
-    }
-    else {
-      //Si non OK => Colore en rouge
-      even.target.style.color = "red";
-    }
-    affBtnCd();
-  });
-  affMessErrSaisiesNonValides(elemChampSaisie)
-};
-function affBtnCd() {
-  // Affiche l'état du bouton de commande
+function majAffBtCd() {
+  // Affiche l'état du bouton de commande, suivant l'état de validité du formulaire.
   if (saisiesValides()) {
     btnCommande.classList = "yesHover";
     btnCommande.style.backgroundColor = "#2c3e50";
@@ -431,69 +404,14 @@ function formulaireComplet() {
     alert("Le formulaire doit être complétement renseigné avant de commander.");
     return false;
   };
-}
-function affMessErrSaisiesNonValides(elemChampSaisie, contenuSaisie) {
-  // A à chaque validation d'une saisie d'un champ du formulaire ( avec touche 'Tab')
-  // Si saisie invalide => Affiche un message d'erreur correspondant à la saisie
-  //elemChampSaisie.addEventListener("change", even => {
-  //  even.preventDefault();
-  // Affiche le(s) message(s) d'erreur si il existe une ou des saisies incorrectes
-  // Verifie saisie du prénom
-  if (elemChampSaisie.id == "firstName") {
-    if (prenomValide == false && contenuSaisie != "") {
-      document.getElementById("firstNameErrorMsg").innerHTML =
-        "Saisie du prénom incorrecte.Le prénom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
-    }
-    else {
-      document.getElementById("firstNameErrorMsg").innerHTML = "";
-    };
-  };
-  // Verifie saisie du Nom
-  if (elemChampSaisie.id == "lastName") {
-    if (nomValide == false) {
-      document.getElementById("lastNameErrorMsg").innerHTML =
-        "Saisie du nom incorrecte.Le nom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
-    }
-    else {
-      document.getElementById("lastNameErrorMsg").innerHTML = "";
-    };
-  };
-  // Verifie saisie adresse
-  if (elemChampSaisie.id == "address") {
-    if (adresseValide == false) {
-      document.getElementById("addressErrorMsg").innerHTML = "Saisie adresse incorrecte.Eviter les caractéres spéciaux suivants : <>?%¤!$#²*§£µ€\^[]{}~";
-    }
-    else {
-      document.getElementById("addressErrorMsg").innerHTML = "";
-    };
-  };
-  // Verifie saisie de la ville
-  if (elemChampSaisie.id == "city") {
-    if (villeValide == false) {
-      document.getElementById("cityErrorMsg").innerHTML =
-        "Saisie de la ville incorrecte.La ville doit commencer par son N° de code postal (5 chiffres),puis espace, puis le nom de la ville doit être du même type que 'Prénom' ou ";
-    }
-    else {
-      document.getElementById("cityErrorMsg").innerHTML = "";
-    };
-  };
-  // Verifie saisie email
-  if (elemChampSaisie.id == "email") {
-    if (emailValide == false) {
-      document.getElementById("emailErrorMsg").innerHTML =
-        "Saisie email incorrecte.Commence par 2 groupes de lettres et/ou chiffres, séparés par '@', puis se termine avec '.' puis 2 ou 3 letrres.";
-    }
-    else {
-      document.getElementById("emailErrorMsg").innerHTML = "";
-    };
-  };
-  //});
 };
+
 function actionBtnCd() {
-  btnCommande = document.getElementById("order");
   btnCommande.addEventListener("keypress", even => {
     even.preventDefault();
-    requeteInfoCd();
+    if (even.key = 'Enter') {
+      requeteInfoCd();
+    }
   })
   btnCommande.addEventListener("click", even => {
     even.preventDefault();
@@ -550,7 +468,25 @@ function requeteInfoCd() {
 };
 // Verification des saisies effectuées
 function saisiesValides() {
-  if (prenomValide && nomValide && adresseValide && villeValide && emailValide) {
+  //Verifie qu'il n'y a pas de message d'erreur
+  messErreur = document.querySelectorAll(".cart__order__form__question p");
+  aucunMessErreur = true; // Par défaut, on considére qu'il n'ya auncun message d'erreur
+  messErreur.forEach(even => {
+    if (even.innerText != "") {
+      // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
+      aucunMessErreur = false
+    }
+  });
+  // Vérifie si il n'y a aucune saisie de renseignée
+  champsSaisies = document.querySelectorAll(".cart__order__form__question input");
+  toutesSaisieFaites = true; // Par défaut, on considére que toutes les saisies sont faites.
+  champsSaisies.forEach(even => {
+    if (even.value == '') {
+      // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
+      toutesSaisieFaites = false
+    }
+  });
+  if (aucunMessErreur == true && toutesSaisieFaites == true) {
     return true
   }
   else {
