@@ -30,8 +30,8 @@ function controlValidationSaisiesFormulaire() {
       //Vérifie uniquement les saisies du formulaire qui ont perdu le focus
       if (idElemFocusPerdu == "firstName" || idElemFocusPerdu == "lastName") {
         compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
-        contenuPrenom=even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, contenuPrenom, compRegex) == false) {
+        prenom=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, prenom, compRegex) == false) {
         //Si saisie 'Prenom' ou 'Nom' non valide => Affiche le message d'erreur
           elemMessErrSaisie.innerText =
           "Saisie du prénom incorrecte.Le prénom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
@@ -44,8 +44,8 @@ function controlValidationSaisiesFormulaire() {
       }
       if (idElemFocusPerdu == "lastName") {
         compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
-        contenuNom=even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, contenuNom, compRegex) == false) {
+        nom=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, nom, compRegex) == false) {
         //Si saisie 'Prenom' ou 'Nom' non valide => Affiche le message d'erreur
           elemMessErrSaisie.innerText =
           "Saisie du nom incorrecte.Le prénom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
@@ -58,8 +58,8 @@ function controlValidationSaisiesFormulaire() {
       }
       if (idElemFocusPerdu == "address") {
         compRegex = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g;
-        contenuAdresse=even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, contenuAdresse, compRegex) == false) {
+        adresse=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, adresse, compRegex) == false) {
         //Si saisie 'Adresse' non valide => Affiche le message d'erreur
           elemMessErrSaisie.innerText =
             "Saisie adresse incorrecte.Eviter les caractéres spéciaux suivants : <>?%¤!$#²*§£µ€\^[]{}~";
@@ -72,8 +72,8 @@ function controlValidationSaisiesFormulaire() {
       }
       if (idElemFocusPerdu == "city") {
         compRegex = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g;
-        contenuVille=even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, contenuVille, compRegex) == false) {
+        ville=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, ville, compRegex) == false) {
           //Si saisie 'Ville' non valide => Affiche le message d'erreur
           elemMessErrSaisie.innerText =
             "Saisie de la ville incorrecte.La ville doit commencer par son N° de code postal (5 chiffres),puis espace, puis le nom de la ville doit être du même type que 'Prénom' ou 'Nom";
@@ -86,8 +86,8 @@ function controlValidationSaisiesFormulaire() {
       }
       if (idElemFocusPerdu == "email") {
         compRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        contenuEmail=even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, contenuEmail, compRegex) == false) {
+        email=even.target.value;
+        if (valideSvtRegex(elemFocusPerdu, email, compRegex) == false) {
           //Si saisie 'Email' non valide => Affiche le message d'erreur
           elemMessErrSaisie.innerText =
             "Saisie email incorrecte.Commence par 2 groupes de lettres et/ou chiffres, séparés par '@', puis se termine avec '.' puis 2 ou 3 letrres.";
@@ -114,7 +114,7 @@ function controlSaisieFormulaire() {
         // Saisie 'Prénom' ou 'Nom'
         // Teste la sasie avec la méthode regex
         compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
-        contenuPrenom=elemSaisieInput.value;
+        prenom=elemSaisieInput.value;
         valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex)
       }
       else if (idElemSaisieInput == "address") {
@@ -155,8 +155,8 @@ function initialisation() {
   prenomValide = false; nomValide = false; adresseValide = false;
   villeValide = false; emailValide = false;
   //Initialise les saisies
-  contenuPrenom = ""; contenuNom = ""; contenuAdresse = "";
-  contenuVille = ""; contenuEmail = "";
+  prenom = ""; nom = ""; adresse = "";
+  ville = ""; email = "";
   // Récupére la base de donnée des produits avec le locaStorage
   // Récupération de la bdd de tous les produits
   if (localStorage.bddProduits != null) {
@@ -397,7 +397,7 @@ function majAffBtCd() {
 };
 function formulaireComplet() {
   //Vérifie si le formulaire est complétement renseigné
-  if (contenuPrenom != "" && contenuNom != "" && contenuAdresse != "" && contenuVille != "" && contenuEmail != "") {
+  if (prenom != "" && nom != "" && adresse != "" && ville != "" && email != "") {
     return true;
   }
   else {
