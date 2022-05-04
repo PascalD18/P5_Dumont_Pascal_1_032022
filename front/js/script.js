@@ -10,7 +10,8 @@ fetch("http://localhost:3000/api/products/")
   })
   .then(tableauProduits => {
     sauveBddProduits(tableauProduits);
-    ajoutListeProduitsHTML(tableauProduits);
+    //ajoutListeProduitsHTML(tableauProduits);
+    majElemHtmlDOMavecTableauProduits(tableauProduits);
     affElemPanier();
 
   })
@@ -23,10 +24,25 @@ fetch("http://localhost:3000/api/products/")
 /////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
+//Modification des elements HTML avec la methode `..${[valeurs issues du 'panierJson']}..`
+function majElemHtmlDOMavecTableauProduits(tableauProduits){
+
+  tableauProduits.forEach(item => {
+    document.getElementById("items").innerHTML+=`
+     <a href="../html/product.html?id=${item._id}">
+     <article>
+      <img src="${item.imageUrl}" alt="${item.name}">
+      <h3 class="productName">${item.name}</h3>
+      <p class="productDescription">${item.description}</p>
+     </article>
+     </a>
+     `
+  });
+};
 // Insertion en dynamique de la liste de produits en HTML
 function ajoutListeProduitsHTML(tableauProduits) {
   var etape = "Départ"
-  tableauProduits.forEach(criteresProduit => {
+  tableauProduits.forEach(item => { 
     if (etape = "Départ") {
       // Balise parent de départ
       var parentListe = document.getElementById("items");
@@ -41,15 +57,16 @@ function ajoutListeProduitsHTML(tableauProduits) {
     };
     //Ajout nouvelle balise 'a' dans le parent
     parentListe.appendChild(newBaliseA);
-    newBaliseA.href = "../html/product.html?id=" + criteresProduit._id;
+    //Maj du lien pour ouvrir la page 'Product.html' avec le N° 'id' correspondands au produit selectionné
+    newBaliseA.href = "../html/product.html?id=" + item._id;
     //Insertion nouvelle balise 'article' dans la balise 'a'
     var parentListe = newBaliseA;
     var newBaliseArticle = document.createElement("article");
     parentListe.appendChild(newBaliseArticle);
     //Remplace l'espace contenu dans le nom du produit par ' '
     // pour que la balise soit correctement dénifie avec ' alt = "[nom du produit]" >'
-    nomProduit = criteresProduit.name;
-    newBaliseArticle.innerHTML = "<img src =" + criteresProduit.imageUrl + ` alt = "` + nomProduit + `" >`;
+    nomProduit = item.name;
+    newBaliseArticle.innerHTML = "<img src =" + item.imageUrl + ` alt = "` + nomProduit + `" >`;
     // insertion nouvelle balise 'h3' dans la balise 'article' (aprés la balise 'img')
     var newElemListe = document.createElement("h3");
     parentListe.appendChild(newElemListe);
@@ -59,7 +76,7 @@ function ajoutListeProduitsHTML(tableauProduits) {
     var newElemListe = document.createElement("p");
     parentListe.appendChild(newElemListe);
     newElemListe.classList.add("productDescription")
-    newElemListe.innerHTML = criteresProduit.description
+    newElemListe.innerHTML = item.description
     var etape = "Suite"
   })
 };
@@ -84,9 +101,9 @@ function sauveBddProduits(tableauProduits) {
   // Sauvegarde la base de donnés de tous les produits
   // Mettre une majuscule à chaque début de nom de canapé
   // exemple : Kanap orthosie devient 'Kanap Orthosie
-  tableauProduits.forEach(nomProd => {
-    premLettreNomprodEnMaj(nomProd.name);
-    nomProd.name = nomProduit;
+  tableauProduits.forEach(item => {
+    premLettreNomprodEnMaj(item.name);
+    item.name = nomProduit;
 
   });
   //Trie dans l'ordre alphabétique les propriétés 'name' dans l'objet Json 'tableauProduits'

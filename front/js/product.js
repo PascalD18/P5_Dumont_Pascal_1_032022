@@ -199,7 +199,6 @@ function majPanier(produitSelect) {
                 }
                 else {
                     // Sinon, ajoute le produit
-
                     panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": nomProd });
                 };
             }
