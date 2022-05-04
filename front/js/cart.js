@@ -31,7 +31,7 @@ function initialisation() {
 
 // ** TEMPO **
 //dataURLProduits[0]._id = "1234";
-//dataURLProduits[1].colors[0] = "rose";
+dataURLProduits[0].colors[0] = "rose";
 // ****
 
   //Verifie si le panier est toujours d'actualité par rapport à 'dataURLProduits'
