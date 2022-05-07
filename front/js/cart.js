@@ -1,3 +1,21 @@
+fetch("http://localhost:3000/api/products/")
+  //Remise à jour de localStorage pour la Bdd des produits issue du serveur
+  //Afin de comparer tous les produits du panier en localStorage
+
+  .then(function (res) {
+    if (res.ok) {
+      return res.json();
+    }
+  })
+  .then(tableauProduits => {
+    sauveBddProduits(tableauProduits);
+  })
+  .catch(function (err) {
+    // Une erreur est survenue
+    console.log("Erreur N°" + err);
+    alert("l'erreur" + err + " est survenue sur le serveur. Nous faisons notre possible pour remédier à ce probléme.N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.")
+
+  })
 // Variables globales
 btnCommande = document.getElementById("order");
 initialisation();
@@ -12,6 +30,11 @@ majAffBtCd()
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
+function sauveBddProduits(tableauProduits) {
+  // Sauvegarde l'objet 'bddProduits'
+  bddProduitsLinea = JSON.stringify(tableauProduits);
+  localStorage.setItem("bddProduits", bddProduitsLinea);
+}
 function initialisation() {
   //Définie l'etat des saisie non valides par défaut
   prenomValide = false; nomValide = false; adresseValide = false;
@@ -23,49 +46,53 @@ function initialisation() {
   // Récupération de la bdd de tous les produits
   if (localStorage.bddProduits != null) {
     bddProduitsLinea = localStorage.getItem("bddProduits");
-    dataURLProduits = JSON.parse(bddProduitsLinea);
+    BddServProduits = JSON.parse(bddProduitsLinea);
   };
   // Récupére le panier existant
   panierLinea = localStorage.getItem("panier");
   panierJson = JSON.parse(panierLinea);
 
-// ** TEMPO **
-//dataURLProduits[0]._id = "1234";
-dataURLProduits[0].colors[0] = "rose";
-// ****
+  // ** TEMPO **
+  //BddServProduits[7]._id = "1234";
+  BddServProduits[7].colors[2] = "x";
+  // ****
 
-  //Verifie si le panier est toujours d'actualité par rapport à 'dataURLProduits'
-  var i = 0;
+  //Verifie si le panier est toujours d'actualité par rapport à 'BddServProduits'
   panierJson.forEach(i => {
-    idOk = false;
-    var j = 0;
-    while (j < dataURLProduits.length && idOk == false) {
-      if (i.codeArt == dataURLProduits[j]._id) {
-        idOk = true; j= j-1;
+    idOk = false; couleurOk = false; styleAffQTProduit = ``;
+    var j = 0; continuer = true;
+    while (j < BddServProduits.length && continuer == true) {
+      if (i.codeArt == BddServProduits[j]._id) {
+        idOk = true; continuer = false;
       }
-      j++;
+      if (j < BddServProduits.length && continuer) {
+        j++;
+      }
     };
     if (idOk == true) {
       // Si le produit du panier existe bien dans 'dataURLlProduits'
       // => Vérifie que la couleur existe encore
-      var k = 0;
-      couleurOk = false;
-      while (k < dataURLProduits[j].colors.length && couleurOk == false) {
-        if (i.couleur == dataURLProduits[j].colors[k]) {
-          couleurOk = true
+      var k = 0; continuer = true;
+      while (k < BddServProduits[j].colors.length && continuer) {
+        if (i.couleur == BddServProduits[j].colors[k]) {
+          couleurOk = true; continuer = false;
         }
-        k++;
-      }
-      if (idOk == true && couleurOk == false) {
-        // Si le produit est retrouvé mais pas la couleur
-        // => Indique que la couleur est obsoléte
-        i.couleur = `La couleur ${i.couleur} est devenue OBSOLETE`
+        if (k < BddServProduits[j].colors.length && continuer) {
+          k++;
+        }
+
       }
     }
-    else {
-      // Si 'id' n'est pas retrouvé => Renseigne le nom du produit = 'OBSOLETE'
-      i.nomProd = `Le produit ${i.nomProd} est devenu OBSOLETE`
-     }
+    //Maj de l'évoution eventuelle du produit dans la propriété 'evolution'
+    if (idOk && couleurOk) {
+      i.evolution = "Idem";
+    }
+    else if (idOk && couleurOk == false) {
+      i.evolution = "Couleur OBSOLETE";
+    }
+    else if (idOk == false) {
+      i.evolution = "Id OBSOLETE";
+    }
   });
   //Trie dans l'ordre alphabétique des noms des produits du panier
   panierJson.sort(function (a, b) {
@@ -82,23 +109,50 @@ function MajElemHtmlDOMavecPanier() {
     // MAJ des elements HTML du D.O.M pour chaque produit contenu dans le panier 'panierJson'
     // Récupére les données à partir du 'panierJson' issu du localStorage
     id = panierJson[item].codeArt;
+    // Affichage de la couleur en fonction de l'évolution du produit par rapport au panier existant
+    // 'NomProd', 'couleur' et 'prixProduit' idems à celui contenu dans 'panierJson'
+    nomProd = panierJson[item].nomProd;
     couleur = panierJson[item].couleur;
+    prixProduit = panierJson[item].prixProduit;
+    // Definit le style à ajouter dans l'élément <img> pour définir la bordure de la couleur du canapé
+    styleBordureCouleur(couleur);
+    //Par défaut on affiche sans style couleur rouge sur fond jaune
+    styleNomProdObsolete = ""; styleCouleurObsolete = "";
+    //Si il existe une évolution, on affiche rouge sur fond jaune
+    if (panierJson[item].evolution == "Couleur OBSOLETE") {
+      //Sinon, on indique que la couleur est obsolete
+      couleur = "La couleur " + panierJson[item].couleur + " est OBSOLETE";
+      //Pour afficher le couleur avec couleur rouge sur fond jaune
+      styleCouleurObsolete = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
+      prixProduit = 0;
+    }
+    else if (panierJson[item].evolution == "Id OBSOLETE") {
+      nomProd = "Le produit " + panierJson[item].nomProd + " est devenu OBSOLETE";
+      //Pour afficher le nom du produit avec couleur rouge sur fond jaune
+      styleNomProdObsolete = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
+      prixProduit = 0;
+    }
+    if (panierJson[item].evolution == "Idem") {
+      styleAffQTProduit = "";
+    }
+    else {
+      styleAffQTProduit = `style ="display: none;"`
+    }
     qtProduit = panierJson[item].qt;
     // Recupére l'addresse Url de l'image, le Nom du produit, et le prix.
-    // Definit le style à ajouter dans l'élément <img> pour définir la bordure de la couleur du canapé
-    bordureProduitSvtCouleur(couleur);
     ImageNomPrixProduitSvtId(id);
     // Methode 1 avec création, maj, et insertion des éléments concernant chaque produit
     // (d'aprés le cours 'modifiez le DOM' )
-    MajElemHtmlDOMavecPanierMeth1(item)
+    //**MajElemHtmlDOMavecPanierMeth1(item)
     // Méthode 2, en écrivant directement tous les éléments concernant chaque produit
+    MajElemHtmlDOMavecPanierMeth2(item)
     item++
   };
 }
 function MajElemHtmlDOMavecPanierMeth1(item) {
   // Affichage du produit 'panierJson[item]'
   // Par défaut, considére le produit non obsoléte
-  produitOk=true;
+  produitOk = true;
   // Avec la méthode de manipulation des éléments du HTML dans le D.O.M
   // Ajoute l'élément <article> dans <Section id="cart__items">
   parent = document.getElementById("cart__items");
@@ -144,7 +198,7 @@ function MajElemHtmlDOMavecPanierMeth1(item) {
   if (panierJson[item].nomProd.includes("OBSOLETE")) {
     // Si le produit est obsolete
     // => Affiche 'OBSOLETE' en rouge sur fond jaune
-    produitOk=false;
+    produitOk = false;
     enfant.style = "color: red; font-weight: 800; background-color: yellow; text-align:center;"
   }
   enfant.innerHTML = panierJson[item].nomProd;
@@ -155,7 +209,7 @@ function MajElemHtmlDOMavecPanierMeth1(item) {
   enfant = document.createElement("p");
   if (panierJson[item].couleur.includes("OBSOLETE")) {
     // Affiche 'OBSOLETE' en rouge sur fond jaune si la couleur est obsolete
-    produitOk=false;
+    produitOk = false;
     enfant.style = "color: red; font-weight: 800; background-color: yellow; text-align:center;"
   }
   enfant.innerHTML = panierJson[item].couleur;
@@ -165,10 +219,10 @@ function MajElemHtmlDOMavecPanierMeth1(item) {
   // Ajoute l'élément <p> dans cet élément <div> et renseigne le prix
   enfant = document.createElement("p");
   if (produitOk == true) {
-   enfant.innerHTML = prixProduit+ " €"; 
+    enfant.innerHTML = prixProduit + " €";
   }
-  else{
-    enfant.innerHTML= 0 +" €";
+  else {
+    enfant.innerHTML = 0 + " €";
   }
   parent_1_1_1.appendChild(enfant);
   // On obtient:
@@ -219,13 +273,32 @@ function MajElemHtmlDOMavecPanierMeth1(item) {
   //On obtient:
   // <p class="deleteItem">Supprimer</p>
 };
-function MajElemHtmlDOMavecPanierMeth2() {
+function MajElemHtmlDOMavecPanierMeth2(item) {
   // Mise a jour des elements HTML du D.O.M concernant les produits
   // en écrivant en une seule fois tous les éléments en une fois concernant chaque produit
   //  test = productJson.codeArt;
   document.querySelector("#cart__items").innerHTML +=
-    `<article classe="cart__item" data-id="${id}" data-color="${couleur}">
-                                                       </article>`
+    `<article class="cart__item" data-id="${id}" data-color="${couleur}">
+    <div class="cart__item__img">
+     <img src="${imageUrlProduit}" alt="${panierJson[item].nomProd}" ${styleBordureCouleur(panierJson[item].couleur)} >
+    </div>
+    <div class="cart__item__content">
+     <div class="cart__item__content__description">
+        <h2 ${styleNomProdObsolete}>${nomProd}</h2>
+        <p ${styleCouleurObsolete}>${couleur}</p>
+        <p>${prixProduit} €</p>
+     </div>
+     <div class="cart__item__content__settings">
+       <div class="cart__item__content__settings__quantity">
+          <p>Qté : ${panierJson[item].qt}</p>
+         <input ${styleAffQTProduit} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${panierJson[item].qt}>
+       </div>
+       <div class="cart__item__content__settings__delete">
+         <p class="deleteItem">Supprimer</p>
+       </div>
+     </div>
+    </div>
+  </article>`
 
 }
 // A chaque sortie de focus
@@ -362,10 +435,10 @@ function valideSvtRegex(elem, contenuSaisie, compRegex) {
 // recherche l'image correspondant au produit dans la base Json 'dataURLProduis' depuis le serveur
 function ImageNomPrixProduitSvtId(id) {
   var i = 0; continuer = true; imageUrlProduit = ""
-  while (i < dataURLProduits.length && imageUrlProduit == "") {
-    if (id == dataURLProduits[i]._id) {
-      imageUrlProduit = dataURLProduits[i].imageUrl;
-      prixProduit = dataURLProduits[i].price;
+  while (i < BddServProduits.length && imageUrlProduit == "") {
+    if (id == BddServProduits[i]._id) {
+      imageUrlProduit = BddServProduits[i].imageUrl;
+      prixProduit = BddServProduits[i].price;
     }
     i++
   }
@@ -415,9 +488,7 @@ function modifQtProduit() {
     });
   });
 };
-function bordureProduitSvtCouleur() {
-  if (!couleur.includes("OBSOLETE")){
-  // Si la couleur n'est pas obsoléte
+function styleBordureCouleur(couleur) {
   // =>Ajoute la bordure de l'image pour completer la modification du D.O.M
   if (couleur.includes("/")) {
     //Si 'couleur' contient '/' => Cas produit bicolor
@@ -427,21 +498,16 @@ function bordureProduitSvtCouleur() {
     // Définition couleur suivante
     couleurSvt = couleur.substring(posiSep + 1, couleur.length)
     defBordureImage = ` style= "border-style: solid; border-right-color: ` + premCouleur + `; border-left-color: ` + premCouleur + `;
-     border-top-color: `+ couleurSvt + `; border-bottom-color: ` + couleurSvt + `; border-width: 15px;`
+     border-top-color: `+ couleurSvt + `; border-bottom-color: ` + couleurSvt + `; border-width: 15px;"`
   }
   else {
     // 1 bordure continue si couleur unique
     defBordureImage = ` style= "border: solid ` + couleur + `; border-width: 15px;`
   }
-
-  defBordureImage = defBordureImage + ` padding: 10px;" />`
-}
-else{
- // Sinon, ne met pas de bordure
-  defBordureImage=" />"
-}
-
+  return defBordureImage + ` padding: 10px;"`
 };
+
+//**  */};
 function suppressionProduit() {
   // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   document.querySelectorAll('.deleteItem').forEach(item => {
@@ -507,7 +573,7 @@ function majTotauxQtPrix() {
 }
 function majAffBtCd() {
   // Affiche l'état du bouton de commande, suivant l'état de validité du formulaire.
-  if (saisiesValides()) {
+  if (validationSaisies()) {
     btnCommande.classList = "yesHover";
     btnCommande.style.backgroundColor = "#2c3e50";
     btnCommande.title = ""
@@ -518,17 +584,6 @@ function majAffBtCd() {
     btnCommande.title = "Renseigner le formulaire avant de valider la commande."
   }
 };
-function formulaireComplet() {
-  //Vérifie si le formulaire est complétement renseigné
-  if (prenom != "" && nom != "" && adresse != "" && ville != "" && email != "") {
-    return true;
-  }
-  else {
-    alert("Le formulaire doit être complétement renseigné avant de commander.");
-    return false;
-  };
-};
-
 function actionBtnCd() {
   btnCommande.addEventListener("keypress", even => {
     even.preventDefault();
@@ -542,7 +597,7 @@ function actionBtnCd() {
   });
 };
 function requeteInfoCd() {
-  if (saisiesValides() && formulaireComplet()) {
+  if (validationSaisies()) {
     // Création de l'objet 'Contact'
     contact = {
       "firstName": prenom,
@@ -584,32 +639,44 @@ function requeteInfoCd() {
         console.log("Erreur N°" + err);
       });
   }
-  else if (formulaireComplet()) {
-    //Si il existe une ou des sasie(s) non valides, et que le formulaire est complétement renseigné
-    alert("Une ou des saisie(s) ne sont pas correctement renseignées.")
+  else {
+    //Affichage des erreurs rencontrées qui empeche l'envoie de la commande
+    messErreur="La commande ne peut-être envoyée car il reste encore une/des erreur(s) suivante(s):";
+    if (messEtatEvolution != ""){messErreur+=`\r- ${messEtatEvolution}`};
+    if (messEtatMessErreur != ""){messErreur+=`\r- ${messEtatMessErreur}`};
+    if (messEtatSaisiesVides != ""){messErreur+=`\r- ${messEtatSaisiesVides}`};
+    alert(messErreur)
   };
 };
 // Verification des saisies effectuées
-function saisiesValides() {
+function validationSaisies() {
   //Verifie qu'il n'y a pas de message d'erreur
   messErreur = document.querySelectorAll(".cart__order__form__question p");
-  aucunMessErreur = true; // Par défaut, on considére qu'il n'ya auncun message d'erreur
+  messEtatMessErreur = ""; // Par défaut, on considére qu'il n'y a auncun message d'erreur
   messErreur.forEach(even => {
     if (even.innerText != "") {
       // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
-      aucunMessErreur = false
+      messEtatMessErreur = "Il reste une/des saisie(s) non correctement renseignée(s)."
     }
   });
   // Vérifie si il n'y a aucune saisie de renseignée
   champsSaisies = document.querySelectorAll(".cart__order__form__question input");
-  toutesSaisieFaites = true; // Par défaut, on considére que toutes les saisies sont faites.
+  messEtatSaisiesVides = ""; // Par défaut, on considére que toutes les saisies sont faites.
   champsSaisies.forEach(even => {
     if (even.value == '') {
       // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
-      toutesSaisieFaites = false
+      messEtatSaisiesVides = "Il reste une/des saisie(s) à renseigner."
     }
   });
-  if (aucunMessErreur == true && toutesSaisieFaites == true) {
+  // Vérifie si tous les produits sont encore d'actualité
+  messEtatEvolution = "";//Par défaut pas d'evolution avant verification
+  panierJson.forEach(item => {
+    if (item.evolution != "Idem") {
+      messEtatEvolution = "Un ou des produits sont devenus obsolétes";
+    }
+  });
+  // Réponse en fonction des verifications
+  if (messEtatEvolution =="" && messEtatMessErreur =="" && messEtatSaisiesVides == "") {
     return true
   }
   else {

@@ -12,7 +12,7 @@ fetch("http://localhost:3000/api/products/")
     sauveBddProduits(tableauProduits);
     //ajoutListeProduitsHTML(tableauProduits);
     majElemHtmlDOMavecTableauProduits(tableauProduits);
-    affElemPanier();
+    affLienPanier();
 
   })
   .catch(function (err) {
@@ -81,11 +81,12 @@ function ajoutListeProduitsHTML(tableauProduits) {
   })
 };
 // Gestion affichage bouton panier en fonction état panier
-function affElemPanier() {
+function affLienPanier() {
+  //Affiche ou non le lien 'Panier' en fonction de son existance ou non.
   // Initialise l'élément <a: 'panier'
   elemPanier = document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
   if (localStorage.panier == undefined) {
-    // si le panier est in'existant => N'affiche pas le lien du panier
+    // si le panier est inexistant => N'affiche pas le lien du panier
     elemPanier.style.display = "none";
   }
   else if (localStorage.panier.length == 2) {
