@@ -30,11 +30,12 @@ majAffBtCd()
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
-function sauveBddProduits(tableauProduits) {
+
+//function sauveBddProduits(tableauProduits) {
   // Sauvegarde l'objet 'bddProduits'
-  bddProduitsLinea = JSON.stringify(tableauProduits);
-  localStorage.setItem("bddProduits", bddProduitsLinea);
-}
+//  bddProduitsLinea = JSON.stringify(tableauProduits);
+//  localStorage.setItem("bddProduits", bddProduitsLinea);
+//}
 function initialisation() {
   //Définie l'etat des saisie non valides par défaut
   prenomValide = false; nomValide = false; adresseValide = false;
@@ -52,9 +53,11 @@ function initialisation() {
   panierLinea = localStorage.getItem("panier");
   panierJson = JSON.parse(panierLinea);
 
-  // ** TEMPO **
-  //BddServProduits[7]._id = "1234";
-  BddServProduits[7].colors[2] = "x";
+  // ** TEMPORAIRE **
+  // ** SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER DANS LE CAS OU LE PANIER N'A PAS CHANGÉ DEPUIS LONGTEMPS **
+
+  BddServProduits[2]._id = "1234";
+  BddServProduits[5].colors[1] = "x";
   // ****
 
   //Verifie si le panier est toujours d'actualité par rapport à 'BddServProduits'
@@ -383,7 +386,7 @@ function controlValidationSaisiesFormulaire() {
     }
   });
 };
-// Controle les sasies dans les champs du formulaire
+// Controle les saisies dans les champs du formulaire
 function controlSaisieFormulaire() {
   document.addEventListener("input", even => {
     //Saisie d'un digit dans un element 'input'
@@ -414,7 +417,7 @@ function controlSaisieFormulaire() {
     };
   });
 }
-// Verifie la saisie avec la methode regex
+// affiche la saisie en cours en vert ou rouge selon la validité
 function valideSvtRegex(elem, contenuSaisie, compRegex) {
   //Par défaut, efface le message d'erreur correspondant
   elemMessErrSaisie = document.getElementById(elem.id + "ErrorMsg");
