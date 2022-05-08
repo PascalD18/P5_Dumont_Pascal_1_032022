@@ -50,7 +50,7 @@ function initialisation() {
   // ** TEMPORAIRE **
   // ** SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER DANS LE CAS OU LE PANIER N'A PAS CHANGÉ DEPUIS LONGTEMPS **
 
-  //BddServProduits[2]._id = "1234";
+  BddServProduits[2]._id = "1234";
   BddServProduits[5].colors[1] = "x";
   // ****
 
@@ -67,7 +67,7 @@ function initialisation() {
       }
     };
     if (idOk == true) {
-      // Si le produit du panier existe bien dans 'dataURLlProduits'
+      // Si le produit du panier existe bien dans 'bddServProduits'
       // => Vérifie que la couleur existe encore
       var k = 0; continuer = true;
       while (k < BddServProduits[j].colors.length && continuer) {
@@ -91,14 +91,7 @@ function initialisation() {
       i.evolution = "Id OBSOLETE";
     }
   });
-  //Trie dans l'ordre alphabétique des noms des produits du panier
-  panierJson.sort(function (a, b) {
-    if (a.name < b.name) {
-      return -1;
-    } else {
-      return 1;
-    }
-  });
+  sauvegardePanier();
 };
 function MajElemHtmlDOMavecPanier() {
   var item = 0;
