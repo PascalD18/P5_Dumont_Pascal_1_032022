@@ -8,7 +8,7 @@ fetch("http://localhost:3000/api/products/")
     }
   })
   .then(tableauProduits => {
-    sauveBddProduits(tableauProduits);
+    classeBddProduits(tableauProduits);
   })
   .catch(function (err) {
     // Une erreur est survenue
@@ -30,12 +30,6 @@ majAffBtCd()
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
-
-//function sauveBddProduits(tableauProduits) {
-  // Sauvegarde l'objet 'bddProduits'
-//  bddProduitsLinea = JSON.stringify(tableauProduits);
-//  localStorage.setItem("bddProduits", bddProduitsLinea);
-//}
 function initialisation() {
   //Définie l'etat des saisie non valides par défaut
   prenomValide = false; nomValide = false; adresseValide = false;
@@ -56,7 +50,7 @@ function initialisation() {
   // ** TEMPORAIRE **
   // ** SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER DANS LE CAS OU LE PANIER N'A PAS CHANGÉ DEPUIS LONGTEMPS **
 
-  BddServProduits[2]._id = "1234";
+  //BddServProduits[2]._id = "1234";
   BddServProduits[5].colors[1] = "x";
   // ****
 
@@ -121,10 +115,11 @@ function MajElemHtmlDOMavecPanier() {
     styleBordureCouleur(couleur);
     //Par défaut on affiche sans style couleur rouge sur fond jaune
     styleNomProdObsolete = ""; styleCouleurObsolete = "";
+    commentCouleur=panierJson[item].couleur;
     //Si il existe une évolution, on affiche rouge sur fond jaune
     if (panierJson[item].evolution == "Couleur OBSOLETE") {
       //Sinon, on indique que la couleur est obsolete
-      couleur = "La couleur " + panierJson[item].couleur + " est OBSOLETE";
+      commentCouleur = "La couleur " + panierJson[item].couleur + " est OBSOLETE";
       //Pour afficher le couleur avec couleur rouge sur fond jaune
       styleCouleurObsolete = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
       prixProduit = 0;
@@ -288,7 +283,7 @@ function MajElemHtmlDOMavecPanierMeth2(item) {
     <div class="cart__item__content">
      <div class="cart__item__content__description">
         <h2 ${styleNomProdObsolete}>${nomProd}</h2>
-        <p ${styleCouleurObsolete}>${couleur}</p>
+        <p ${styleCouleurObsolete}>${commentCouleur}</p>
         <p>${prixProduit} €</p>
      </div>
      <div class="cart__item__content__settings">
@@ -435,7 +430,7 @@ function valideSvtRegex(elem, contenuSaisie, compRegex) {
   };
 };
 
-// recherche l'image correspondant au produit dans la base Json 'dataURLProduis' depuis le serveur
+// recherche l'image correspondant au produit dans la base Json 'BddServProduits' depuis le serveur
 function ImageNomPrixProduitSvtId(id) {
   var i = 0; continuer = true; imageUrlProduit = ""
   while (i < BddServProduits.length && imageUrlProduit == "") {
@@ -538,8 +533,9 @@ function suppressionProduit() {
         }
       };
       majTotauxQtPrix();
+      majAffBtCd();
     });
-  })
+  });
 };
 // Sauvedarde en local du panier
 function sauvegardePanier() {

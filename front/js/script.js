@@ -9,7 +9,7 @@ fetch("http://localhost:3000/api/products/")
     }
   })
   .then(tableauProduits => {
-    sauveBddProduits(tableauProduits);
+    classeBddProduits(tableauProduits);
     //ajoutListeProduitsHTML(tableauProduits);
     majElemHtmlDOMavecTableauProduits(tableauProduits);
     affLienPanier();

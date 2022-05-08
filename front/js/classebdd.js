@@ -1,4 +1,4 @@
-function sauveBddProduits(tableauProduits) {
+function classeBddProduits(tableauProduits) {
     // Sauvegarde la base de donnés de tous les produits
     // avec classement des proppriétés 'name' dans l'ordre alphabétique 
     // 1) Met une majuscule à chaque début de nom de canapé
@@ -17,9 +17,9 @@ function sauveBddProduits(tableauProduits) {
         return 1;
       }
     });
-    // 3) Sauvegarde l'objet 'bddProduits'
-    bddProduitsLinea = JSON.stringify(tableauProduits);
-    localStorage.setItem("bddProduits", bddProduitsLinea);
+   // // 3) Sauvegarde l'objet 'bddProduits'
+   // bddProduitsLinea = JSON.stringify(tableauProduits);
+   // localStorage.setItem("bddProduits", bddProduitsLinea);
   }
   // Mets la premiere lettre de la 2éme partie du nom de produit en majuscule
   function premLettreNomprodEnMaj(nomProd) {
