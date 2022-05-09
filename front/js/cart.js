@@ -50,8 +50,8 @@ function initialisation() {
   // ** TEMPORAIRE **
   // ** SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER DANS LE CAS OU LE PANIER N'A PAS CHANGÉ DEPUIS LONGTEMPS **
 
-  BddServProduits[2]._id = "1234";
-  BddServProduits[5].colors[1] = "x";
+  BddServProduits[3]._id = "1234";
+  BddServProduits[6].colors[0] = "x";
   // ****
 
   //Verifie si le panier est toujours d'actualité par rapport à 'BddServProduits'
@@ -131,7 +131,7 @@ function MajElemHtmlDOMavecPanier() {
     }
     qtProduit = panierJson[item].qt;
     // Recupére l'addresse Url de l'image, le Nom du produit, et le prix.
-    ImageNomPrixProduitSvtId(id);
+    imagePrixSvtId(id);
     // Methode 1 avec création, maj, et insertion des éléments concernant chaque produit
     // (d'aprés le cours 'modifiez le DOM' )
     //**MajElemHtmlDOMavecPanierMeth1(item)
@@ -424,21 +424,21 @@ function valideSvtRegex(elem, contenuSaisie, compRegex) {
 };
 
 // recherche l'image correspondant au produit dans la base Json 'BddServProduits' depuis le serveur
-function ImageNomPrixProduitSvtId(id) {
-  var i = 0; continuer = true; imageUrlProduit = ""
-  while (i < BddServProduits.length && imageUrlProduit == "") {
+function imagePrixSvtId(id) {
+  var i = 0; idTrouvé = false;
+  while (i < BddServProduits.length && idTrouvé==false) {
     if (id == BddServProduits[i]._id) {
       imageUrlProduit = BddServProduits[i].imageUrl;
       prixProduit = BddServProduits[i].price;
+      idTrouvé=true;
     }
     i++
   }
-  if (imageUrlProduit == "") {
-    // Si l'Url du produit n'est plus retrouvée avec son 'id'
-    // Cela signifie que le produit n'existe plus dans la base de donnée du serveur
-    // Affiche le logo canapé
-    imageUrlProduit = "../images/logo.png";
-  }
+  if (idTrouvé==false){
+    //Si 'id' n'a pas été trouvé
+    //=> Prends par défaut le logo comme image de canapé
+    imageUrlProduit ="../images/logo.png";
+  };
 };
 
 function modifQtProduit() {
@@ -554,7 +554,7 @@ function majTotauxQtPrix() {
   panierJson.forEach(item => {
     totalQt = totalQt + item.qt;
     // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
-    ImageNomPrixProduitSvtId(item.codeArt);
+    imagePrixSvtId(item.codeArt);
     totalPrix = totalPrix + item.qt * prixProduit;
   });
   // Mise à jour des totaux de Qt et prix dans le D.O.M
