@@ -1,5 +1,4 @@
 //localStorage.removeItem("panier");
-//localStorage.removeItem("bddProduits");
 
 fetch("http://localhost:3000/api/products/")
 
@@ -8,12 +7,11 @@ fetch("http://localhost:3000/api/products/")
       return res.json();
     }
   })
-  .then(tableauProduits => {
-    classeBddProduits(tableauProduits);
-    //ajoutListeProduitsHTML(tableauProduits);
-    majElemHtmlDOMavecTableauProduits(tableauProduits);
+  .then(datasProduitsAPI => {
+    classeBddProduits(datasProduitsAPI);
+    majElemHtmlDOMavecdatasProduitsAPI(datasProduitsAPI);
     affLienPanier();
-
+  
   })
   .catch(function (err) {
     // Une erreur est survenue
@@ -25,9 +23,9 @@ fetch("http://localhost:3000/api/products/")
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
 //Modification des elements HTML avec la methode `..${[valeurs issues du 'panierJson']}..`
-function majElemHtmlDOMavecTableauProduits(tableauProduits){
+function majElemHtmlDOMavecdatasProduitsAPI(datasProduitsAPI){
 
-  tableauProduits.forEach(item => {
+  datasProduitsAPI.forEach(item => {
     document.getElementById("items").innerHTML+=`
      <a href="../html/product.html?id=${item._id}">
      <article>
@@ -40,9 +38,9 @@ function majElemHtmlDOMavecTableauProduits(tableauProduits){
   });
 };
 // Insertion en dynamique de la liste de produits en HTML
-function ajoutListeProduitsHTML(tableauProduits) {
+function ajoutListeProduitsHTML(datasProduitsAPI) {
   var etape = "Départ"
-  tableauProduits.forEach(item => { 
+  datasProduitsAPI.forEach(item => { 
     if (etape = "Départ") {
       // Balise parent de départ
       var parentListe = document.getElementById("items");

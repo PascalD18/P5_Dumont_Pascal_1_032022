@@ -1,14 +1,23 @@
 fetch("http://localhost:3000/api/products/")
-  //Remise à jour de localStorage pour la Bdd des produits issue du serveur
+  //Récupération des datas 'datasProduitsAPI' des produits issus de l'API
   //Afin de comparer tous les produits du panier en localStorage
-
   .then(function (res) {
     if (res.ok) {
       return res.json();
     }
   })
-  .then(tableauProduits => {
-    classeBddProduits(tableauProduits);
+  .then(datasProduitsAPI => {
+    classeBddProduits(datasProduitsAPI);
+    initialisation(datasProduitsAPI);
+    MajElemHtmlDOMavecPanier(datasProduitsAPI);
+    majTotauxQtPrix();
+    modifQtProduit();
+    suppressionProduit();
+    controlSaisieFormulaire();
+    controlValidationSaisiesFormulaire();
+    btnCommande = document.getElementById("order");// Variable globale, utilisées dans les 2 fonctions precedentes
+    actionBtnCd()
+    majAffBtCd()
   })
   .catch(function (err) {
     // Une erreur est survenue
@@ -16,65 +25,49 @@ fetch("http://localhost:3000/api/products/")
     alert("l'erreur" + err + " est survenue sur le serveur. Nous faisons notre possible pour remédier à ce probléme.N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.")
 
   })
-// Variables globales
-btnCommande = document.getElementById("order");
-initialisation();
-MajElemHtmlDOMavecPanier();
-majTotauxQtPrix();
-modifQtProduit();
-suppressionProduit();
-controlSaisieFormulaire();
-controlValidationSaisiesFormulaire();
-actionBtnCd()
-majAffBtCd()
+
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
-function initialisation() {
+function initialisation(datasProduitsAPI) {
   //Définie l'etat des saisie non valides par défaut
   prenomValide = false; nomValide = false; adresseValide = false;
   villeValide = false; emailValide = false;
   //Initialise les saisies
   prenom = ""; nom = ""; adresse = "";
   ville = ""; email = "";
-  // Récupére la base de donnée des produits avec le locaStorage
-  // Récupération de la bdd de tous les produits
-  if (localStorage.bddProduits != null) {
-    bddProduitsLinea = localStorage.getItem("bddProduits");
-    BddServProduits = JSON.parse(bddProduitsLinea);
-  };
-  // Récupére le panier existant
+  // Récupére le panier déjà existant avec le locaStorage
   panierLinea = localStorage.getItem("panier");
   panierJson = JSON.parse(panierLinea);
 
-  // ** TEMPORAIRE **
-  // ** SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER DANS LE CAS OU LE PANIER N'A PAS CHANGÉ DEPUIS LONGTEMPS **
+  // ***********************************************************************
+  // SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER 
+  // ENCORE CONTENUS DANS LE PANIER QUI N'AURAIT PAS CHANGÉ DEPUIS LONGTEMPS
+  // datasProduitsAPI[3]._id = "1234";
+  // datasProduitsAPI[6].colors[0] = "x";
+  // ************************************************************************
 
-  BddServProduits[3]._id = "1234";
-  BddServProduits[6].colors[0] = "x";
-  // ****
-
-  //Verifie si le panier est toujours d'actualité par rapport à 'BddServProduits'
+  //Verifie si le panier est toujours d'actualité par rapport à 'datasProduitsAPI'
   panierJson.forEach(i => {
-    idOk = false; couleurOk = false; styleAffQTProduit = ``;
+    idOk = false; couleurOk = false;
     var j = 0; continuer = true;
-    while (j < BddServProduits.length && continuer == true) {
-      if (i.codeArt == BddServProduits[j]._id) {
+    while (j < datasProduitsAPI.length && continuer == true) {
+      if (i.codeArt == datasProduitsAPI[j]._id) {
         idOk = true; continuer = false;
       }
-      if (j < BddServProduits.length && continuer) {
+      if (j < datasProduitsAPI.length && continuer) {
         j++;
       }
     };
     if (idOk == true) {
-      // Si le produit du panier existe bien dans 'bddServProduits'
+      // Si le produit du panier existe bien dans 'datasProduitsAPI'
       // => Vérifie que la couleur existe encore
       var k = 0; continuer = true;
-      while (k < BddServProduits[j].colors.length && continuer) {
-        if (i.couleur == BddServProduits[j].colors[k]) {
+      while (k < datasProduitsAPI[j].colors.length && continuer) {
+        if (i.couleur == datasProduitsAPI[j].colors[k]) {
           couleurOk = true; continuer = false;
         }
-        if (k < BddServProduits[j].colors.length && continuer) {
+        if (k < datasProduitsAPI[j].colors.length && continuer) {
           k++;
         }
 
@@ -93,45 +86,49 @@ function initialisation() {
   });
   sauvegardePanier();
 };
-function MajElemHtmlDOMavecPanier() {
+function MajElemHtmlDOMavecPanier(datasProduitsAPI) {
   var item = 0;
   while (item < panierJson.length) {
     // MAJ des elements HTML du D.O.M pour chaque produit contenu dans le panier 'panierJson'
     // Récupére les données à partir du 'panierJson' issu du localStorage
     id = panierJson[item].codeArt;
-    // Affichage de la couleur en fonction de l'évolution du produit par rapport au panier existant
-    // 'NomProd', 'couleur' et 'prixProduit' idems à celui contenu dans 'panierJson'
-    nomProd = panierJson[item].nomProd;
-    couleur = panierJson[item].couleur;
+    // Affichage de certaines données en fonction de l'évolution du produit par rapport au panier existant
+    // 'nomProdHTML', 'couleur' et 'prixProduit' idems à celui contenu dans 'panierJson'
+    nomProdHTML = panierJson[item].nomProd;
+    couleurHTML = panierJson[item].couleur;
     prixProduit = panierJson[item].prixProduit;
     // Definit le style à ajouter dans l'élément <img> pour définir la bordure de la couleur du canapé
-    styleBordureCouleur(couleur);
-    //Par défaut on affiche sans style couleur rouge sur fond jaune
-    styleNomProdObsolete = ""; styleCouleurObsolete = "";
-    commentCouleur=panierJson[item].couleur;
+    styleBordureCouleur(panierJson[item].couleur);
+    //Par défaut on affiche sans style particulier
+    styleNomProdHTML = ""; styleCouleurHTML = "";
     //Si il existe une évolution, on affiche rouge sur fond jaune
     if (panierJson[item].evolution == "Couleur OBSOLETE") {
-      //Sinon, on indique que la couleur est obsolete
-      commentCouleur = "La couleur " + panierJson[item].couleur + " est OBSOLETE";
-      //Pour afficher le couleur avec couleur rouge sur fond jaune
-      styleCouleurObsolete = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
+      //Si la couleur est obsoléte on l'indique avec 'couleurHTML'
+      couleurHTML = "La couleur " + panierJson[item].couleur + " est OBSOLETE";
+      //Et on l'affiche avec couleur rouge sur fond jaune
+      styleCouleurHTML = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
+      //On met le prix du produit à zero pour ne pas influencer le calcul du prix total
       prixProduit = 0;
     }
     else if (panierJson[item].evolution == "Id OBSOLETE") {
-      nomProd = "Le produit " + panierJson[item].nomProd + " est devenu OBSOLETE";
-      //Pour afficher le nom du produit avec couleur rouge sur fond jaune
-      styleNomProdObsolete = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
+      //Si le produit est obsoléte, on l'indique avec 'nomProdHTML'
+      nomProdHTML = "Le produit " + panierJson[item].nomProd + " est devenu OBSOLETE";
+      //Et on affiche avec couleur rouge sur fond jaune
+      styleNomProdHTML = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
+      //On met le prix du produit à zero pour ne pas influencer le calcul du prix total
       prixProduit = 0;
     }
     if (panierJson[item].evolution == "Idem") {
-      styleAffQTProduit = "";
+      // Si le produit n'est pas obsoléte => on laisse l'affichage de la Qt du produit
+      afficheQtProduit = "";
     }
     else {
-      styleAffQTProduit = `style ="display: none;"`
+      // sinon on masque l'élément HTML concernant la quantité de produit
+      afficheQtProduit = `style ="display: none;"`
     }
     qtProduit = panierJson[item].qt;
-    // Recupére l'addresse Url de l'image, le Nom du produit, et le prix.
-    imagePrixSvtId(id);
+    // Recupére l'addresse Url de l'image, et le prix.
+    imagePrixAPIsvtId(datasProduitsAPI,id);
     // Methode 1 avec création, maj, et insertion des éléments concernant chaque produit
     // (d'aprés le cours 'modifiez le DOM' )
     //**MajElemHtmlDOMavecPanierMeth1(item)
@@ -269,20 +266,20 @@ function MajElemHtmlDOMavecPanierMeth2(item) {
   // en écrivant en une seule fois tous les éléments en une fois concernant chaque produit
   //  test = productJson.codeArt;
   document.querySelector("#cart__items").innerHTML +=
-    `<article class="cart__item" data-id="${id}" data-color="${couleur}">
+    `<article class="cart__item" data-id="${id}" data-color="${panierJson[item].couleur}">
     <div class="cart__item__img">
      <img src="${imageUrlProduit}" alt="${panierJson[item].nomProd}" ${styleBordureCouleur(panierJson[item].couleur)} >
     </div>
     <div class="cart__item__content">
      <div class="cart__item__content__description">
-        <h2 ${styleNomProdObsolete}>${nomProd}</h2>
-        <p ${styleCouleurObsolete}>${commentCouleur}</p>
+        <h2 ${styleNomProdHTML}>${nomProdHTML}</h2>
+        <p ${styleCouleurHTML}>${couleurHTML}</p>
         <p>${prixProduit} €</p>
      </div>
      <div class="cart__item__content__settings">
        <div class="cart__item__content__settings__quantity">
           <p>Qté : ${panierJson[item].qt}</p>
-         <input ${styleAffQTProduit} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${panierJson[item].qt}>
+         <input ${afficheQtProduit} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${panierJson[item].qt}>
        </div>
        <div class="cart__item__content__settings__delete">
          <p class="deleteItem">Supprimer</p>
@@ -423,21 +420,22 @@ function valideSvtRegex(elem, contenuSaisie, compRegex) {
   };
 };
 
-// recherche l'image correspondant au produit dans la base Json 'BddServProduits' depuis le serveur
-function imagePrixSvtId(id) {
+// Récupére 'imageURLProduit' et 'prixProduit' issus des datas des produits de l'API 'datasProduitsAPI'
+// correspondant à 'Id'
+function imagePrixAPIsvtId(datasProduitsAPI,id) {
   var i = 0; idTrouvé = false;
-  while (i < BddServProduits.length && idTrouvé==false) {
-    if (id == BddServProduits[i]._id) {
-      imageUrlProduit = BddServProduits[i].imageUrl;
-      prixProduit = BddServProduits[i].price;
-      idTrouvé=true;
+  while (i < datasProduitsAPI.length && idTrouvé == false) {
+    if (id == datasProduitsAPI[i]._id) {
+      imageUrlProduit = datasProduitsAPI[i].imageUrl;
+      prixProduit = datasProduitsAPI[i].price;
+      idTrouvé = true;
     }
     i++
   }
-  if (idTrouvé==false){
+  if (idTrouvé == false) {
     //Si 'id' n'a pas été trouvé
     //=> Prends par défaut le logo comme image de canapé
-    imageUrlProduit ="../images/logo.png";
+    imageUrlProduit = "../images/logo.png";
   };
 };
 
@@ -554,7 +552,7 @@ function majTotauxQtPrix() {
   panierJson.forEach(item => {
     totalQt = totalQt + item.qt;
     // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
-    imagePrixSvtId(item.codeArt);
+    imagePrixAPIsvtId(item.codeArt);
     totalPrix = totalPrix + item.qt * prixProduit;
   });
   // Mise à jour des totaux de Qt et prix dans le D.O.M
@@ -633,10 +631,10 @@ function requeteInfoCd() {
   }
   else {
     //Affichage des erreurs rencontrées qui empeche l'envoie de la commande
-    messErreur="La commande ne peut-être envoyée car il reste encore une/des erreur(s) suivante(s):";
-    if (messEtatEvolution != ""){messErreur+=`\r- ${messEtatEvolution}`};
-    if (messEtatMessErreur != ""){messErreur+=`\r- ${messEtatMessErreur}`};
-    if (messEtatSaisiesVides != ""){messErreur+=`\r- ${messEtatSaisiesVides}`};
+    messErreur = "La commande ne peut-être envoyée car il reste encore une/des erreur(s) suivante(s):";
+    if (messEtatEvolution != "") { messErreur += `\r- ${messEtatEvolution}` };
+    if (messEtatMessErreur != "") { messErreur += `\r- ${messEtatMessErreur}` };
+    if (messEtatSaisiesVides != "") { messErreur += `\r- ${messEtatSaisiesVides}` };
     alert(messErreur)
   };
 };
@@ -668,7 +666,7 @@ function validationSaisies() {
     }
   });
   // Réponse en fonction des verifications
-  if (messEtatEvolution =="" && messEtatMessErreur =="" && messEtatSaisiesVides == "") {
+  if (messEtatEvolution == "" && messEtatMessErreur == "" && messEtatSaisiesVides == "") {
     return true
   }
   else {
