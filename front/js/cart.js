@@ -1,6 +1,4 @@
 fetch("http://localhost:3000/api/products/")
-  //Récupération des datas 'datasProduitsAPI' des produits issus de l'API
-  //Afin de comparer tous les produits du panier en localStorage
   .then(function (res) {
     if (res.ok) {
       return res.json();
@@ -10,22 +8,20 @@ fetch("http://localhost:3000/api/products/")
     classeBddProduits(datasProduitsAPI);
     initialisation(datasProduitsAPI);
     MajElemHtmlDOMavecPanier(datasProduitsAPI);
-    majTotauxQtPrix();
-    modifQtProduit();
-    suppressionProduit();
+    majTotauxQtPrix(datasProduitsAPI);
+    modifQtProduit(datasProduitsAPI);
+    suppressionProduit(datasProduitsAPI);
     controlSaisieFormulaire();
     controlValidationSaisiesFormulaire();
     btnCommande = document.getElementById("order");// Variable globale, utilisées dans les 2 fonctions precedentes
-    actionBtnCd()
-    majAffBtCd()
+    actionBtnCd();
+    majAffBtCd();
   })
   .catch(function (err) {
     // Une erreur est survenue
     console.log("Erreur N°" + err);
     alert("l'erreur" + err + " est survenue sur le serveur. Nous faisons notre possible pour remédier à ce probléme.N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.")
-
-  })
-
+  });
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
@@ -43,8 +39,8 @@ function initialisation(datasProduitsAPI) {
   // ***********************************************************************
   // SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER 
   // ENCORE CONTENUS DANS LE PANIER QUI N'AURAIT PAS CHANGÉ DEPUIS LONGTEMPS
-  // datasProduitsAPI[3]._id = "1234";
-  // datasProduitsAPI[6].colors[0] = "x";
+  //datasProduitsAPI[1]._id = "1234";
+  datasProduitsAPI[2].colors[0] = "x";
   // ************************************************************************
 
   //Verifie si le panier est toujours d'actualité par rapport à 'datasProduitsAPI'
@@ -99,6 +95,8 @@ function MajElemHtmlDOMavecPanier(datasProduitsAPI) {
     prixProduit = panierJson[item].prixProduit;
     // Definit le style à ajouter dans l'élément <img> pour définir la bordure de la couleur du canapé
     styleBordureCouleur(panierJson[item].couleur);
+    // Recupére l'addresse Url de l'image, et le prix.
+    imagePrixAPIsvtId(datasProduitsAPI, id);
     //Par défaut on affiche sans style particulier
     styleNomProdHTML = ""; styleCouleurHTML = "";
     //Si il existe une évolution, on affiche rouge sur fond jaune
@@ -127,8 +125,6 @@ function MajElemHtmlDOMavecPanier(datasProduitsAPI) {
       afficheQtProduit = `style ="display: none;"`
     }
     qtProduit = panierJson[item].qt;
-    // Recupére l'addresse Url de l'image, et le prix.
-    imagePrixAPIsvtId(datasProduitsAPI,id);
     // Methode 1 avec création, maj, et insertion des éléments concernant chaque produit
     // (d'aprés le cours 'modifiez le DOM' )
     //**MajElemHtmlDOMavecPanierMeth1(item)
@@ -422,7 +418,7 @@ function valideSvtRegex(elem, contenuSaisie, compRegex) {
 
 // Récupére 'imageURLProduit' et 'prixProduit' issus des datas des produits de l'API 'datasProduitsAPI'
 // correspondant à 'Id'
-function imagePrixAPIsvtId(datasProduitsAPI,id) {
+function imagePrixAPIsvtId(datasProduitsAPI, id) {
   var i = 0; idTrouvé = false;
   while (i < datasProduitsAPI.length && idTrouvé == false) {
     if (id == datasProduitsAPI[i]._id) {
@@ -439,7 +435,7 @@ function imagePrixAPIsvtId(datasProduitsAPI,id) {
   };
 };
 
-function modifQtProduit() {
+function modifQtProduit(datasProduitsAPI) {
   // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   selectQt = document.querySelectorAll('div.cart__item__content__settings__quantity>input')
   selectQt.forEach(item => {
@@ -451,12 +447,12 @@ function modifQtProduit() {
       // Recupération de l'id et de la couleur depuis le D.O.M via le dataset 
       idDOM = elemProdCorresondant.dataset.id;
       couleurDOM = elemProdCorresondant.dataset.color;
-      // pour chaqque produit du panier 'panierJson'
+      //Pour chaqque produit du panier 'panierJson'
       var i = 0; continuer = true;
       qtProduit = item.valueAsNumber;
       while (i < panierJson.length && continuer == true) {
         if (panierJson[i].codeArt == idDOM && panierJson[i].couleur == couleurDOM) {
-          // si l'id et la couleur sont identiques => Renseigne la Qt
+          // si l'id et la couleur sont identiques => Renseigne la Qt dans le panier
           panierJson[i].qt = qtProduit
           // MAJ de la Qt dans le HTML du D.O.M
           // Récupére l'élément parent contenant l'enfant <p>
@@ -469,11 +465,12 @@ function modifQtProduit() {
             }
           }
           sauvegardePanier();
+          majAffBtCd();
           continuer = false;
         };
         i++
       };
-      majTotauxQtPrix();
+      majTotauxQtPrix(datasProduitsAPI);
     });
   });
 };
@@ -497,7 +494,7 @@ function styleBordureCouleur(couleur) {
 };
 
 //**  */};
-function suppressionProduit() {
+function suppressionProduit(datasProduitsAPI) {
   // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   document.querySelectorAll('.deleteItem').forEach(item => {
     item.addEventListener("click", even => {
@@ -523,7 +520,7 @@ function suppressionProduit() {
           window.location.href = "../html/index.html"
         }
       };
-      majTotauxQtPrix();
+      majTotauxQtPrix(datasProduitsAPI);
       majAffBtCd();
     });
   });
@@ -546,13 +543,13 @@ function supprItemsNullDsPanier() {
   panierJson = JSON.parse(panierLinea);
   sauvegardePanier();
 };
-function majTotauxQtPrix() {
+function majTotauxQtPrix(datasProduitsAPI) {
   // Calcul des totaux en bouclant avec 'panierJson'
   let totalQt = 0; let totalPrix = 0;
   panierJson.forEach(item => {
     totalQt = totalQt + item.qt;
     // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
-    imagePrixAPIsvtId(item.codeArt);
+    imagePrixAPIsvtId(datasProduitsAPI,item.codeArt);
     totalPrix = totalPrix + item.qt * prixProduit;
   });
   // Mise à jour des totaux de Qt et prix dans le D.O.M
@@ -566,12 +563,29 @@ function majAffBtCd() {
   if (validationSaisies()) {
     btnCommande.classList = "yesHover";
     btnCommande.style.backgroundColor = "#2c3e50";
-    btnCommande.title = ""
+    btnCommande.title = "Génére la commande"
   }
   else {
     btnCommande.classList = "noHover";
     btnCommande.style.backgroundColor = "grey";
-    btnCommande.title = "Renseigner le formulaire avant de valider la commande."
+    // Maj de l'infobulle en fonction des erreurs de saisie
+    if (messErrQtProduitNul != "" || messErrProdObsolete != "") {
+      // Préviens d'abord si le produit et obsoléte et/ou si un produit contient une qt =0
+      infoBulle = `*Attention* la commande ne pourra être validée`
+      if (messErrProdObsolete != "") {
+        infoBulle = `${infoBulle}\r
+       - il existe un ou des produit(s) obosoléte(s).`
+      }
+      if (messErrQtProduitNul != "") {
+        infoBulle = `${infoBulle}\r
+       - il existe un ou des produit(s) avec Qté = 0 .`
+      }
+    }
+    else {
+      // Sinon demande de mieux renseigner le formulaire
+      infoBulle = "Finir de renseigner correctement le formulaire."
+    };
+    btnCommande.title = infoBulle;
   }
 };
 function actionBtnCd() {
@@ -630,46 +644,55 @@ function requeteInfoCd() {
       });
   }
   else {
-    //Affichage des erreurs rencontrées qui empeche l'envoie de la commande
-    messErreur = "La commande ne peut-être envoyée car il reste encore une/des erreur(s) suivante(s):";
-    if (messEtatEvolution != "") { messErreur += `\r- ${messEtatEvolution}` };
-    if (messEtatMessErreur != "") { messErreur += `\r- ${messEtatMessErreur}` };
-    if (messEtatSaisiesVides != "") { messErreur += `\r- ${messEtatSaisiesVides}` };
-    alert(messErreur)
+    alert(messErreur);
   };
 };
 // Verification des saisies effectuées
 function validationSaisies() {
   //Verifie qu'il n'y a pas de message d'erreur
-  messErreur = document.querySelectorAll(".cart__order__form__question p");
-  messEtatMessErreur = ""; // Par défaut, on considére qu'il n'y a auncun message d'erreur
-  messErreur.forEach(even => {
+  elemMessErrFormulaire = document.querySelectorAll(".cart__order__form__question p");
+  messErrSaisieFormIncorrecte = ""; // Par défaut, on considére qu'il n'y a auncun message d'erreur
+  elemMessErrFormulaire.forEach(even => {
     if (even.innerText != "") {
       // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
-      messEtatMessErreur = "Il reste une/des saisie(s) non correctement renseignée(s)."
+      messErrSaisieFormIncorrecte = "Il reste une/des saisie(s) non correctement renseignée(s)."
     }
   });
   // Vérifie si il n'y a aucune saisie de renseignée
   champsSaisies = document.querySelectorAll(".cart__order__form__question input");
-  messEtatSaisiesVides = ""; // Par défaut, on considére que toutes les saisies sont faites.
+  messErrSaisieVide = ""; // Par défaut, on considére que toutes les saisies sont faites.
   champsSaisies.forEach(even => {
     if (even.value == '') {
       // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
-      messEtatSaisiesVides = "Il reste une/des saisie(s) à renseigner."
+      messErrSaisieVide = "Il reste une/des saisie(s) à renseigner."
     }
   });
-  // Vérifie si tous les produits sont encore d'actualité
-  messEtatEvolution = "";//Par défaut pas d'evolution avant verification
+
+  messErrProdObsolete = "";//Par défaut pas d'evolution avant verification
+  messErrQtProduitNul = "";//Par défaut toutes les qt de produits sont >0
   panierJson.forEach(item => {
+    // Vérifie si tous les produits sont encore d'actualité
     if (item.evolution != "Idem") {
-      messEtatEvolution = "Un ou des produits sont devenus obsolétes";
+      messErrProdObsolete = "il existe un ou des produit(s) obosoléte(s)";
+    }
+    // Verifie que tous les produits ont une Qt > 0 
+    if (item.qt == 0) {
+      messErrQtProduitNul = "il existe un ou des qt de produit(s) = 0";
     }
   });
+  // Vérifie que tous les qt de produits sont > 0
+
   // Réponse en fonction des verifications
-  if (messEtatEvolution == "" && messEtatMessErreur == "" && messEtatSaisiesVides == "") {
+  if (messErrProdObsolete == "" && messErrSaisieFormIncorrecte == "" && messErrSaisieVide == "" && messErrQtProduitNul == "") {
     return true
   }
   else {
+    //Renseigne les erreurs rencontrées dans l'info bulle du bouton de commande
+    messErreur = "La commande ne peut-être envoyée car il reste encore une/des erreur(s) suivante(s):";
+    if (messErrProdObsolete != "") { messErreur += `\r- ${messErrProdObsolete}` };
+    if (messErrQtProduitNul != "") { messErreur += `\r- ${messErrQtProduitNul}` };
+    if (messErrSaisieFormIncorrecte != "") { messErreur += `\r- ${messErrSaisieFormIncorrecte}` };
+    if (messErrSaisieVide != "") { messErreur += `\r- ${messErrSaisieVide}` };
     return false
   }
 };

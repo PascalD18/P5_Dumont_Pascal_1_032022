@@ -1,32 +1,31 @@
 //localStorage.removeItem("panier");
-
+//localStorage.removeItem("datasProduitsAPI")
 fetch("http://localhost:3000/api/products/")
-
   .then(function (res) {
     if (res.ok) {
       return res.json();
     }
   })
   .then(datasProduitsAPI => {
-    classeBddProduits(datasProduitsAPI);
+    classeBddProduits(datasProduitsAPI)
+    //initdatasProduitsAPI(datasProduitsAPI);
     majElemHtmlDOMavecdatasProduitsAPI(datasProduitsAPI);
     affLienPanier();
-  
   })
   .catch(function (err) {
     // Une erreur est survenue
     console.log("Erreur N°" + err);
     alert("l'erreur" + err + " est survenue sur le serveur. Nous faisons notre possible pour remédier à ce probléme.N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.")
+  });
 
-  })
 /////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
 //Modification des elements HTML avec la methode `..${[valeurs issues du 'panierJson']}..`
-function majElemHtmlDOMavecdatasProduitsAPI(datasProduitsAPI){
+function majElemHtmlDOMavecdatasProduitsAPI(datasProduitsAPI) {
 
   datasProduitsAPI.forEach(item => {
-    document.getElementById("items").innerHTML+=`
+    document.getElementById("items").innerHTML += `
      <a href="../html/product.html?id=${item._id}">
      <article>
       <img src="${item.imageUrl}" alt="${item.name}">
@@ -38,9 +37,9 @@ function majElemHtmlDOMavecdatasProduitsAPI(datasProduitsAPI){
   });
 };
 // Insertion en dynamique de la liste de produits en HTML
-function ajoutListeProduitsHTML(datasProduitsAPI) {
+function ajoutListeProduitsHTML() {
   var etape = "Départ"
-  datasProduitsAPI.forEach(item => { 
+  datasProduitsAPI.forEach(item => {
     if (etape = "Départ") {
       // Balise parent de départ
       var parentListe = document.getElementById("items");

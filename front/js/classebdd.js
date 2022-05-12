@@ -15,8 +15,8 @@ function classeBddProduits(datasProduitsAPI) {
     }
   });
 };
-// Mets la premiere lettre de la 2éme partie du nom de produit en majuscule
 function premLettreNomprodEnMaj(nomProd) {
+  // Mets la premiere lettre de la 2éme partie du nom de produit en majuscule
   // recherche la lettre 'premLettreMaj' à mettre en majuscule 
   // dans le nom 'Kanap [premLettreMaj]... '
   // exp: 'Kanap orthosie' devient 'Kanap Orthesie'

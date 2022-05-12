@@ -8,7 +8,6 @@ const btnAjoutPanier = document.getElementById("addToCart");
 selectQt = document.getElementById("quantity");
 selectCouleur = document.getElementById("colors");
 qtNonVide = false; couleurSelect = false;
-//localStorage.removeItem("panier");
 affEtatBtnAjoutPanier();
 // Requete API sur les produitSelect du produit suivant N° 'id
 fetch("http://localhost:3000/api/products/" + id)
@@ -37,31 +36,18 @@ fetch("http://localhost:3000/api/products/" + id)
 
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
-// Affiche ou non le bouton 'Ajout au  panier'
-function affMessSaisieProduit() {
-    if (couleurSelect == false && qtNonVide == true) {
-        // Si aucune couleur n'est selectionnée et/ou QT = 0
-        // => Masque le bouton 'd'ajout au panier
-        //btnAjoutPanier.value = "disabled";
-        alert("Il faut selectionner une couleur");
-    }
-    else if (qtNonVide == false && couleurSelect == true) {
-        // Sinon affiche le bouton
-        alert("La quantité doit être > 0")
-    }
-    else if (couleurSelect == false && qtNonVide == false) {
-        alert("Il faut selectionner une couleur et La quantité doit être > 0")
-    }
-};
-// Affiche ou non le bouton 'Ajout au  panier'
+// Affiche en grisé ou non le bouton 'Ajouter au panier'
+// Et Maj du message d'erreur en bulle info au survol de la souris
 function affEtatBtnAjoutPanier() {
     if (couleurSelect == true && qtNonVide == true) {
-        // Si aucune couleur n'est selectionnée et/ou QT = 0
+        // Si aucune couleur n'est selectionnée et/ou Qt = 0
         btnAjoutPanier.style.backgroundColor = "#2c3e50";
         btnAjoutPanier.classList = "yesHover";
         btnAjoutPanier.title = "";
     }
     else {
+        //Sinon, si la selection n'est pas compléte
+        //=> Maj e la bulle info au survol de la souris
         btnAjoutPanier.style.backgroundColor = "grey";
         btnAjoutPanier.classList = "noHover";
         if (qtNonVide==true) {
@@ -206,7 +192,7 @@ function majPanier(produitSelect) {
             window.location.href = "../html/cart.html"
         }
         else {
-            affMessSaisieProduit();
+            alert(btnAjoutPanier.title);
         }
     });
 };
