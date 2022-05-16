@@ -32,14 +32,22 @@ function premLettreNomprodEnMaj(nomProd) {
 };
 function affLienPanier() {
   // Gestion affichage bouton panier en fonction état panier
-  // Définie dans le D.O.M le lien 'panier'
-  elemPanier = document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
-  if (localStorage.panier == undefined) {
-      // si le panier est in'existant => N'affiche pas le lien du panier
-      elemPanier.style.display = "none";
-  }
-  else {
-      // Sinon remet le lien du panier
-      elemPanier.style.display = "";
+  // Parcours tous les liens contenus dans le parent de classe 'limiteWidthBlock'
+  // dans le D.O.M
+  elemPanier = document.querySelectorAll(".limitedWidthBlock>nav a")
+  var i = 0;
+  while (i < elemPanier.length) {
+    if (elemPanier[i].innerHTML == 'Panier') {
+      // Pour le lien concernant le panier
+      if (localStorage.panier == undefined) {
+        // si le panier est inexistant => N'affiche pas le lien du panier
+        elemPanier[i].style.display = "none"
+      }
+      else {
+        // Sinon laisse affiché le lien du panier
+        elemPanier[i].style.display = "";
+      };
+    };
+    i++;
   };
-}
+};

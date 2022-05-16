@@ -118,8 +118,7 @@ function majElemsHTMLsvtProduitselect(produitSelect) {
 function majOptionsCouleur(couleursProduitSelect) {
     var i = 0; var j = 0;
     couleursProduitSelect.forEach(couleur => {
-        //sauvegardePanier();
-        var enfantElemCouleur = document.createElement("option");
+       var enfantElemCouleur = document.createElement("option");
         enfantElemCouleur.id = "couleur" + i;
         if (j == 0) {
             // Au début, Ajoute en premier l'option par défaut
