@@ -8,7 +8,6 @@ const btnAjoutPanier = document.getElementById("addToCart");
 selectQt = document.getElementById("quantity");
 selectCouleur = document.getElementById("colors");
 qtNonVide = false; couleurSelect = false;
-affEtatBtnAjoutPanier();
 // Requete API sur les produitSelect du produit suivant N° 'id
 fetch("http://localhost:3000/api/products/" + id)
     .then(function (res) {
@@ -18,10 +17,12 @@ fetch("http://localhost:3000/api/products/" + id)
     })
     .then(produitSelect => {
         if (produitSelect != undefined) {
-            majElemsProduitHTML(produitSelect);
+            majElemsHTMLsvtProduitselect(produitSelect);
+            affLienPanier();
+            initPanierSiExiste();
+            affEtatBtnAjoutPanier();
             modifQt();
             choixCouleur();
-            initPanier();
             majPanier(produitSelect);
         }
         else {
@@ -94,8 +95,8 @@ function modifQt() {
         affEtatBtnAjoutPanier();
     });
 };
-// Recuperation ou réinitialisation du panier
-function initPanier() {
+function initPanierSiExiste() {
+    // Recuperation du panier
     if (localStorage.panier != undefined) {
         // Récupération si panier déjà en cours
         localStorage.getItem("panier");
@@ -103,7 +104,7 @@ function initPanier() {
         panierJson = JSON.parse(localStorage.panier);
     }
 }
-function majElemsProduitHTML(produitSelect) {
+function majElemsHTMLsvtProduitselect(produitSelect) {
     // MAJ du prix
     document.getElementById("price").innerHTML = produitSelect.price;
     // MAJ de 'description'
@@ -111,7 +112,6 @@ function majElemsProduitHTML(produitSelect) {
     // MAJ des options de couleur
     var couleursProduitSelect = produitSelect.colors;
     majOptionsCouleur(couleursProduitSelect);
-    affLienPanier();
 };
 
 // Renseigne l'Option des couleurs //
@@ -147,29 +147,12 @@ function majOptionsCouleur(couleursProduitSelect) {
         };
     });
 };
-// Gestion affichage bouton panier en fonction état panier
-function affLienPanier() {
-    // Définie dans le D.O.M le lien 'panier'
-    elemPanier = document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
-    if (localStorage.panier == undefined) {
-        // si le panier est in'existant => N'affiche pas le lien du panier
-        elemPanier.style.display = "none";
-    }
-    else if (localStorage.panier.length == 2) {
-        // Si le panier est existant mais vide => N'affiche pas le lien du panier
-        elemPanier.style.display = "none";
-    }
-    else {
-        // Sinon remet le lien du panier
-        elemPanier.style.display = "";
-    };
-}
 // MAJ du panier
 function majPanier(produitSelect) {
     btnAjoutPanier.addEventListener("click", function (event) {
         event.preventDefault();
-        nomProd=premLettreNomprodEnMaj(produitSelect.name);
         if (couleurSelect && qtNonVide) {
+            nomProd=premLettreNomprodEnMaj(produitSelect.name);
             // Si une couleur selectionnée et Qt >0
             if (localStorage.panier == undefined) {
                 // Si panier inexistant => MAJ 1er data du panier
@@ -182,6 +165,7 @@ function majPanier(produitSelect) {
                     // Si le produit existe déjà dans le panier => MAJ qt uniquement
                     newQt = qtProduit + panierJson[itemProduit].qt;
                     panierJson[itemProduit].qt = newQt;
+
                 }
                 else {
                     // Sinon, ajoute le produit
@@ -221,17 +205,4 @@ function verifSiProduitExisteDsPanier() {
         };
         i++
     };
-};
-// Mets la premiere lettre de la 2éme partie du nom de produit en majuscule
-function premLettreNomprodEnMaj(nomProd) {
-    // recherche la lettre 'premLettreMaj' à mettre en majuscule  
-    posiSep = nomProd.indexOf(" ");
-    premLettreMaj = nomProd.substring(posiSep + 1, posiSep + 2);
-    // La mets systématiquement en majuscule
-    premLettreMaj = premLettreMaj.toUpperCase();
-    // Reconstitue le nom complet
-    debNom = nomProd.substring(posiSep + 1, 0);
-    finNom = nomProd.substring(nomProd.length, posiSep + 2);
-    nomProduit = debNom + premLettreMaj + finNom;
-    return nomProduit;
 };

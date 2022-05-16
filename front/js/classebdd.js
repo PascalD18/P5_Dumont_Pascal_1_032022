@@ -30,3 +30,16 @@ function premLettreNomprodEnMaj(nomProd) {
   nomProd = debNom + premLettreMaj + finNom;// Concaténe début + lettreMajuscule + fin
   return nomProd;
 };
+function affLienPanier() {
+  // Gestion affichage bouton panier en fonction état panier
+  // Définie dans le D.O.M le lien 'panier'
+  elemPanier = document.querySelectorAll(".limitedWidthBlock>nav>ul>a li")[1]
+  if (localStorage.panier == undefined) {
+      // si le panier est in'existant => N'affiche pas le lien du panier
+      elemPanier.style.display = "none";
+  }
+  else {
+      // Sinon remet le lien du panier
+      elemPanier.style.display = "";
+  };
+}

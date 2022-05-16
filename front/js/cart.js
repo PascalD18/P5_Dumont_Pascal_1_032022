@@ -9,11 +9,11 @@ fetch("http://localhost:3000/api/products/")
     initialisation(datasProduitsAPI);
     MajElemHtmlDOMavecPanier(datasProduitsAPI);
     majTotauxQtPrix(datasProduitsAPI);
-    modifQtProduit(datasProduitsAPI);
     suppressionProduit(datasProduitsAPI);
+    modifQtProduit(datasProduitsAPI);
     controlSaisieFormulaire();
     controlValidationSaisiesFormulaire();
-    btnCommande = document.getElementById("order");// Variable globale, utilisées dans les 2 fonctions precedentes
+    btnCommande = document.getElementById("order");// Variable globale, utilisées dans les 2 fonctions suivantes
     actionBtnCd();
     majAffBtCd();
   })
@@ -26,13 +26,14 @@ fetch("http://localhost:3000/api/products/")
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
 function initialisation(datasProduitsAPI) {
-  //Définie l'etat des saisie non valides par défaut
-  prenomValide = false; nomValide = false; adresseValide = false;
-  villeValide = false; emailValide = false;
-  //Initialise les saisies
-  prenom = ""; nom = ""; adresse = "";
-  ville = ""; email = "";
-  // Récupére le panier déjà existant avec le locaStorage
+ // //Définie l'etat des saisie non valides par défaut
+ // prenomValide = false; nomValide = false; adresseValide = false;
+ // villeValide = false; emailValide = false;
+ 
+// //Initialise les saisies
+//  prenom = ""; nom = ""; adresse = "";
+//  ville = ""; //email = "";
+//  // Récupére le panier déjà existant avec le locaStorage
   panierLinea = localStorage.getItem("panier");
   panierJson = JSON.parse(panierLinea);
 
@@ -320,7 +321,6 @@ function controlValidationSaisiesFormulaire() {
           // Sinon, efface le message d'erreur 
           elemMessErrSaisie.innerText = "";
         }
-        majAffBtCd();
       }
       if (idElemFocusPerdu == "address") {
         compRegex = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g;
@@ -334,7 +334,6 @@ function controlValidationSaisiesFormulaire() {
           // Sinon, efface le message d'erreur 
           elemMessErrSaisie.innerText = "";
         }
-        majAffBtCd();
       }
       if (idElemFocusPerdu == "city") {
         compRegex = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g;
@@ -348,7 +347,6 @@ function controlValidationSaisiesFormulaire() {
           // Sinon, efface le message d'erreur 
           elemMessErrSaisie.innerText = "";
         }
-        majAffBtCd();
       }
       if (idElemFocusPerdu == "email") {
         compRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -362,8 +360,8 @@ function controlValidationSaisiesFormulaire() {
           // Sinon, efface le message d'erreur 
           elemMessErrSaisie.innerText = "";
         }
-        majAffBtCd();
       }
+      majAffBtCd();
     }
   });
 };
@@ -464,12 +462,13 @@ function modifQtProduit(datasProduitsAPI) {
               enfant.innerText = "Qté : " + qtProduit;
             }
           }
-          sauvegardePanier();
-          majAffBtCd();
+          
           continuer = false;
         };
         i++
       };
+      sauvegardePanier();
+      majAffBtCd();
       majTotauxQtPrix(datasProduitsAPI);
     });
   });
@@ -512,11 +511,14 @@ function suppressionProduit(datasProduitsAPI) {
       while (i < panierJson.length && continuer == true) {
         if (panierJson[i].codeArt == idDOM && panierJson[i].couleur == couleurDOM) {
           delete panierJson[i];
-          supprItemsNullDsPanier();
+          supprItemsNullDsPanier()
+          if (panierJson.length == 0){
+            localStorage.removeItem("panier");
+          }
           continuer = false;
         };
         i++
-        if (panierJson.length == 0) {
+        if (localStorage.panier == undefined) {
           window.location.href = "../html/index.html"
         }
       };
@@ -549,7 +551,7 @@ function majTotauxQtPrix(datasProduitsAPI) {
   panierJson.forEach(item => {
     totalQt = totalQt + item.qt;
     // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
-    imagePrixAPIsvtId(datasProduitsAPI,item.codeArt);
+    imagePrixAPIsvtId(datasProduitsAPI, item.codeArt);
     totalPrix = totalPrix + item.qt * prixProduit;
   });
   // Mise à jour des totaux de Qt et prix dans le D.O.M
