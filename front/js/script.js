@@ -1,4 +1,5 @@
 //localStorage.removeItem("panier");
+let bddProduitsServer;
 fetch("http://localhost:3000/api/products/")
   .then(function (res) {
     if (res.ok) {
@@ -6,7 +7,8 @@ fetch("http://localhost:3000/api/products/")
     }
   })
   .then(function (datasProduitsAPI) {
-    classeBddProduits(datasProduitsAPI)
+    bddProduitsServer=datasProduitsAPI;
+    classeBddProduits()
     majElemsHtmlDOMsvtBddproduits(datasProduitsAPI);
     affLienPanier();
   })

@@ -1,13 +1,13 @@
-function classeBddProduits(datasProduitsAPI) {
+function classeBddProduits() {
   // Classement des proppriétés 'name' dans l'ordre alphabétique 
   // 1) Met une majuscule à chaque début de nom de canapé
   // exemple : Kanap orthosie devient 'Kanap Orthosie'
-  datasProduitsAPI.forEach(item => {
+  bddProduitsServer.forEach(item => {
     item.name = premLettreNomprodEnMaj(item.name);
   });
   //2) Trie dans l'ordre alphabétique les propriétés 'name'
   //   dans l'objet Json 'datasProduitsAPI'
-  datasProduitsAPI.sort(function (a, b) {
+  bddProduitsServer.sort(function (a, b) {
     if (a.name < b.name) {
       return -1;
     } else {
