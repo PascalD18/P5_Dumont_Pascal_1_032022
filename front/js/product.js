@@ -1,13 +1,4 @@
-// Lecture du N° 'id' avec l'URL envoyé par la page 'index.html'
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
-const id = urlParams.get('id');
-// Identifie dans le D.O.M le bouton 'Ajouter au panier'
-const btnAjoutPanier = document.getElementById("addToCart");
-// Identifie la selection de la Qt
-selectQt = document.getElementById("quantity");
-selectCouleur = document.getElementById("colors");
-qtNonVide = false; couleurSelect = false;
+initialisation();
 // Requete API sur les produitSelect du produit suivant N° 'id
 fetch("http://localhost:3000/api/products/" + id)
     .then(function (res) {
@@ -26,7 +17,8 @@ fetch("http://localhost:3000/api/products/" + id)
             majPanier(produitSelect);
         }
         else {
-            alert("La page 'products.html', ne peut-être ouverte directement.Il faut avoir selectionner un produit avec la page d'acceuil.")
+            alert(`La page 'products.html', ne peut-être ouverte directement.
+            Il faut avoir selectionner un produit avec la page d'acceuil.`)
             window.location.href = "../html/index.html"
         }
     })
@@ -37,13 +29,24 @@ fetch("http://localhost:3000/api/products/" + id)
 
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
-// Affiche en grisé ou non le bouton 'Ajouter au panier'
-// Et Maj du message d'erreur en bulle info au survol de la souris
+function initialisation(){
+// Lecture du N° 'id' avec l'URL envoyé par la page 'index.html'
+var queryString = window.location.search;
+ urlParams = new URLSearchParams(queryString);
+ id = urlParams.get('id');
+ // Par défaut : Qt=0 et aucune couleur de selectionnée
+ // On initialise cet état dans les 2 indicateurs suivants:
+  qtNonVide=false; couleurSelect = false;
+ // Définition de l'élement bouton 'Ajouter au panier'
+  btnAjoutPanier = document.getElementById("addToCart");
+}
 function affEtatBtnAjoutPanier() {
-    if (couleurSelect == true && qtNonVide == true) {
-        // Si aucune couleur n'est selectionnée et/ou Qt = 0
+// Affiche en grisé ou non le bouton 'Ajouter au panier'
+// Et Maj du message d'erreur en bulle info au survol de la souris 
+   if (couleurSelect == true && qtNonVide == true) {
+      // Si une couleur est selectionnée et Qt > 0
         btnAjoutPanier.style.backgroundColor = "#2c3e50";
-        btnAjoutPanier.classList = "yesHover";
+        btnAjoutPanier.classList = "yesHover"; 
         btnAjoutPanier.title = "";
     }
     else {
@@ -62,10 +65,13 @@ function affEtatBtnAjoutPanier() {
         }
     }
 };
-// Selection d'une couleur
+
 function choixCouleur() {
-    // Lit la couleur selectionnée
+    // Selection d'une couleur
+    // Initialise l'élement concernant la liste déroulante
+    selectCouleur = document.getElementById("colors");
     selectCouleur.addEventListener("change", function (event) {
+    // A chaque modification de l'élément, lit la couleur selectionnée
         event.preventDefault();
         couleur = selectCouleur.value;
         nbCars = couleur.length;
@@ -82,6 +88,8 @@ function choixCouleur() {
 };
 // Modification Qt
 function modifQt() {
+    qtNonVide = false;// Par défaut
+    selectQt = document.getElementById("quantity");
     selectQt.addEventListener("change", function (event) {
         event.preventDefault();
         // Qt considérée comme > 0 par défault

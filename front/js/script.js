@@ -1,9 +1,8 @@
 //localStorage.removeItem("panier");
-
 fetch("http://localhost:3000/api/products/")
   .then(function (res) {
     if (res.ok) {
-      return res.json();
+     return res.json();
     }
   })
   .then(function (datasProduitsAPI) {
@@ -15,7 +14,7 @@ fetch("http://localhost:3000/api/products/")
     // Une erreur est survenue
     console.log("Erreur N°" + err);
     alert("l'erreur" + err + " est survenue sur le serveur. Nous faisons notre possible pour remédier à ce probléme.N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.")
-  })
+  });
 /////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
