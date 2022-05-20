@@ -1,12 +1,12 @@
 function classeBddProduits() {
   // Classement des proppriétés 'name' dans l'ordre alphabétique 
-  // 1) Met une majuscule à chaque début de nom de canapé
+  // Met une majuscule à chaque début de nom de canapé
   // exemple : Kanap orthosie devient 'Kanap Orthosie'
   bddProduitsServer.forEach(item => {
     item.name = premLettreNomprodEnMaj(item.name);
   });
-  //2) Trie dans l'ordre alphabétique les propriétés 'name'
-  //   dans l'objet Json 'datasProduitsAPI'
+  //Trie dans l'ordre alphabétique les propriétés 'name'
+  // dans l'objet Json 'datasProduitsAPI'
   bddProduitsServer.sort(function (a, b) {
     if (a.name < b.name) {
       return -1;
@@ -31,23 +31,15 @@ function premLettreNomprodEnMaj(nomProd) {
   return nomProd;
 };
 function affLienPanier() {
-  // Gestion affichage bouton panier en fonction état panier
-  // Parcours tous les liens contenus dans le parent de classe 'limiteWidthBlock'
-  // dans le D.O.M
-  elemPanier = document.querySelectorAll(".limitedWidthBlock>nav a")
-  var i = 0;
-  while (i < elemPanier.length) {
-    if (elemPanier[i].innerHTML == 'Panier') {
-      // Pour le lien concernant le panier
-      if (localStorage.panier == undefined) {
-        // si le panier est inexistant => N'affiche pas le lien du panier
-        elemPanier[i].style.display = "none"
-      }
-      else {
-        // Sinon laisse affiché le lien du panier
-        elemPanier[i].style.display = "";
-      };
-    };
-    i++;
+  // Affichage du lien 'Panier' en fonction de son existance ou non dans localStorage
+  // Récupére le lien panier
+  elemPanier = document.getElementsByClassName("panier")
+  if (localStorage.panier == undefined) {
+    // si le panier est inexistant => N'affiche pas le lien du panier
+    elemPanier[0].style.display = "none"
+  }
+  else {
+    // Sinon laisse affiché le lien du panier
+    elemPanier[0].style.display = "";
   };
 };

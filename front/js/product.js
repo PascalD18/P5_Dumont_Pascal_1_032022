@@ -1,22 +1,30 @@
+// Lecture de 'id' via l'url envoyé par la page 'index.html'
+// initialisation par défaut des indicateurs de l'état de selection couleur et/ou Qt
+// Initialisation du bouton 'Ajouter au panier''
 initialisation();
-// Requete API sur les produitSelect du produit suivant N° 'id
+// Initialise le panier si il existe
+initPanierSiExiste();
+//Affiche ou non le lien du panier en fonction de son existance ou non dans localStorage
+affLienPanier();
+// Affiche le bouton 'Ajouter au panier' en grisé ou en bleu + ombrage selon l'état des saisies
+affEtatBtnAjoutPanier();
+// Requete API d'un produit en fonction de son 'id'
+let produitSelect; // définie le produit choisi en fonction de son id
 fetch("http://localhost:3000/api/products/" + id)
-    .then(function (res) {
-        if (res.ok) {
-            return res.json();
+    .then(function (reponse) {
+        if (reponse.ok) {
+            return reponse.json();
         };
     })
-    .then(produitSelect => {
-        if (produitSelect != undefined) {
-            majElemsHTMLsvtProduitselect(produitSelect);
-            affLienPanier();
-            initPanierSiExiste();
-            affEtatBtnAjoutPanier();
-            modifQt();
-            choixCouleur();
-            majPanier(produitSelect);
+    .then(reponse => {
+        if (reponse != undefined) {
+            // Si la réponse de l'API est identifiée comme étant un produit
+            // => MAJ en dynamique les éléments correspondants aux caractéristiques du produit 
+            produitSelect=reponse;
+            majElemsHTMLsvtProduitselect();
         }
         else {
+            // Sinon, affiche un message d'erreur, et retour à la page d'acceuil
             alert(`La page 'products.html', ne peut-être ouverte directement.
             Il faut avoir selectionner un produit avec la page d'acceuil.`)
             window.location.href = "../html/index.html"
@@ -25,8 +33,18 @@ fetch("http://localhost:3000/api/products/" + id)
     .catch(function (err) {
         // Une erreur est survenue
         console.log("Erreur N°" + err);
+        alert(`l'erreur` + err + ` est survenue sur le serveur.
+        Nous faisons notre possible pour remédier à ce probléme.
+        N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.
+        Merci pour votre comprehension.`)
     });
-
+    // Mise à jour de la page lorsque l'on change la Qt d'un prouit
+    modifQt();
+    // Mise à jour de la page lorsque l'on selectionne une couleur
+    choixCouleur();
+    // Action du bouton 'Ajouter au panier'
+    // si clic, ou selection puis appui sur touche 'enter'
+    actionBoutonAjoutPanier();
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
 function initialisation(){
@@ -65,7 +83,14 @@ function affEtatBtnAjoutPanier() {
         }
     }
 };
-
+function initPanierSiExiste(){
+ // Si le panier existe dans localStorage 
+ // le charge dans 'panierJson'
+ if (localStorage.panier != undefined){
+    panierLinea = localStorage.getItem("panier");
+    panierJson = JSON.parse(panierLinea);
+ }
+}
 function choixCouleur() {
     // Selection d'une couleur
     // Initialise l'élement concernant la liste déroulante
@@ -103,16 +128,7 @@ function modifQt() {
         affEtatBtnAjoutPanier();
     });
 };
-function initPanierSiExiste() {
-    // Recuperation du panier
-    if (localStorage.panier != undefined) {
-        // Récupération si panier déjà en cours
-        localStorage.getItem("panier");
-        //Conversion en format json
-        panierJson = JSON.parse(localStorage.panier);
-    }
-}
-function majElemsHTMLsvtProduitselect(produitSelect) {
+function majElemsHTMLsvtProduitselect() {
     // MAJ du prix
     document.getElementById("price").innerHTML = produitSelect.price;
     // MAJ de 'description'
@@ -155,7 +171,7 @@ function majOptionsCouleur(couleursProduitSelect) {
     });
 };
 // MAJ du panier
-function majPanier(produitSelect) {
+function actionBoutonAjoutPanier() {
     btnAjoutPanier.addEventListener("click", function (event) {
         event.preventDefault();
         if (couleurSelect && qtNonVide) {

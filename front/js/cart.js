@@ -1,76 +1,98 @@
+//Définition des variables globales
+//Déclare la variable l'ojet json  = Panier des produits
+let panierJson;
+// Déclare l'élément correspondant comme bouton de commande 
+const btnCommande = document.getElementById("order");
+// Charge la base de donnée des produits 'bddProuitsServer depuis l'API
+// Si l'utilisateur ouvre directement la page 'cart.html' concernant le panier.
+// et que entre-temps les produits ont évolués sur le serveur
+// => Si cette base de données reste en locaStorage, une évolution éventuelle des produits
+// sur le server, ne sera pas prise en compte.
 fetch("http://localhost:3000/api/products/")
-  .then(function (res) {
-    if (res.ok) {
-      return res.json();
+  .then(function (reponse) {
+    if (reponse.ok) {
+      return reponse.json();
     }
   })
-  .then(datasProduitsAPI => {
-    classeBddProduits(datasProduitsAPI);
-    initialisation(datasProduitsAPI);
-    MajElemHtmlDOMavecPanier(datasProduitsAPI);
-    majTotauxQtPrix(datasProduitsAPI);
-    suppressionProduit(datasProduitsAPI);
-    modifQtProduit(datasProduitsAPI);
-    controlSaisieFormulaire();
-    controlValidationSaisiesFormulaire();
-    btnCommande = document.getElementById("order");// Variable globale, utilisées dans les 2 fonctions suivantes
-    actionBtnCd();
-    majAffBtCd();
+  .then (reponse => {
+    bddProduitsServer = reponse;
+  // Définie 'panierJson' à partir de localStorage
+  // En ajoutant la propriété 'evolution' pour prendre en compte les produits qui peuvent être devenus obsolétes
+  // Définie également 'btnCommande' qui sera utilisé dans des fonctions à venir
+  initialisation();
+  // Classe la base de données des produits issue du serveur
+  classeBddProduits();
+  // Affiche en dynamique les produits dans le html du D.O.M
+  MajElemHtmlDOMavecPanier();
+  // Detecte la modification de la qt d'un produit
+  // et la met à jour dans le panier 'panierJson'
+  modifQtProduit();
+  // Detecte la suppression d'un produit 
+  // Le supprimme du html du D.OM et également dans le panier 'panierJson'
+  suppressionProduit();
+  // Calcule et affiche le prix total de tous les produits du panier
+  majTotauxQtPrix();
+  // Gére l'affichage du bouton commande en fonction de :
+  // - l'etat des saisies du formulaire
+  // - Si il existe d'éventuels prouits obsolétes contenus dans le panier 'panierJson'
+  // - Si les qt des produits du paniers sont tous >0
+  affEtatBtnCdSvtProduitsEtFormulaire();
   })
   .catch(function (err) {
     // Une erreur est survenue
     console.log("Erreur N°" + err);
-    alert("l'erreur" + err + " est survenue sur le serveur. Nous faisons notre possible pour remédier à ce probléme.N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.")
+    alert(`l'erreur` + err + ` est survenue sur le serveur.
+    Nous faisons notre possible pour remédier à ce probléme.
+    N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.
+    Merci pour votre comprehension.`)
   });
+
+  // Controle chaque saisie du formulaire  en temps réel 
+  controlSaisieFormulaire();
+  // Vérifie et identifie les erreurs de sasies et l'état de remplissage du formulaire
+  controlValidationSaisiesFormulaire();
+  // Déclenche la commande si le panier est à jour, et correctement renseigné
+  actionBtnCd();
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
-function initialisation(datasProduitsAPI) {
- // //Définie l'etat des saisie non valides par défaut
- // prenomValide = false; nomValide = false; adresseValide = false;
- // villeValide = false; emailValide = false;
- 
-// //Initialise les saisies
-//  prenom = ""; nom = ""; adresse = "";
-//  ville = ""; //email = "";
-//  // Récupére le panier déjà existant avec le locaStorage
+function initialisation() {
+ // Récupére le panier déjà existant avec le locaStorage
   panierLinea = localStorage.getItem("panier");
   panierJson = JSON.parse(panierLinea);
 
   // ***********************************************************************
   // SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER 
-  // ENCORE CONTENUS DANS LE PANIER QUI N'AURAIT PAS CHANGÉ DEPUIS LONGTEMPS
-  //datasProduitsAPI[1]._id = "1234";
-  datasProduitsAPI[2].colors[0] = "x";
+      bddProduitsServer[1]._id = "1234";
+      bddProduitsServer[2].colors[0] = "x";
   // ************************************************************************
 
-  //Verifie si le panier est toujours d'actualité par rapport à 'datasProduitsAPI'
+  // Verifie si le panier n'a pas de produits obsoletes par rapport à 'bddProduitsServer'
   panierJson.forEach(i => {
-    idOk = false; couleurOk = false;
+    idOk = false; couleurOk = false;  
     var j = 0; continuer = true;
-    while (j < datasProduitsAPI.length && continuer == true) {
-      if (i.codeArt == datasProduitsAPI[j]._id) {
+    while (j < bddProduitsServer.length && continuer == true) {
+      if (i.codeArt == bddProduitsServer[j]._id) {
         idOk = true; continuer = false;
       }
-      if (j < datasProduitsAPI.length && continuer) {
+      if (j < bddProduitsServer.length && continuer) {
         j++;
       }
     };
     if (idOk == true) {
-      // Si le produit du panier existe bien dans 'datasProduitsAPI'
+      // Si le produit du panier existe bien dans 'bddProduitsServer'
       // => Vérifie que la couleur existe encore
       var k = 0; continuer = true;
-      while (k < datasProduitsAPI[j].colors.length && continuer) {
-        if (i.couleur == datasProduitsAPI[j].colors[k]) {
+      while (k < bddProduitsServer[j].colors.length && continuer) {
+        if (i.couleur == bddProduitsServer[j].colors[k]) {
           couleurOk = true; continuer = false;
         }
-        if (k < datasProduitsAPI[j].colors.length && continuer) {
+        if (k < bddProduitsServer[j].colors.length && continuer) {
           k++;
         }
-
       }
     }
-    //Maj de l'évoution eventuelle du produit dans la propriété 'evolution'
+    //Maj de l'évolution eventuelle du produit avec la propriété 'evolution'
     if (idOk && couleurOk) {
       i.evolution = "Idem";
     }
@@ -83,59 +105,69 @@ function initialisation(datasProduitsAPI) {
   });
   sauvegardePanier();
 };
-function MajElemHtmlDOMavecPanier(datasProduitsAPI) {
+function MajElemHtmlDOMavecPanier() {
   var item = 0;
   while (item < panierJson.length) {
+    // Pour chaque produit contenu dans le panier 'panierJson'
     // MAJ des elements HTML du D.O.M pour chaque produit contenu dans le panier 'panierJson'
-    // Récupére les données à partir du 'panierJson' issu du localStorage
+    // 1) Preparation des données avant la modification en dynamique
+    // 1-1) Chargement des données d'origine à partir du 'panierJson' issu du localStorage
     id = panierJson[item].codeArt;
-    // Affichage de certaines données en fonction de l'évolution du produit par rapport au panier existant
-    // 'nomProdHTML', 'couleur' et 'prixProduit' idems à celui contenu dans 'panierJson'
+    //    Affichage de certaines données en fonction de l'évolution du produit par rapport au panier existant
+    //    'nomProdHTML', 'couleur' et 'prixProduit' idems à celui contenu dans 'panierJson'
     nomProdHTML = panierJson[item].nomProd;
     couleurHTML = panierJson[item].couleur;
     prixProduit = panierJson[item].prixProduit;
-    // Definit le style à ajouter dans l'élément <img> pour définir la bordure de la couleur du canapé
+    //    Definit le style à ajouter dans l'élément <img> pour définir la bordure de la couleur du canapé
     styleBordureCouleur(panierJson[item].couleur);
-    // Recupére l'addresse Url de l'image, et le prix.
-    imagePrixAPIsvtId(datasProduitsAPI, id);
-    //Par défaut on affiche sans style particulier
+    //    Charge l'addresse Url de l'image, et le prix.
+    imagePrixAPIsvtId(id);
+    // 1-2) MAJ du style et modification éventuelle des données d'origines précédentes 
+    //      en fonction de la proprieté 'evolution'
+    //      Par défaut on affiche sans style particulier
     styleNomProdHTML = ""; styleCouleurHTML = "";
-    //Si il existe une évolution, on affiche rouge sur fond jaune
+    
     if (panierJson[item].evolution == "Couleur OBSOLETE") {
-      //Si la couleur est obsoléte on l'indique avec 'couleurHTML'
+    //   1-2-1) Cas ou il existe une évolution, uniquement sur la couleur => Modification de 'couleurHTML'
+    //    => 1-2-1-1) On indique que la couleur est obsoléte
       couleurHTML = "La couleur " + panierJson[item].couleur + " est OBSOLETE";
-      //Et on l'affiche avec couleur rouge sur fond jaune
+    //       1-2-1-2) On utilise un style de couleur rouge sur fond jaune
       styleCouleurHTML = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
-      //On met le prix du produit à zero pour ne pas influencer le calcul du prix total
+    //       1-2-1-3) On met le prix du produit à zero pour ne pas influencer le calcul du prix total
       prixProduit = 0;
     }
     else if (panierJson[item].evolution == "Id OBSOLETE") {
-      //Si le produit est obsoléte, on l'indique avec 'nomProdHTML'
+    //    1-2-2) Cas ou le produit est obsoléte
+    //    => 1-2-2-1) Modification de 'nomProdHTML'
       nomProdHTML = "Le produit " + panierJson[item].nomProd + " est devenu OBSOLETE";
-      //Et on affiche avec couleur rouge sur fond jaune
+    //        1-2-2-2) On utilise un style de couleur rouge sur fond jaune
       styleNomProdHTML = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
-      //On met le prix du produit à zero pour ne pas influencer le calcul du prix total
+    //      1-2-2-3) On met le prix du produit à zero pour ne pas influencer le calcul du prix total
       prixProduit = 0;
     }
+    //      1-2-2-4) Affichage du la selection de la qt ( element <input>)
+    //               uniquement si le produit n'est pas obosoléte
     if (panierJson[item].evolution == "Idem") {
-      // Si le produit n'est pas obsoléte => on laisse l'affichage de la Qt du produit
-      afficheQtProduit = "";
+    //      1-2-2-4-1) Si le produit n'est pas obsoléte => Pas de masquage de la selection de qt
+      masqueSelectQtProd = "";
     }
     else {
-      // sinon on masque l'élément HTML concernant la quantité de produit
-      afficheQtProduit = `style ="display: none;"`
+    //      1-2-2-4-2) Sinon on masque l'élément HTML concernant la selection des qt 
+    //                 Ne masque pas la qt d'origne, et évite de la modifier
+      masqueSelectQtProd = `style ="display: none;"`
     }
+    //      1-2-2-5) Charge la qt du produit 
     qtProduit = panierJson[item].qt;
-    // Methode 1 avec création, maj, et insertion des éléments concernant chaque produit
-    // (d'aprés le cours 'modifiez le DOM' )
-    //**MajElemHtmlDOMavecPanierMeth1(item)
-    // Méthode 2, en écrivant directement tous les éléments concernant chaque produit
-    MajElemHtmlDOMavecPanierMeth2(item)
+    // 2) Modification dynamique avec la prise en compte des données
+    //    définies et chargées en fonction des datas contenues dans le panier
+     MajElemHtmlDOMavecPanierMeth2(item)
     item++
   };
+  affEtatBtnCdSvtProduitsEtFormulaire();
 }
 function MajElemHtmlDOMavecPanierMeth1(item) {
   // Affichage du produit 'panierJson[item]'
+  // en utilisant la méthode d'API DOM HTML
   // Par défaut, considére le produit non obsoléte
   produitOk = true;
   // Avec la méthode de manipulation des éléments du HTML dans le D.O.M
@@ -149,7 +181,7 @@ function MajElemHtmlDOMavecPanierMeth1(item) {
   // </article> 
   // Renseigne 'id' et 'color' dans la balise <article> avec [data-]
   enfant.dataset.id = id;
-  enfant.dataset.color = couleur;
+  enfant.dataset.color = couleurHTML;
   // On obtient :
   // <article class="cart__item" data-id="[id]" data-color ="[couleur]">
   // Ajoute l'élément <div> dans l'élément <article>
@@ -260,8 +292,7 @@ function MajElemHtmlDOMavecPanierMeth1(item) {
 };
 function MajElemHtmlDOMavecPanierMeth2(item) {
   // Mise a jour des elements HTML du D.O.M concernant les produits
-  // en écrivant en une seule fois tous les éléments en une fois concernant chaque produit
-  //  test = productJson.codeArt;
+  // en écrivant directement le HTML et en y insérant les datas corresdant à chaque produit contenu dans le panier
   document.querySelector("#cart__items").innerHTML +=
     `<article class="cart__item" data-id="${id}" data-color="${panierJson[item].couleur}">
     <div class="cart__item__img">
@@ -276,7 +307,7 @@ function MajElemHtmlDOMavecPanierMeth2(item) {
      <div class="cart__item__content__settings">
        <div class="cart__item__content__settings__quantity">
           <p>Qté : ${panierJson[item].qt}</p>
-         <input ${afficheQtProduit} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${panierJson[item].qt}>
+         <input ${masqueSelectQtProd} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${panierJson[item].qt}>
        </div>
        <div class="cart__item__content__settings__delete">
          <p class="deleteItem">Supprimer</p>
@@ -284,11 +315,10 @@ function MajElemHtmlDOMavecPanierMeth2(item) {
      </div>
     </div>
   </article>`
-
-}
-// A chaque sortie de focus
-// Vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
+};
 function controlValidationSaisiesFormulaire() {
+  // A chaque sortie de focus
+  // Vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
   document.addEventListener("focusout", even => {
     even.preventDefault();
     elemFocusPerdu = even.target;
@@ -307,7 +337,7 @@ function controlValidationSaisiesFormulaire() {
           // Sinon, efface le message d'erreur 
           elemMessErrSaisie.innerText = "";
         }
-        majAffBtCd();
+        affEtatBtnCdSvtProduitsEtFormulaire();
       }
       if (idElemFocusPerdu == "lastName") {
         compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
@@ -361,7 +391,7 @@ function controlValidationSaisiesFormulaire() {
           elemMessErrSaisie.innerText = "";
         }
       }
-      majAffBtCd();
+      affEtatBtnCdSvtProduitsEtFormulaire();
     }
   });
 };
@@ -394,6 +424,7 @@ function controlSaisieFormulaire() {
         valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex);
       };
     };
+    affEtatBtnCdSvtProduitsEtFormulaire();
   });
 }
 // affiche la saisie en cours en vert ou rouge selon la validité
@@ -414,14 +445,14 @@ function valideSvtRegex(elem, contenuSaisie, compRegex) {
   };
 };
 
-// Récupére 'imageURLProduit' et 'prixProduit' issus des datas des produits de l'API 'datasProduitsAPI'
+// Récupére 'imageURLProduit' et 'prixProduit' issus des datas des produits de l'API 'bddProduitsServer'
 // correspondant à 'Id'
-function imagePrixAPIsvtId(datasProduitsAPI, id) {
+function imagePrixAPIsvtId(id) {
   var i = 0; idTrouvé = false;
-  while (i < datasProduitsAPI.length && idTrouvé == false) {
-    if (id == datasProduitsAPI[i]._id) {
-      imageUrlProduit = datasProduitsAPI[i].imageUrl;
-      prixProduit = datasProduitsAPI[i].price;
+  while (i < bddProduitsServer.length && idTrouvé == false) {
+    if (id == bddProduitsServer[i]._id) {
+      imageUrlProduit = bddProduitsServer[i].imageUrl;
+      prixProduit = bddProduitsServer[i].price;
       idTrouvé = true;
     }
     i++
@@ -433,7 +464,7 @@ function imagePrixAPIsvtId(datasProduitsAPI, id) {
   };
 };
 
-function modifQtProduit(datasProduitsAPI) {
+function modifQtProduit() {
   // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   selectQt = document.querySelectorAll('div.cart__item__content__settings__quantity>input')
   selectQt.forEach(item => {
@@ -450,7 +481,7 @@ function modifQtProduit(datasProduitsAPI) {
       qtProduit = item.valueAsNumber;
       while (i < panierJson.length && continuer == true) {
         if (panierJson[i].codeArt == idDOM && panierJson[i].couleur == couleurDOM) {
-          // si l'id et la couleur sont identiques => Renseigne la Qt dans le panier
+          // si l'id et la couleur sont identiques => MAJ de la Qt dans le panier
           panierJson[i].qt = qtProduit
           // MAJ de la Qt dans le HTML du D.O.M
           // Récupére l'élément parent contenant l'enfant <p>
@@ -468,13 +499,13 @@ function modifQtProduit(datasProduitsAPI) {
         i++
       };
       sauvegardePanier();
-      majAffBtCd();
-      majTotauxQtPrix(datasProduitsAPI);
+      affEtatBtnCdSvtProduitsEtFormulaire();
+      majTotauxQtPrix();
     });
   });
 };
 function styleBordureCouleur(couleur) {
-  // =>Ajoute la bordure de l'image pour completer la modification du D.O.M
+  // => Ajoute la bordure de l'image pour completer la modification du D.O.M
   if (couleur.includes("/")) {
     //Si 'couleur' contient '/' => Cas produit bicolor
     //Définition 1ére couleur
@@ -493,7 +524,7 @@ function styleBordureCouleur(couleur) {
 };
 
 //**  */};
-function suppressionProduit(datasProduitsAPI) {
+function suppressionProduit() {
   // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   document.querySelectorAll('.deleteItem').forEach(item => {
     item.addEventListener("click", even => {
@@ -522,8 +553,8 @@ function suppressionProduit(datasProduitsAPI) {
           window.location.href = "../html/index.html"
         }
       };
-      majTotauxQtPrix(datasProduitsAPI);
-      majAffBtCd();
+      majTotauxQtPrix();
+      affEtatBtnCdSvtProduitsEtFormulaire();
     });
   });
 };
@@ -545,13 +576,13 @@ function supprItemsNullDsPanier() {
   panierJson = JSON.parse(panierLinea);
   sauvegardePanier();
 };
-function majTotauxQtPrix(datasProduitsAPI) {
+function majTotauxQtPrix() {
   // Calcul des totaux en bouclant avec 'panierJson'
   let totalQt = 0; let totalPrix = 0;
   panierJson.forEach(item => {
     totalQt = totalQt + item.qt;
     // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
-    imagePrixAPIsvtId(datasProduitsAPI, item.codeArt);
+    imagePrixAPIsvtId(item.codeArt);
     totalPrix = totalPrix + item.qt * prixProduit;
   });
   // Mise à jour des totaux de Qt et prix dans le D.O.M
@@ -560,9 +591,9 @@ function majTotauxQtPrix(datasProduitsAPI) {
   elemTotalPrix = document.getElementById("totalPrice");
   elemTotalPrix.innerHTML = totalPrix;
 }
-function majAffBtCd() {
+function affEtatBtnCdSvtProduitsEtFormulaire() {
   // Affiche l'état du bouton de commande, suivant l'état de validité du formulaire.
-  if (validationSaisies()) {
+  if (etatValidationFormulaire()) {
     btnCommande.classList = "yesHover";
     btnCommande.style.backgroundColor = "#2c3e50";
     btnCommande.title = "Génére la commande"
@@ -603,7 +634,7 @@ function actionBtnCd() {
   });
 };
 function requeteInfoCd() {
-  if (validationSaisies()) {
+  if (etatValidationFormulaire()) {
     // Création de l'objet 'Contact'
     contact = {
       "firstName": prenom,
@@ -649,9 +680,14 @@ function requeteInfoCd() {
     alert(messErreur);
   };
 };
-// Verification des saisies effectuées
-function validationSaisies() {
-  //Verifie qu'il n'y a pas de message d'erreur
+
+function etatValidationFormulaire() {
+  if (panierJson == undefined) {
+    return
+  }
+  // Renvoie l'etat de validation du formulaire
+  // => true si ok ou false si le formulaire n'est pas correctement renseigné
+  // Verifie qu'il n'y a pas de message d'erreur
   elemMessErrFormulaire = document.querySelectorAll(".cart__order__form__question p");
   messErrSaisieFormIncorrecte = ""; // Par défaut, on considére qu'il n'y a auncun message d'erreur
   elemMessErrFormulaire.forEach(even => {
@@ -669,7 +705,6 @@ function validationSaisies() {
       messErrSaisieVide = "Il reste une/des saisie(s) à renseigner."
     }
   });
-
   messErrProdObsolete = "";//Par défaut pas d'evolution avant verification
   messErrQtProduitNul = "";//Par défaut toutes les qt de produits sont >0
   panierJson.forEach(item => {
@@ -682,8 +717,6 @@ function validationSaisies() {
       messErrQtProduitNul = "il existe un ou des qt de produit(s) = 0";
     }
   });
-  // Vérifie que tous les qt de produits sont > 0
-
   // Réponse en fonction des verifications
   if (messErrProdObsolete == "" && messErrSaisieFormIncorrecte == "" && messErrSaisieVide == "" && messErrQtProduitNul == "") {
     return true

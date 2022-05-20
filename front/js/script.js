@@ -1,28 +1,40 @@
-//localStorage.removeItem("panier");
+//**************Test**********
+// localStorage.removeItem("panier");
+//******************************
+
+//Affiche ou non le lien du panier en fonction de son existance ou non dans localStorage
+ affLienPanier();
 let bddProduitsServer;
 fetch("http://localhost:3000/api/products/")
-  .then(function (res) {
-    if (res.ok) {
-     return res.json();
+  .then(function (reponse) {
+    if (reponse.ok) {
+     return reponse.json();
     }
   })
-  .then(function (datasProduitsAPI) {
-    bddProduitsServer=datasProduitsAPI;
-    classeBddProduits()
-    majElemsHtmlDOMsvtBddproduits(datasProduitsAPI);
-    affLienPanier();
+  .then(function (reponse) {
+    bddProduitsServer=reponse;
+    // Classe la base de données des produits issue du serveur
+    classeBddProduits();
+    // Modifie en dynamique l'affichage des prodduits
+    majElemsHtmlDOMsvtBddproduits_Meth1();
   })
   .catch(function (err) {
     // Une erreur est survenue
     console.log("Erreur N°" + err);
-    alert("l'erreur" + err + " est survenue sur le serveur. Nous faisons notre possible pour remédier à ce probléme.N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.")
+    alert(`l'erreur` + err + ` est survenue sur le serveur.
+    Nous faisons notre possible pour remédier à ce probléme.
+    N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.
+    Merci pour votre comprehension.`)
   });
 /////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
-function majElemsHtmlDOMsvtBddproduits(datasProduitsAPI) {
-  //Modification des elements HTML avec la methode `..${[valeurs issues du 'panierJson']}..`
-  datasProduitsAPI.forEach(item => {
+function majElemsHtmlDOMsvtBddproduits_Meth1() {
+  // Affichage des produits contenus dans 'bddProduitsServer'
+  // Methode 1
+  // en écrivant directement le HTML correspondant à chaque produit
+  // et en y incluant des datas de type `..${[valeurs issues du 'panierJson']}..`
+  bddProduitsServer.forEach(item => {
     document.getElementById("items").innerHTML += `
      <a href="../html/product.html?id=${item._id}">
      <article>
@@ -34,10 +46,12 @@ function majElemsHtmlDOMsvtBddproduits(datasProduitsAPI) {
      `
   });
 };
-function xmajElemsHtmlDOMsvtBddproduits(datasProduitsAPI) {
-  // Insertion en dynamique des elements HTML
+function majElemsHtmlDOMsvtBddproduits_Meth2() {
+  // Affichage des produits contenus dans 'bddProduitsServer'
+  // Methode 2
+  // en utilisant la méthode d'API DOM HTML
   var etape = "Départ"
-  datasProduitsAPI.forEach(item => {
+  bddProduitsServer.forEach(item => {
     if (etape = "Départ") {
       // Balise parent de départ
       var parentListe = document.getElementById("items");
