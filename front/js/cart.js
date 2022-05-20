@@ -1,6 +1,8 @@
 //Définition des variables globales
 //Déclare la variable l'ojet json  = Panier des produits
 let panierJson;
+// Déclare la validation par regex
+let validationRegex;
 // Déclare l'élément correspondant comme bouton de commande 
 const btnCommande = document.getElementById("order");
 // Charge la base de donnée des produits 'bddProuitsServer depuis l'API
@@ -14,29 +16,29 @@ fetch("http://localhost:3000/api/products/")
       return reponse.json();
     }
   })
-  .then (reponse => {
+  .then(reponse => {
     bddProduitsServer = reponse;
-  // Définie 'panierJson' à partir de localStorage
-  // En ajoutant la propriété 'evolution' pour prendre en compte les produits qui peuvent être devenus obsolétes
-  // Définie également 'btnCommande' qui sera utilisé dans des fonctions à venir
-  initialisation();
-  // Classe la base de données des produits issue du serveur
-  classeBddProduits();
-  // Affiche en dynamique les produits dans le html du D.O.M
-  MajElemHtmlDOMavecPanier();
-  // Detecte la modification de la qt d'un produit
-  // et la met à jour dans le panier 'panierJson'
-  modifQtProduit();
-  // Detecte la suppression d'un produit 
-  // Le supprimme du html du D.OM et également dans le panier 'panierJson'
-  suppressionProduit();
-  // Calcule et affiche le prix total de tous les produits du panier
-  majTotauxQtPrix();
-  // Gére l'affichage du bouton commande en fonction de :
-  // - l'etat des saisies du formulaire
-  // - Si il existe d'éventuels prouits obsolétes contenus dans le panier 'panierJson'
-  // - Si les qt des produits du paniers sont tous >0
-  affEtatBtnCdSvtProduitsEtFormulaire();
+    // Définie 'panierJson' à partir de localStorage
+    // En ajoutant la propriété 'evolution' pour prendre en compte les produits qui peuvent être devenus obsolétes
+    // Définie également 'btnCommande' qui sera utilisé dans des fonctions à venir
+    initialisation();
+    // Classe la base de données des produits issue du serveur
+    classeBddProduits();
+    // Affiche en dynamique les produits dans le html du D.O.M
+    MajElemHtmlDOMavecPanier();
+    // Detecte la modification de la qt d'un produit
+    // et la met à jour dans le panier 'panierJson'
+    modifQtProduit();
+    // Detecte la suppression d'un produit 
+    // Le supprimme du html du D.OM et également dans le panier 'panierJson'
+    suppressionProduit();
+    // Calcule et affiche le prix total de tous les produits du panier
+    majTotauxQtPrix();
+    // Gére l'affichage du bouton commande en fonction de :
+    // - l'etat des saisies du formulaire
+    // - Si il existe d'éventuels prouits obsolétes contenus dans le panier 'panierJson'
+    // - Si les qt des produits du paniers sont tous >0
+    affEtatBtnCdSvtProduitsEtFormulaire();
   })
   .catch(function (err) {
     // Une erreur est survenue
@@ -47,29 +49,30 @@ fetch("http://localhost:3000/api/products/")
     Merci pour votre comprehension.`)
   });
 
-  // Controle chaque saisie du formulaire  en temps réel 
-  controlSaisieFormulaire();
-  // Vérifie et identifie les erreurs de sasies et l'état de remplissage du formulaire
-  controlValidationSaisiesFormulaire();
-  // Déclenche la commande si le panier est à jour, et correctement renseigné
-  actionBtnCd();
+// Controle chaque saisie du formulaire  en temps réel 
+controlSaisieFormulaire();
+// Vérifie et identifie les erreurs de sasies et l'état de remplissage du formulaire
+ControlSaisieSiPerteFocus();
+// Déclenche la commande si le panier est à jour, et correctement renseigné
+actionBtnCd();
+
 //////////////////////////////////////////////////////
 ////////////////////// FONCTIONS /////////////////////
 //////////////////////////////////////////////////////
 function initialisation() {
- // Récupére le panier déjà existant avec le locaStorage
+  // Récupére le panier déjà existant avec le locaStorage
   panierLinea = localStorage.getItem("panier");
   panierJson = JSON.parse(panierLinea);
 
   // ***********************************************************************
   // SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER 
-      bddProduitsServer[1]._id = "1234";
-      bddProduitsServer[2].colors[0] = "x";
+  // bddProduitsServer[1]._id = "1234";
+  // bddProduitsServer[2].colors[0] = "x";
   // ************************************************************************
 
   // Verifie si le panier n'a pas de produits obsoletes par rapport à 'bddProduitsServer'
   panierJson.forEach(i => {
-    idOk = false; couleurOk = false;  
+    idOk = false; couleurOk = false;
     var j = 0; continuer = true;
     while (j < bddProduitsServer.length && continuer == true) {
       if (i.codeArt == bddProduitsServer[j]._id) {
@@ -126,44 +129,43 @@ function MajElemHtmlDOMavecPanier() {
     //      en fonction de la proprieté 'evolution'
     //      Par défaut on affiche sans style particulier
     styleNomProdHTML = ""; styleCouleurHTML = "";
-    
+
     if (panierJson[item].evolution == "Couleur OBSOLETE") {
-    //   1-2-1) Cas ou il existe une évolution, uniquement sur la couleur => Modification de 'couleurHTML'
-    //    => 1-2-1-1) On indique que la couleur est obsoléte
+      //   1-2-1) Cas ou il existe une évolution, uniquement sur la couleur => Modification de 'couleurHTML'
+      //    => 1-2-1-1) On indique que la couleur est obsoléte
       couleurHTML = "La couleur " + panierJson[item].couleur + " est OBSOLETE";
-    //       1-2-1-2) On utilise un style de couleur rouge sur fond jaune
+      //       1-2-1-2) On utilise un style de couleur rouge sur fond jaune
       styleCouleurHTML = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
-    //       1-2-1-3) On met le prix du produit à zero pour ne pas influencer le calcul du prix total
+      //       1-2-1-3) On met le prix du produit à zero pour ne pas influencer le calcul du prix total
       prixProduit = 0;
     }
     else if (panierJson[item].evolution == "Id OBSOLETE") {
-    //    1-2-2) Cas ou le produit est obsoléte
-    //    => 1-2-2-1) Modification de 'nomProdHTML'
+      //    1-2-2) Cas ou le produit est obsoléte
+      //    => 1-2-2-1) Modification de 'nomProdHTML'
       nomProdHTML = "Le produit " + panierJson[item].nomProd + " est devenu OBSOLETE";
-    //        1-2-2-2) On utilise un style de couleur rouge sur fond jaune
+      //        1-2-2-2) On utilise un style de couleur rouge sur fond jaune
       styleNomProdHTML = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
-    //      1-2-2-3) On met le prix du produit à zero pour ne pas influencer le calcul du prix total
+      //      1-2-2-3) On met le prix du produit à zero pour ne pas influencer le calcul du prix total
       prixProduit = 0;
     }
     //      1-2-2-4) Affichage du la selection de la qt ( element <input>)
     //               uniquement si le produit n'est pas obosoléte
     if (panierJson[item].evolution == "Idem") {
-    //      1-2-2-4-1) Si le produit n'est pas obsoléte => Pas de masquage de la selection de qt
+      //      1-2-2-4-1) Si le produit n'est pas obsoléte => Pas de masquage de la selection de qt
       masqueSelectQtProd = "";
     }
     else {
-    //      1-2-2-4-2) Sinon on masque l'élément HTML concernant la selection des qt 
-    //                 Ne masque pas la qt d'origne, et évite de la modifier
+      //      1-2-2-4-2) Sinon on masque l'élément HTML concernant la selection des qt 
+      //                 Ne masque pas la qt d'origne, et évite de la modifier
       masqueSelectQtProd = `style ="display: none;"`
     }
     //      1-2-2-5) Charge la qt du produit 
     qtProduit = panierJson[item].qt;
     // 2) Modification dynamique avec la prise en compte des données
     //    définies et chargées en fonction des datas contenues dans le panier
-     MajElemHtmlDOMavecPanierMeth2(item)
+    MajElemHtmlDOMavecPanierMeth2(item)
     item++
   };
-  affEtatBtnCdSvtProduitsEtFormulaire();
 }
 function MajElemHtmlDOMavecPanierMeth1(item) {
   // Affichage du produit 'panierJson[item]'
@@ -316,7 +318,7 @@ function MajElemHtmlDOMavecPanierMeth2(item) {
     </div>
   </article>`
 };
-function controlValidationSaisiesFormulaire() {
+function ControlSaisieSiPerteFocus() {
   // A chaque sortie de focus
   // Vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
   document.addEventListener("focusout", even => {
@@ -324,108 +326,97 @@ function controlValidationSaisiesFormulaire() {
     elemFocusPerdu = even.target;
     idElemFocusPerdu = even.target.id;
     if (idElemFocusPerdu != undefined && idElemFocusPerdu != '') {
-      //Vérifie uniquement les saisies du formulaire qui ont perdu le focus
-      if (idElemFocusPerdu == "firstName" || idElemFocusPerdu == "lastName") {
-        compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
-        prenom = even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, prenom, compRegex) == false) {
-          //Si saisie 'Prenom' ou 'Nom' non valide => Affiche le message d'erreur
-          elemMessErrSaisie.innerText =
-            "Saisie du prénom incorrecte.Le prénom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
-        }
-        else {
-          // Sinon, efface le message d'erreur 
-          elemMessErrSaisie.innerText = "";
-        }
-        affEtatBtnCdSvtProduitsEtFormulaire();
-      }
-      if (idElemFocusPerdu == "lastName") {
-        compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
-        nom = even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, nom, compRegex) == false) {
-          //Si saisie 'Prenom' ou 'Nom' non valide => Affiche le message d'erreur
-          elemMessErrSaisie.innerText =
-            "Saisie du nom incorrecte.Le prénom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
-        }
-        else {
-          // Sinon, efface le message d'erreur 
-          elemMessErrSaisie.innerText = "";
-        }
-      }
-      if (idElemFocusPerdu == "address") {
-        compRegex = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g;
-        adresse = even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, adresse, compRegex) == false) {
-          //Si saisie 'Adresse' non valide => Affiche le message d'erreur
-          elemMessErrSaisie.innerText =
-            "Saisie adresse incorrecte.Eviter les caractéres spéciaux suivants : <>?%¤!$#²*§£µ€\^[]{}~";
-        }
-        else {
-          // Sinon, efface le message d'erreur 
-          elemMessErrSaisie.innerText = "";
-        }
-      }
-      if (idElemFocusPerdu == "city") {
-        compRegex = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g;
-        ville = even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, ville, compRegex) == false) {
-          //Si saisie 'Ville' non valide => Affiche le message d'erreur
-          elemMessErrSaisie.innerText =
-            "Saisie de la ville incorrecte.La ville doit commencer par son N° de code postal (5 chiffres),puis espace, puis le nom de la ville doit être du même type que 'Prénom' ou 'Nom";
-        }
-        else {
-          // Sinon, efface le message d'erreur 
-          elemMessErrSaisie.innerText = "";
-        }
-      }
-      if (idElemFocusPerdu == "email") {
-        compRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        email = even.target.value;
-        if (valideSvtRegex(elemFocusPerdu, email, compRegex) == false) {
-          //Si saisie 'Email' non valide => Affiche le message d'erreur
-          elemMessErrSaisie.innerText =
-            "Saisie email incorrecte.Commence par 2 groupes de lettres et/ou chiffres, séparés par '@', puis se termine avec '.' puis 2 ou 3 letrres.";
-        }
-        else {
-          // Sinon, efface le message d'erreur 
-          elemMessErrSaisie.innerText = "";
-        }
-      }
-      affEtatBtnCdSvtProduitsEtFormulaire();
+      verifSaisieFormulaire(even.target);
     }
+    affEtatBtnCdSvtProduitsEtFormulaire();
   });
+};
+function verifSaisieFormulaire(elemSaisieFormulaire) {
+  //Identification de l'élement en cours de saisie
+  idElemSaisieFormulaire = elemSaisieFormulaire.id;
+  if (idElemSaisieFormulaire != undefined && idElemSaisieFormulaire != '') {
+    // Ne verifie que les saisies du formulaire
+    if (idElemSaisieFormulaire == "firstName" || idElemSaisieFormulaire == "lastName") {
+      // Saisie 'Prénom' ou 'Nom'
+      // Teste la saisie avec la méthode regex
+      compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
+      // Mémorise le Prenom ou le Nom
+      if (idElemSaisieFormulaire == "firstName") { prenom = elemSaisieFormulaire.value };
+      if (idElemSaisieFormulaire == "lastName") { nom = elemSaisieFormulaire.value };
+      valideSvtRegex(elemSaisieFormulaire, elemSaisieFormulaire.value, compRegex);
+      // Met à jour le message d'erreur correspondant à la saisie du formulaire
+      if (validationRegex == false && elemSaisieFormulaire.value != "") {
+        elemMessErrSaisie.innerText =
+          "Saisie du prénom incorrecte.Le prénom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
+      }
+      else {
+        elemMessErrSaisie.innerText = "";
+      }
+    }
+    else if (idElemSaisieFormulaire == "address") {
+      // Saisie adresse
+      // Teste la saisie avec la méthode regex
+      compRegex = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g;
+      // Mémorise l'adresse
+      adresse = elemSaisieFormulaire.value;
+      valideSvtRegex(elemSaisieFormulaire, adresse, compRegex);
+      // Met à jour le message d'erreur correspondant à la saisie du formulaire
+      if (validationRegex == false && elemSaisieFormulaire.value != "") {
+        elemMessErrSaisie.innerText =
+          "Saisie adresse incorrecte.Eviter les caractéres spéciaux suivants : <>?%¤!$#²*§£µ€\^[]{}~";
+      }
+      else {
+        // Sinon, efface le message d'erreur 
+        elemMessErrSaisie.innerText = "";
+      }
+
+    }
+    else if (idElemSaisieFormulaire == "city") {
+      //Saisie Ville
+      // Teste la saisie avec la méthode regex
+      compRegex = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g;
+      // Mémorise la ville
+      ville = elemSaisieFormulaire.value;
+      valideSvtRegex(elemSaisieFormulaire, ville, compRegex);
+      if (validationRegex == false && elemSaisieFormulaire.value != "") {
+        //Si saisie 'Ville' non valide => Affiche le message d'erreur
+        elemMessErrSaisie.innerText =
+          "Saisie de la ville incorrecte.La ville doit commencer par son N° de code postal (5 chiffres),puis espace, puis le nom de la ville doit être du même type que 'Prénom' ou 'Nom";
+      }
+      else {
+        // Sinon, efface le message d'erreur 
+        elemMessErrSaisie.innerText = "";
+      }
+    }
+    else if (idElemSaisieFormulaire == "email") {
+      // Saisie email
+      // Teste la saisie avec la méthode regex
+      compRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      // Mémorise l'email
+      email = elemSaisieFormulaire.value;
+      valideSvtRegex(elemSaisieFormulaire, email, compRegex)
+      if (validationRegex == false && elemSaisieFormulaire.value != "") {
+        //Si saisie 'Email' non valide => Affiche le message d'erreur
+        elemMessErrSaisie.innerText =
+          "Saisie email incorrecte.Commence par 2 groupes de letrre et/ou chiffres contenant 1 ou des '.' non à suivre , séparés par '@', puis se termine avec '.' puis 2 ou 3 letrres.";
+      }
+      else {
+        // Sinon, efface le message d'erreur 
+        elemMessErrSaisie.innerText = "";
+      }
+    };
+  };
 };
 // Controle les saisies dans les champs du formulaire
 function controlSaisieFormulaire() {
   document.addEventListener("input", even => {
     //Saisie d'un digit dans un element 'input'
     even.preventDefault();
-    //Identification de l'élement en cours de saisie
-    elemSaisieInput = even.target;
-    idElemSaisieInput = elemSaisieInput.id;
-    if (idElemSaisieInput != undefined && idElemSaisieInput != '') {
-      if (idElemSaisieInput == "firstName" || idElemSaisieInput == "lastName") {
-        // Saisie 'Prénom' ou 'Nom'
-        // Teste la sasie avec la méthode regex
-        compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
-        prenom = elemSaisieInput.value;
-        valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex)
-      }
-      else if (idElemSaisieInput == "address") {
-        compRegex = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g;
-        valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex);
-      }
-      else if (idElemSaisieInput == "city") {
-        compRegex = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g;
-        valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex);
-      }
-      else if (idElemSaisieInput == "email") {
-        compRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        valideSvtRegex(elemSaisieInput, elemSaisieInput.value, compRegex);
-      };
-    };
+    // Verification digit par digit de la saisie d'un champs du formulaire 
+    verifSaisieFormulaire(even.target);
     affEtatBtnCdSvtProduitsEtFormulaire();
   });
+
 }
 // affiche la saisie en cours en vert ou rouge selon la validité
 function valideSvtRegex(elem, contenuSaisie, compRegex) {
@@ -436,12 +427,12 @@ function valideSvtRegex(elem, contenuSaisie, compRegex) {
   if (compRegex.test(contenuSaisie) || contenuSaisie == "") {
     // Si OK => Colore la saisie en vert
     elem.style.color = "green";
-    return true;
+    return validationRegex = true;
   }
   else {
     // Si non OK avec une saisie non vide => Colore la saisie en rouge
     elem.style.color = "red";
-    return false;
+    return validationRegex = false;
   };
 };
 
@@ -479,6 +470,10 @@ function modifQtProduit() {
       //Pour chaqque produit du panier 'panierJson'
       var i = 0; continuer = true;
       qtProduit = item.valueAsNumber;
+      if (isNaN(qtProduit) || qtProduit < 0) {
+        qtProduit = 0;
+        item.valueAsNumber = 0;
+      }
       while (i < panierJson.length && continuer == true) {
         if (panierJson[i].codeArt == idDOM && panierJson[i].couleur == couleurDOM) {
           // si l'id et la couleur sont identiques => MAJ de la Qt dans le panier
@@ -493,7 +488,7 @@ function modifQtProduit() {
               enfant.innerText = "Qté : " + qtProduit;
             }
           }
-          
+
           continuer = false;
         };
         i++
@@ -543,7 +538,7 @@ function suppressionProduit() {
         if (panierJson[i].codeArt == idDOM && panierJson[i].couleur == couleurDOM) {
           delete panierJson[i];
           supprItemsNullDsPanier()
-          if (panierJson.length == 0){
+          if (panierJson.length == 0) {
             localStorage.removeItem("panier");
           }
           continuer = false;
@@ -593,7 +588,7 @@ function majTotauxQtPrix() {
 }
 function affEtatBtnCdSvtProduitsEtFormulaire() {
   // Affiche l'état du bouton de commande, suivant l'état de validité du formulaire.
-  if (etatValidationFormulaire()) {
+  if (SaisiePanierOk()) {
     btnCommande.classList = "yesHover";
     btnCommande.style.backgroundColor = "#2c3e50";
     btnCommande.title = "Génére la commande"
@@ -634,7 +629,7 @@ function actionBtnCd() {
   });
 };
 function requeteInfoCd() {
-  if (etatValidationFormulaire()) {
+  if (SaisiePanierOk()) {
     // Création de l'objet 'Contact'
     contact = {
       "firstName": prenom,
@@ -681,7 +676,7 @@ function requeteInfoCd() {
   };
 };
 
-function etatValidationFormulaire() {
+function SaisiePanierOk() {
   if (panierJson == undefined) {
     return
   }
@@ -690,12 +685,14 @@ function etatValidationFormulaire() {
   // Verifie qu'il n'y a pas de message d'erreur
   elemMessErrFormulaire = document.querySelectorAll(".cart__order__form__question p");
   messErrSaisieFormIncorrecte = ""; // Par défaut, on considére qu'il n'y a auncun message d'erreur
+  // Vérifie si il existe un message d'erreur concernant une saisie de formulaire
   elemMessErrFormulaire.forEach(even => {
     if (even.innerText != "") {
       // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
       messErrSaisieFormIncorrecte = "Il reste une/des saisie(s) non correctement renseignée(s)."
     }
   });
+
   // Vérifie si il n'y a aucune saisie de renseignée
   champsSaisies = document.querySelectorAll(".cart__order__form__question input");
   messErrSaisieVide = ""; // Par défaut, on considére que toutes les saisies sont faites.
