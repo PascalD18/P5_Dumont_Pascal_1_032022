@@ -66,8 +66,8 @@ function initialisation() {
 
   // ***********************************************************************
   // SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER 
-  // bddProduitsServer[1]._id = "1234";
-  // bddProduitsServer[2].colors[0] = "x";
+  //  bddProduitsServer[1]._id = "1234";
+  //  bddProduitsServer[2].colors[0] = "x";
   // ************************************************************************
 
   // Verifie si le panier n'a pas de produits obsoletes par rapport à 'bddProduitsServer'

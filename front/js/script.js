@@ -1,5 +1,5 @@
 //**************Test**********
-// localStorage.removeItem("panier");
+ //localStorage.removeItem("panier");
 //******************************
 
 //Affiche ou non le lien du panier en fonction de son existance ou non dans localStorage
