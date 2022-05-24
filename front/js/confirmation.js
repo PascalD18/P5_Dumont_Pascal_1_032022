@@ -5,4 +5,4 @@ const orderID = urlParams.get('orderID');
 // affiche le N° de commande via l'URL envoyé par la page 'cart.html'
 document.getElementById("orderId").innerText=orderID;
 // Supprime le panier du localStorage
-localStorage.removeItem("panier");
+localStorage.removeItem("cart");

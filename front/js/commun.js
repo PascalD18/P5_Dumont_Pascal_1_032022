@@ -1,23 +1,21 @@
 // Classement des proppriétés 'name' dans l'ordre alphabétique 
-// Met une majuscule à chaque début de nom de canapé
-// exemple : Kanap orthosie devient 'Kanap Orthosie'
 function sortDataProducts() {
   dataProductsServer.forEach(item => {
-    item.name = premLettrenameProductEnMaj(item.name);
+    item.name = firstLetterNameProduct(item.name);
   });
 
   //Trie dans l'ordre alphabétique les propriétés 'name' dans l'objet Json 'datasProduitsAPI'
   dataProductsServer.sort(function (a, b) {
-    if (a.name < b.name) {
-      return -1;
-    } else {
+    if (a.name >= b.name) {
       return 1;
+    } else {
+      return -1;
     }
   });
 };
 
 // Met 1ére lettre de la 2éme partie du nom de produit en majuscule
-function premLettrenameProductEnMaj(nameProduct) {
+function firstLetterNameProduct(nameProduct) {
 
   // recherche la 1ére lettre 'firstLetterLowercase' à mettre en majuscule dans le nom 'Kanap [firstLetterLowercase]...'
   // exp: 'Kanap orthosie' devient 'Kanap Orthesie'
@@ -42,18 +40,18 @@ function premLettrenameProductEnMaj(nameProduct) {
   return nameProduct;
 };
 
-// Affichage du lien 'Panier' en fonction de son existance ou non dans localStorage
-function affLienPanier() {
+ //Affiche ou non le lien du panier en fonction de son existance ou non dans localStorage
+function ShowLinkCartIfItis() {
 
   // Récupére le lien panier
-  elemCart = document.getElementsByClassName("cart")
+  elemCart = document.getElementsByClassName("panier");
 
   // si le panier est inexistant => N'affiche pas le lien du panier
-  if (localStorage.panier == undefined) {
-    elemCart[0].style.display = "none";
-
-    // Sinon laisse affiché le lien du panier
-  } else {
+  if (localStorage.cart != undefined) {
     elemCart[0].style.display = "";
+  } else {
+
+  // Sinon laisse affiché le lien du panier
+    elemCart[0].style.display = "none";
   };
 };
