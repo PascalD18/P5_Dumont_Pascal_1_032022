@@ -1,9 +1,9 @@
 // Lecture de 'id' via l'url envoyé par la page 'index.html'
-// initialisation par défaut des indicateurs de l'état de selection couleur et/ou Qt
-// Initialisation du bouton 'Ajouter au panier''
-initialisation();
+// initialization par défaut des indicateurs de l'état de selection couleur et/ou Qt
+// initialisation du bouton 'Ajouter au panier''
+initialization();
 // Initialise le panier si il existe
-initPanierSiExiste();
+initCartIfIs();
 //Affiche ou non le lien du panier en fonction de son existance ou non dans localStorage
 affLienPanier();
 // Affiche le bouton 'Ajouter au panier' en grisé ou en bleu + ombrage selon l'état des saisies
@@ -11,16 +11,16 @@ affEtatBtnAjoutPanier();
 // Requete API d'un produit en fonction de son 'id'
 let produitSelect; // définie le produit choisi en fonction de son id
 fetch("http://localhost:3000/api/products/" + id)
-    .then(function (reponse) {
-        if (reponse.ok) {
-            return reponse.json();
+    .then(function (response) {
+        if (response.ok) {
+            return response.json();
         };
     })
-    .then(reponse => {
-        if (reponse != undefined) {
+    .then(response => {
+        if (response != undefined) {
             // Si la réponse de l'API est identifiée comme étant un produit
             // => MAJ en dynamique les éléments correspondants aux caractéristiques du produit 
-            produitSelect=reponse;
+            produitSelect=response;
             majElemsHTMLsvtProduitselect();
         }
         else {
@@ -31,7 +31,7 @@ fetch("http://localhost:3000/api/products/" + id)
         }
     })
     .catch(function (err) {
-        // Une erreur est survenue
+        // Affiche l'erreur de l'API
         console.log("Erreur N°" + err);
         alert(`l'erreur` + err + ` est survenue sur le serveur.
         Nous faisons notre possible pour remédier à ce probléme.
@@ -47,7 +47,7 @@ fetch("http://localhost:3000/api/products/" + id)
     actionBoutonAjoutPanier();
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
-function initialisation(){
+function initialization(){
 // Lecture du N° 'id' avec l'URL envoyé par la page 'index.html'
 var queryString = window.location.search;
  urlParams = new URLSearchParams(queryString);
@@ -66,16 +66,14 @@ function affEtatBtnAjoutPanier() {
         btnAjoutPanier.style.backgroundColor = "#2c3e50";
         btnAjoutPanier.classList = "yesHover"; 
         btnAjoutPanier.title = "";
-    }
-    else {
+    } else {
         //Sinon, si la selection n'est pas compléte
         //=> Maj e la bulle info au survol de la souris
         btnAjoutPanier.style.backgroundColor = "grey";
         btnAjoutPanier.classList = "noHover";
         if (qtNonVide==true) {
             btnAjoutPanier.title = "Selectionner une couleur";
-        }
-        else if (couleurSelect==true) {
+        }  else if (couleurSelect==true) {
             btnAjoutPanier.title = "Selectionner une Qt >0";
         }
         else if (couleurSelect == false && qtNonVide == false) {
@@ -83,12 +81,12 @@ function affEtatBtnAjoutPanier() {
         }
     }
 };
-function initPanierSiExiste(){
+function initCartIfIs(){
  // Si le panier existe dans localStorage 
- // le charge dans 'panierJson'
+ // le charge dans 'cartJson'
  if (localStorage.panier != undefined){
-    panierLinea = localStorage.getItem("panier");
-    panierJson = JSON.parse(panierLinea);
+    cartLinea = localStorage.getItem("cart");
+    cartJson = JSON.parse(cartLinea);
  }
 }
 function choixCouleur() {
@@ -118,9 +116,10 @@ function modifQt() {
     selectQt.addEventListener("change", function (event) {
         event.preventDefault();
         // Qt considérée comme > 0 par défault
-        qtProduit = parseInt(selectQt.value);
-        if (qtProduit == 0) {
+        qtProduct = parseInt(selectQt.value);
+        if (isNaN(qtProduct) || qtProduct <= 0) {
             qtNonVide = false
+            selectQt.value = 0;
         }
         else {
             qtNonVide = true
@@ -167,8 +166,7 @@ function majOptionsCouleur(couleursProduitSelect) {
             var parentElemCouleur = document.getElementById("colors")
             parentElemCouleur.appendChild(enfantElemCouleur);
             i++;
-        };
-    });
+        };});
 };
 // MAJ du panier
 function actionBoutonAjoutPanier() {
@@ -179,20 +177,20 @@ function actionBoutonAjoutPanier() {
             // Si une couleur selectionnée et Qt >0
             if (localStorage.panier == undefined) {
                 // Si panier inexistant => MAJ 1er data du panier
-                panierJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": nomProd }]
+                cartJson = [{ "codeArt": id, "couleur": couleur, "qt": qtProduct, "nomProd": nomProd }]
             }
             else {
                 // Si panier non vide
                 verifSiProduitExisteDsPanier();
                 if (produitExiste) {
                     // Si le produit existe déjà dans le panier => MAJ qt uniquement
-                    newQt = qtProduit + panierJson[itemProduit].qt;
-                    panierJson[itemProduit].qt = newQt;
+                    newQt = qtProduct + cartJson[itemProduit].qt;
+                    cartJson[itemProduit].qt = newQt;
 
                 }
                 else {
                     // Sinon, ajoute le produit
-                    panierJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduit, "nomProd": nomProd });
+                    cartJson.push({ "codeArt": id, "couleur": couleur, "qt": qtProduct, "nomProd": nomProd });
                 };
             }
             sauvegardePanier();
@@ -206,23 +204,23 @@ function actionBoutonAjoutPanier() {
 // Sauvegarde en local du panier
 function sauvegardePanier() {
     //Trie dans l'ordre alphabétique des noms des produits
-    panierJson.sort(function (a, b) {
+    cartJson.sort(function (a, b) {
         if (a.nomProd < b.nomProd) {
             return -1;
         } else {
             return 1;
         }
     });
-    panierLinea = JSON.stringify(panierJson);
-    localStorage.setItem("panier", panierLinea);
+    cartLinea = JSON.stringify(cartJson);
+    localStorage.setItem("cart", cartLinea);
 };
 // Verifie si le produit exit déjà dans le panier
 function verifSiProduitExisteDsPanier() {
     // Verifie si le produit selectionné existe déjà dans le panier
     var i = 0; continuer = true;
     produitExiste = false; // Par défaut, considére le produit inexistant dans panier
-    while (i < panierJson.length && produitExiste == false) {
-        if (panierJson[i].codeArt == id && panierJson[i].couleur == couleur) {
+    while (i < cartJson.length && produitExiste == false) {
+        if (cartJson[i].codeArt == id && cartJson[i].couleur == couleur) {
             itemProduit = i; produitExiste = true;
             continuer = false;
         };

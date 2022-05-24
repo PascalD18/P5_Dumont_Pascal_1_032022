@@ -1,7 +1,3 @@
-//**************Test**********
- //localStorage.removeItem("panier");
-//******************************
-
 //Affiche ou non le lien du panier en fonction de son existance ou non dans localStorage
  affLienPanier();
 let bddProduitsServer;
@@ -26,39 +22,42 @@ fetch("http://localhost:3000/api/products/")
     N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.
     Merci pour votre comprehension.`)
   });
+
 /////////////////////////////////////////
 ////////////////////// FONCTIONS ////////////////////
 /////////////////////////////////////////////////////
+
+// Affichage des produits contenus dans 'bddProduitsServer' Methode 1
+// en écrivant directement le HTML correspondant à chaque produit et en y incluant des datas ${[datat]}..`
 function majElemsHtmlDOMsvtBddproduits_Meth1() {
-  // Affichage des produits contenus dans 'bddProduitsServer'
-  // Methode 1
-  // en écrivant directement le HTML correspondant à chaque produit
-  // et en y incluant des datas de type `..${[valeurs issues du 'panierJson']}..`
+
+  // Mémorisation des balises concernant les items 'elemItems', à inclure dans le HTML du D.O.M
+  let elemItems;
   bddProduitsServer.forEach(item => {
-    document.getElementById("items").innerHTML += `
+     elemItems= `
      <a href="../html/product.html?id=${item._id}">
      <article>
-      <img src="${item.imageUrl}" alt="${item.name}">
+      <img src="${item.imageUrl}" alt="${item.altTxt}">
       <h3 class="productName">${item.name}</h3>
       <p class="productDescription">${item.description}</p>
      </article>
      </a>
      `
   });
+  document.getElementById("items").innerHTML=elemItems
 };
+
+  // Affichage des produits contenus dans 'bddProduitsServer'en utilisant la méthode d'API DOM HTML
 function majElemsHtmlDOMsvtBddproduits_Meth2() {
-  // Affichage des produits contenus dans 'bddProduitsServer'
-  // Methode 2
-  // en utilisant la méthode d'API DOM HTML
-  var etape = "Départ"
+
+  etape="Départ";
   bddProduitsServer.forEach(item => {
     if (etape = "Départ") {
       // Balise parent de départ
       var parentListe = document.getElementById("items");
       // Définie une premiére balise 'a' enfant
       var newBaliseA = document.createElement("a");
-    }
-    else {
+    } else {
       // Redéfinie l'élément 'newBaliseA' précedent comme élément parent
       var parentListe = newBaliseA;
       // Redefinie une nouvelle balise 'a' enfant

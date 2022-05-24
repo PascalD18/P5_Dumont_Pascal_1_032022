@@ -1,13 +1,13 @@
-function classeBddProduits() {
-  // Classement des proppriétés 'name' dans l'ordre alphabétique 
-  // Met une majuscule à chaque début de nom de canapé
-  // exemple : Kanap orthosie devient 'Kanap Orthosie'
-  bddProduitsServer.forEach(item => {
-    item.name = premLettreNomprodEnMaj(item.name);
+// Classement des proppriétés 'name' dans l'ordre alphabétique 
+// Met une majuscule à chaque début de nom de canapé
+// exemple : Kanap orthosie devient 'Kanap Orthosie'
+function sortDataProducts() {
+  dataProductsServer.forEach(item => {
+    item.name = premLettrenameProductEnMaj(item.name);
   });
-  //Trie dans l'ordre alphabétique les propriétés 'name'
-  // dans l'objet Json 'datasProduitsAPI'
-  bddProduitsServer.sort(function (a, b) {
+
+  //Trie dans l'ordre alphabétique les propriétés 'name' dans l'objet Json 'datasProduitsAPI'
+  dataProductsServer.sort(function (a, b) {
     if (a.name < b.name) {
       return -1;
     } else {
@@ -15,31 +15,45 @@ function classeBddProduits() {
     }
   });
 };
-function premLettreNomprodEnMaj(nomProd) {
-  // Mets la premiere lettre de la 2éme partie du nom de produit en majuscule
-  // recherche la lettre 'premLettreMaj' à mettre en majuscule 
-  // dans le nom 'Kanap [premLettreMaj]... '
+
+// Met 1ére lettre de la 2éme partie du nom de produit en majuscule
+function premLettrenameProductEnMaj(nameProduct) {
+
+  // recherche la 1ére lettre 'firstLetterLowercase' à mettre en majuscule dans le nom 'Kanap [firstLetterLowercase]...'
   // exp: 'Kanap orthosie' devient 'Kanap Orthesie'
-  posiSep = nomProd.indexOf(" ");// Repére la position de l'espace comme séparateur
-  premLettreMaj = nomProd.substring(posiSep + 1, posiSep + 2);// Extrait la lettre à mettre en majuscule
+  // Repére la position de l'espace comme séparateur
+  posiSep = nameProduct.indexOf(" ");
+
+  // Extrait la lettre à mettre en majuscule
+  firstLetterLowercase = nameProduct.substring(posiSep + 1, posiSep + 2);
+
   // La mets systématiquement en majuscule
-  premLettreMaj = premLettreMaj.toUpperCase();
+  firstLetterLowercase = firstLetterLowercase.toUpperCase();
+
   // Reconstitue le nom complet
-  debNom = nomProd.substring(posiSep + 1, 0);// Début de 'name' avec l'espace inclu
-  finNom = nomProd.substring(nomProd.length, posiSep + 2);// Fin de 'name' sans la lettre en majuscule
-  nomProd = debNom + premLettreMaj + finNom;// Concaténe début + lettreMajuscule + fin
-  return nomProd;
+  // Début de 'name' avec l'espace inclu
+  beginName = nameProduct.substring(posiSep + 1, 0);
+
+  // Fin de 'name' sans la lettre en majuscule
+  endName = nameProduct.substring(nameProduct.length, posiSep + 2);
+
+  // Concaténe début + lettreMajuscule + fin
+  nameProduct = beginName + firstLetterLowercase + endName;
+  return nameProduct;
 };
+
+// Affichage du lien 'Panier' en fonction de son existance ou non dans localStorage
 function affLienPanier() {
-  // Affichage du lien 'Panier' en fonction de son existance ou non dans localStorage
+
   // Récupére le lien panier
-  elemPanier = document.getElementsByClassName("panier")
+  elemCart = document.getElementsByClassName("cart")
+
+  // si le panier est inexistant => N'affiche pas le lien du panier
   if (localStorage.panier == undefined) {
-    // si le panier est inexistant => N'affiche pas le lien du panier
-    elemPanier[0].style.display = "none"
-  }
-  else {
+    elemCart[0].style.display = "none";
+
     // Sinon laisse affiché le lien du panier
-    elemPanier[0].style.display = "";
+  } else {
+    elemCart[0].style.display = "";
   };
 };
