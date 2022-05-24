@@ -1,15 +1,15 @@
-//Définition des variables globales
-//Déclare la variable l'ojet json  = Panier des produits
+//Déclare l'ojet json  = Panier des produits
 let cartJson;
+
 // Déclare la validation par regex
 let ValidRegex;
+
 // Déclare l'élément correspondant comme bouton de commande 
 const btnCommande = document.getElementById("order");
-// Charge la base de donnée des produits 'bddProuitsServer depuis l'API
-// Si l'utilisateur ouvre directement la page 'cart.html' concernant le panier.
-// et que entre-temps les produits ont évolués sur le serveur
-// => Si cette base de données reste en locaStorage, une évolution éventuelle des produits
-// sur le server, ne sera pas prise en compte.
+
+// Charge la base de donnée des produits 'dataProductServer' depuis l'API
+// Car si l'utilisateur ouvre directement la page 'cart.html' concernant le panier,
+// une évolution éventuelle des produits issus du server stockés en locaStorage, ne serait pas prise en compte.
 fetch("http://localhost:3000/api/products/")
   .then(function (response) {
     if (response.ok) {
@@ -18,26 +18,12 @@ fetch("http://localhost:3000/api/products/")
   })
   .then(response => {
     dataProductsServer = response;
-    // Définie 'cartJson' à partir de localStorage
-    // En ajoutant la propriété 'evolution' pour prendre en compte les produits qui peuvent être devenus obsolétes
-    // Définie également 'btnCommande' qui sera utilisé dans des fonctions à venir
     initialization();
-    // Classe la base de données des produits issue du serveur
     sortDataProducts();
-    // Affiche en dynamique les produits dans le html du D.O.M
     MajElemHtmlDOMavecPanier();
-    // Detecte la modification de la qt d'un produit
-    // et la met à jour dans le panier 'cartJson'
     modifqtProduct();
-    // Detecte la suppression d'un produit 
-    // Le supprimme du html du D.OM et également dans le panier 'cartJson'
     suppressionProduit();
-    // Calcule et affiche le prix total de tous les produits du panier
-    majTotauxQtPrix();
-    // Gére l'affichage du bouton commande en fonction de :
-    // - l'etat des saisies du formulaire
-    // - Si il existe d'éventuels prouits obsolétes contenus dans le panier 'cartJson'
-    // - Si les qt des produits du paniers sont tous >0
+    calcTotalQtPrices();
     affEtatBtnCdSvtProduitsEtFormulaire();
   })
   .catch(function (err) {
@@ -69,7 +55,7 @@ function initialization() {
   // ***********************************************************************
   // SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER 
   //  dataProductsServer[1]._id = "1234";
-  //   dataProductsServer[2].colors[0] = "x";
+  //  dataProductsServer[2].colors[0] = "x";
   // ************************************************************************
 
   // Verifie si le panier n'a pas de produits obsoletes par rapport à 'dataProductsServer'
@@ -112,20 +98,25 @@ function initialization() {
   });
   saveCart();
 };
+
+// Pour chaque produit contenu dans le panier 'cartJson', MAJ des elements HTML du D.O.M
 function MajElemHtmlDOMavecPanier() {
   var item = 0;
+  elemsHtmlProducts="";
   while (item < cartJson.length) {
 
-    // Pour chaque produit contenu dans le panier 'cartJson', MAJ des elements HTML du D.O.M
+
     // 1) Preparation des données avant la modification en dynamique
     // 1-1) Chargement des données d'origine à partir du 'cartJson' issu du localStorage
     id = cartJson[item].codeArt;
 
-    //    Affichage de certaines données en fonction de l'évolution du produit par rapport au panier existant
-    //    'nameProductHtml', 'couleur' et 'priceProduct' idems à celui contenu dans 'cartJson'
+    // Définition par défaut des éléments HTML, concernant nom, couleur, et selection Qt
     nameProductHtml = cartJson[item].nameProd;
-    couleurHTML = cartJson[item].color;
+    colorHtml= cartJson[item].color;
     priceProduct = cartJson[item].priceProduct;
+    classElemSelectQtProd = `class = "itemQuantity"`;
+    classElemNameProduct ="";
+    classElemColorProduct ="";
 
     //    Definit le style à ajouter dans l'élément <img> pour définir la bordure de la couleur du canapé
     styleBordureCouleur(cartJson[item].color);
@@ -134,17 +125,15 @@ function MajElemHtmlDOMavecPanier() {
     picturePriceApiDepId(id);
 
     // 1-2) MAJ du style et modification éventuelle des données d'origines précédentes 
-    //      en fonction de la proprieté 'evolution'
-    //      Par défaut on affiche sans style particulier
-    stylenameProductHtml = ""; styleCouleurHTML = "";
-
-    //   1-2-1) Cas ou il existe une évolution, uniquement sur la couleur => Modification de 'couleurHTML'
-    //    => 1-2-1-1) On indique que la couleur est obsoléte
+    //      en fonction de la proprieté 'evolution' 
     if (cartJson[item].evolution == "Couleur OBSOLETE") {
-      couleurHTML = "La couleur " + cartJson[item].color + " est OBSOLETE";
 
-      //       1-2-1-2) On utilise un style de couleur rouge sur fond jaune
-      styleCouleurHTML = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
+    //   1-2-1) Cas ou il existe une évolution, uniquement sur la couleur => Modification de 'colorHtml'
+    //    => 1-2-1-1) On indique que la couleur est obsoléte
+      colorHtml = "La couleur " + cartJson[item].color + " est OBSOLETE";
+
+      //       1-2-1-2) On ajoute la classe "obsolete", pour que l'élément 'colorHtml' soit rouge sur fond jaune
+      classElemColorProduct = `class = "obsolete"`;
 
       //       1-2-1-3) On met le prix du produit à zero pour ne pas influencer le calcul du prix total
       priceProduct = 0;
@@ -154,174 +143,44 @@ function MajElemHtmlDOMavecPanier() {
       //    => 1-2-2-1) Modification de 'nameProductHtml'
       nameProductHtml = "Le produit " + cartJson[item].nameProd + " est devenu OBSOLETE";
 
-      //        1-2-2-2) On utilise un style de couleur rouge sur fond jaune
-      stylenameProductHtml = `style="color: red; font-weight: 800; background-color: yellow; text-align:center;"`;
+      //        1-2-2-2) On utilise la classe "obsolete", pour que le style CSS soit couleur rougr sur fond jaune
+      classElemNameProduct = `class = "obsolete"`;
 
       //      1-2-2-3) On met le prix du produit à zero pour ne pas influencer le calcul du prix total
       priceProduct = 0;
     }
-    //      1-2-2-4) Affichage du la selection de la qt ( element <input>)
-    //               uniquement si le produit n'est pas obosoléte
-    if (cartJson[item].evolution == "Idem") {
+    if (cartJson[item].evolution != "Idem") {
 
-      //      1-2-2-4-1) Si le produit n'est pas obsoléte => Pas de masquage de la selection de qt
-      masqueSelectQtProd = "";
-    } else {
-      //      1-2-2-4-2) Sinon on masque l'élément HTML concernant la selection des qt 
-      //                 Ne masque pas la qt d'origne, et évite de la modifier
-      masqueSelectQtProd = `style ="display: none;"`
+     //      1-2-2-4) Si le produit est obsoléte => On ajoute la classe 'hideselect' pour masquer la  selection de la qt, afin d'éviter de la modifier
+      classElemSelectQtProd = `class = "itemQuantity hideselect"`;
     }
-    //      1-2-2-5) Charge la qt du produit 
+    //      1-2-2-5) Charge la qt du produit  
     qtProduct = cartJson[item].qt;
-
-    // 2) Modification dynamique avec la prise en compte des données
-    //    définies et chargées en fonction des datas contenues dans le panier
     updateElemHtmlWithCart(item)
     item++
   };
+
+  // Modifie le HTML dans le D.O.M, en 1 fois, en insérant tous les éléments contenus dans 'elemsHtmlProducts'
+  document.querySelector("#cart__items").innerHTML = elemsHtmlProducts;
 }
-function MajElemHtmlDOMavecPanierMeth1(item) {
-  // Affichage du produit 'cartJson[item]'
-  // en utilisant la méthode d'API DOM HTML
-  // Par défaut, considére le produit non obsoléte
-  produitOk = true;
-  // Avec la méthode de manipulation des éléments du HTML dans le D.O.M
-  // Ajoute l'élément <article> dans <Section id="cart__items">
-  parent = document.getElementById("cart__items");
-  enfant = document.createElement("article");
-  enfant.classList = "cart__item";
-  parent.appendChild(enfant);
-  // => on obtient :
-  // <article class="cart__item">
-  // </article> 
-  // Renseigne 'id' et 'color' dans la balise <article> avec [data-]
-  enfant.dataset.id = id;
-  enfant.dataset.color = couleurHTML;
-  // On obtient :
-  // <article class="cart__item" data-id="[id]" data-color ="[couleur]">
-  // Ajoute l'élément <div> dans l'élément <article>
-  parent_1 = enfant;
-  enfant = document.createElement("div");
-  enfant.classList = "cart__item__img";
-  parent_1.appendChild(enfant);
-  // On obtient:
-  // <div class="cart__item__img">
-  // </div>
-  // Maj url de l'image et style css de la bordure de couleur = 'defBordureImage' dans l'élément <img>
-  enfant.innerHTML = "<img src =" + pictureUrlProduct + " alt =" + cartJson[item].nameProd + defBordureImage
-  // Ajoute un 2éme élément <div> dans l'élément  <article>
-  enfant = document.createElement("div");
-  enfant.classList = "cart__item__content"
-  parent_1.appendChild(enfant);
-  // On obtient :
-  // <div class ="cart__item__content>
-  // </div>
-  parent_1_1 = enfant;
-  // Ajoute un élément <div> dans cet 'élément <div>
-  enfant = document.createElement("div");
-  enfant.classList = "cart__item__content__description";
-  parent_1_1.appendChild(enfant);
-  // On obtient :
-  // <div class ="cart__item__content_description>
-  // </div>
-  parent_1_1_1 = enfant;
-  // Ajoute l'élément <h2> dans cet élément <div> et renseigne le nom du produit
-  enfant = enfant = document.createElement("h2");
-  if (cartJson[item].nameProd.includes("OBSOLETE")) {
-    // Si le produit est obsolete
-    // => Affiche 'OBSOLETE' en rouge sur fond jaune
-    produitOk = false;
-    enfant.style = "color: red; font-weight: 800; background-color: yellow; text-align:center;"
-  }
-  enfant.innerHTML = cartJson[item].nameProd;
-  parent_1_1_1.appendChild(enfant);
-  // On obtient:
-  //<h2>[Nom du produit]</h2>
-  // Ajoute l'élément <p> dans cet élément <div> et renseigne la couleur
-  enfant = document.createElement("p");
-  if (cartJson[item].color.includes("OBSOLETE")) {
-    // Affiche 'OBSOLETE' en rouge sur fond jaune si la couleur est obsolete
-    produitOk = false;
-    enfant.style = "color: red; font-weight: 800; background-color: yellow; text-align:center;"
-  }
-  enfant.innerHTML = cartJson[item].color;
-  parent_1_1_1.appendChild(enfant);
-  //On obtient:
-  //<p>[couleur]</p>
-  // Ajoute l'élément <p> dans cet élément <div> et renseigne le prix
-  enfant = document.createElement("p");
-  if (produitOk) {
-    enfant.innerHTML = priceProduct + " €";
-  } else {
-    enfant.innerHTML = 0 + " €";
-  }
-  parent_1_1_1.appendChild(enfant);
-  // On obtient:
-  // <p>[prix en €]</p>
-  // Ajoute un élément <div> dans l'élément <div class="cart__item__content">
-  enfant = document.createElement("div");
-  enfant.classList = "cart__item__content__settings";
-  parent_1_1.appendChild(enfant);
-  // On obtient :
-  // <div class="cart__item__content__settings">
-  //</div>
-  // Ajout d'un l'élément <div> dans cet élément
-  parent_1_1_2 = enfant;
-  enfant = document.createElement("div");
-  enfant.classList = "cart__item__content__settings__quantity";
-  parent_1_1_2.appendChild(enfant);
-  // On obtient:
-  // <div class="cart__item__content__settings__quantity>
-  //</div>
-  // Ajout d'un l'élément <p> dans cet élément
-  parent_1_1_2_1 = enfant;
-  enfant = document.createElement("p");
-  enfant.innerHTML = "Qté : " + qtProduct;
-  parent_1_1_2_1.appendChild(enfant);
-  // On obtient:
-  //<p>[quantité] : </p>
-  // Ajoute l'éléménet <input> dans 
-  enfant = document.createElement("input");
-  enfant.type = "number";
-  enfant.classList = "itemQuantity";
-  enfant.name = "itemQuantity";
-  enfant.min = "1"; enfant.max = "100";
-  enfant.value = qtProduct;
-  parent_1_1_2_1.appendChild(enfant);
-  // Ajoute un élement <div> dans l'élément <div> de classe 'cart__item__content__settings'
-  enfant = document.createElement("div");
-  enfant.classList = "cart__item__content__settings__delete";
-  parent_1_1_2.appendChild(enfant);
-  // on obtient:
-  //<div class="cart__item__content__settings__delete
-  //<div>
-  //Ajoute un élément <p> dans cet élément <div>
-  parent_1_1_2_2 = enfant;
-  enfant = document.createElement("p");
-  enfant.classList = "deleteItem";
-  enfant.innerHTML = "Supprimer";
-  parent_1_1_2_2.appendChild(enfant);
-  //On obtient:
-  // <p class="deleteItem">Supprimer</p>
-};
+
+// Concaténe les élements HTML concernant les produits du panier dans 'elemsHtmlProducts'
 function updateElemHtmlWithCart(item) {
-  // Mise a jour des elements HTML du D.O.M concernant les produits
-  // en écrivant directement le HTML et en y insérant les datas corresdant à chaque produit contenu dans le panier
-  document.querySelector("#cart__items").innerHTML +=
+   elemsHtmlProducts+=
     `<article class="cart__item" data-id="${id}" data-color="${cartJson[item].color}">
     <div class="cart__item__img">
      <img src="${pictureUrlProduct}" alt="${cartJson[item].nameProd}" ${styleBordureCouleur(cartJson[item].color)} >
     </div>
     <div class="cart__item__content">
      <div class="cart__item__content__description">
-        <h2 ${stylenameProductHtml}>${nameProductHtml}</h2>
-        <p ${styleCouleurHTML}>${couleurHTML}</p>
+        <h2 ${classElemNameProduct}>${nameProductHtml}</h2>
+        <p ${classElemColorProduct}>${colorHtml}</p>
         <p>${priceProduct} €</p>
      </div>
      <div class="cart__item__content__settings">
        <div class="cart__item__content__settings__quantity">
           <p>Qté : ${cartJson[item].qt}</p>
-         <input ${masqueSelectQtProd} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${cartJson[item].qt}>
+         <input type="number" ${classElemSelectQtProd} name="itemQuantity" min="1" max="100" value=${cartJson[item].qt}>
        </div>
        <div class="cart__item__content__settings__delete">
          <p class="deleteItem">Supprimer</p>
@@ -459,8 +318,8 @@ function picturePriceApiDepId(id) {
   };
 };
 
+// Modifie la QT d'un produit
 function modifqtProduct() {
-  // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   selectQt = document.querySelectorAll('div.cart__item__content__settings__quantity>input')
   selectQt.forEach(item => {
     item.addEventListener("change", even => {
@@ -492,38 +351,39 @@ function modifqtProduct() {
               enfant.innerText = "Qté : " + qtProduct;
             }
           }
-
           again = false;
         };
         i++
       };
       saveCart();
       affEtatBtnCdSvtProduitsEtFormulaire();
-      majTotauxQtPrix();
+      calcTotalQtPrices();
     });
   });
 };
 function styleBordureCouleur(couleur) {
   // => Ajoute la bordure de l'image pour completer la modification du D.O.M
   if (couleur.includes("/")) {
-    //Si 'couleur' contient '/' => Cas produit bicolor
-    //Définition 1ére couleur
+    
+    // 1) Si 'couleur' contient '/' => Cas produit bicolor
+    // 1-1) Définition 1ére couleur
     posiSep = couleur.indexOf("/");
     premCouleur = couleur.substring(0, posiSep)
-    // Définition couleur suivante
+
+    // 1-2) Définition couleur suivante
     couleurSvt = couleur.substring(posiSep + 1, couleur.length)
     defBordureImage = ` style= "border-style: solid; border-right-color: ` + premCouleur + `; border-left-color: ` + premCouleur + `;
      border-top-color: `+ couleurSvt + `; border-bottom-color: ` + couleurSvt + `; border-width: 15px;"`
   } else {
-    // 1 bordure continue si couleur unique
+
+    // 2) bordure continue si couleur unique
     defBordureImage = ` style= "border: solid ` + couleur + `; border-width: 15px;`
   }
   return defBordureImage + ` padding: 10px;"`
 };
 
-//**  */};
+// Supprime un produit
 function suppressionProduit() {
-  // Modification du panier en fonction de l'element 'Supprimer' cliqué dans le D.O.M
   document.querySelectorAll('.deleteItem').forEach(item => {
     item.addEventListener("click", even => {
       even.preventDefault();
@@ -551,7 +411,7 @@ function suppressionProduit() {
           window.location.href = "../html/index.html"
         }
       };
-      majTotauxQtPrix();
+      calcTotalQtPrices();
       affEtatBtnCdSvtProduitsEtFormulaire();
     });
   });
@@ -576,7 +436,9 @@ function delItemsNullInCart() {
   cartJson = JSON.parse(cartLinear);
   saveCart();
 };
-function majTotauxQtPrix() {
+
+// Calcule et affiche les totaux des prix et Qt de tous les produits
+function calcTotalQtPrices() {
   // Calcul des totaux en bouclant avec 'cartJson'
   let totalQt = 0; let totalPrix = 0;
   cartJson.forEach(item => {
@@ -591,8 +453,9 @@ function majTotauxQtPrix() {
   elemTotalPrix = document.getElementById("totalPrice");
   elemTotalPrix.innerHTML = totalPrix;
 }
-function affEtatBtnCdSvtProduitsEtFormulaire() {
+
   // Affiche l'état du bouton de commande, suivant l'état de validité du formulaire.
+function affEtatBtnCdSvtProduitsEtFormulaire() {
   if (SaisiePanierOk()) {
     btnCommande.classList = "yesHover";
     btnCommande.style.backgroundColor = "#2c3e50";

@@ -175,6 +175,9 @@ main {
 	white-space: normal;
 }
 
+#hidelink{
+	display: none;
+}
 
 /********/
 /*Footer*/

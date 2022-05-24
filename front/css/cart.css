@@ -73,6 +73,16 @@ h2 {
 	font-weight: 700;
 }
 
+.obsolete{
+	background-color: yellow;
+	color: red;
+	font-weight: 800; text-align:center;
+}
+
+.hideselect{
+	display: none;
+}
+
 /*******/
 /*Price*/
 /*******/
