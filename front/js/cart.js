@@ -20,25 +20,22 @@ fetch("http://localhost:3000/api/products/")
     dataProductsServer = response;
     initialization();
     sortDataProducts();
-    MajElemHtmlDOMavecPanier();
+    UpdateElemsCartInHtml();
     modifqtProduct();
-    suppressionProduit();
+    deleteProduct();
     calcTotalQtPrices();
-    affEtatBtnCdSvtProduitsEtFormulaire();
+    displayBtnorderAccordInputStatus();
   })
   .catch(function (err) {
+
     // Affiche l'erreur de l'API
     alert(`l'erreur` + err + ` est survenue sur le serveur.
     Nous faisons notre possible pour remédier à ce probléme.
     N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.
     Merci pour votre comprehension.`)
   });
-
-// Controle chaque saisie du formulaire  en temps réel 
-controlSaisieFormulaire();
-// Vérifie et identifie les erreurs de sasies et l'état de remplissage du formulaire
-ControlSaisieSiPerteFocus();
-// Déclenche la commande si le panier est à jour, et correctement renseigné
+controlFormEntry();
+controlLossFocus();
 actionBtnCd();
 
 //////////////////////////////////////////////////////
@@ -100,11 +97,10 @@ function initialization() {
 };
 
 // Pour chaque produit contenu dans le panier 'cartJson', MAJ des elements HTML du D.O.M
-function MajElemHtmlDOMavecPanier() {
+function UpdateElemsCartInHtml() {
   var item = 0;
-  elemsHtmlProducts="";
+  elemsHtmlProducts = "";
   while (item < cartJson.length) {
-
 
     // 1) Preparation des données avant la modification en dynamique
     // 1-1) Chargement des données d'origine à partir du 'cartJson' issu du localStorage
@@ -112,28 +108,26 @@ function MajElemHtmlDOMavecPanier() {
 
     // Définition par défaut des éléments HTML, concernant nom, couleur, et selection Qt
     nameProductHtml = cartJson[item].nameProd;
-    colorHtml= cartJson[item].color;
+    colorHtml = cartJson[item].color;
     priceProduct = cartJson[item].priceProduct;
     classElemSelectQtProd = `class = "itemQuantity"`;
-    classElemNameProduct ="";
-    classElemColorProduct ="";
+    classElemNameProduct = "";
+    classElemEvolColorProduct = "";
+    classAndTypeEdgeColorProduct(cartJson[item].color);
 
-    //    Definit le style à ajouter dans l'élément <img> pour définir la bordure de la couleur du canapé
-    styleBordureCouleur(cartJson[item].color);
-
-    //    Charge l'addresse Url de l'image, et le prix.
+    // Charge l'addresse Url de l'image, et le prix.
     picturePriceApiDepId(id);
 
     // 1-2) MAJ du style et modification éventuelle des données d'origines précédentes 
     //      en fonction de la proprieté 'evolution' 
     if (cartJson[item].evolution == "Couleur OBSOLETE") {
 
-    //   1-2-1) Cas ou il existe une évolution, uniquement sur la couleur => Modification de 'colorHtml'
-    //    => 1-2-1-1) On indique que la couleur est obsoléte
+      //   1-2-1) Cas ou il existe une évolution, uniquement sur la couleur
+      //    => 1-2-1-1) On indique que la couleur est obsoléte
       colorHtml = "La couleur " + cartJson[item].color + " est OBSOLETE";
 
       //       1-2-1-2) On ajoute la classe "obsolete", pour que l'élément 'colorHtml' soit rouge sur fond jaune
-      classElemColorProduct = `class = "obsolete"`;
+      classElemEvolColorProduct = `class = "obsolete"`;
 
       //       1-2-1-3) On met le prix du produit à zero pour ne pas influencer le calcul du prix total
       priceProduct = 0;
@@ -151,7 +145,7 @@ function MajElemHtmlDOMavecPanier() {
     }
     if (cartJson[item].evolution != "Idem") {
 
-     //      1-2-2-4) Si le produit est obsoléte => On ajoute la classe 'hideselect' pour masquer la  selection de la qt, afin d'éviter de la modifier
+      //      1-2-2-4) Si le produit est obsoléte => On ajoute la classe 'hideselect' pour masquer la  selection de la qt, afin d'éviter de la modifier
       classElemSelectQtProd = `class = "itemQuantity hideselect"`;
     }
     //      1-2-2-5) Charge la qt du produit  
@@ -160,21 +154,21 @@ function MajElemHtmlDOMavecPanier() {
     item++
   };
 
-  // Modifie le HTML dans le D.O.M, en 1 fois, en insérant tous les éléments contenus dans 'elemsHtmlProducts'
+  // Modifie le HTML dans le D.O.M, en 1 fois, en insérant 'elemsHtmlProducts'
   document.querySelector("#cart__items").innerHTML = elemsHtmlProducts;
 }
 
 // Concaténe les élements HTML concernant les produits du panier dans 'elemsHtmlProducts'
 function updateElemHtmlWithCart(item) {
-   elemsHtmlProducts+=
+  elemsHtmlProducts +=
     `<article class="cart__item" data-id="${id}" data-color="${cartJson[item].color}">
     <div class="cart__item__img">
-     <img src="${pictureUrlProduct}" alt="${cartJson[item].nameProd}" ${styleBordureCouleur(cartJson[item].color)} >
+     <img src="${pictureUrlProduct}" alt="${cartJson[item].nameProd}" ${classAndTypeEdgeColorProduct(cartJson[item].color)}>
     </div>
     <div class="cart__item__content">
      <div class="cart__item__content__description">
         <h2 ${classElemNameProduct}>${nameProductHtml}</h2>
-        <p ${classElemColorProduct}>${colorHtml}</p>
+        <p ${classElemEvolColorProduct}>${colorHtml}</p>
         <p>${priceProduct} €</p>
      </div>
      <div class="cart__item__content__settings">
@@ -189,7 +183,7 @@ function updateElemHtmlWithCart(item) {
     </div>
   </article>`
 };
-function ControlSaisieSiPerteFocus() {
+function controlLossFocus() {
   // A chaque sortie de focus
   // Vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
   document.addEventListener("focusout", even => {
@@ -199,99 +193,96 @@ function ControlSaisieSiPerteFocus() {
     if (idElemFocusPerdu != undefined && idElemFocusPerdu != '') {
       verifSaisieFormulaire(even.target);
     }
-    affEtatBtnCdSvtProduitsEtFormulaire();
+    displayBtnorderAccordInputStatus();
   });
 };
+
+//Vérifie la saisie du formulaire en cours
 function verifSaisieFormulaire(elemSaisieFormulaire) {
-  //Identification de l'élement en cours de saisie
   idElemSaisieFormulaire = elemSaisieFormulaire.id;
   if (idElemSaisieFormulaire != undefined && idElemSaisieFormulaire != '') {
-    // Ne verifie que les saisies du formulaire
     if (idElemSaisieFormulaire == "firstName" || idElemSaisieFormulaire == "lastName") {
-      // Saisie 'Prénom' ou 'Nom'
-      // Teste la saisie avec la méthode regex
+      if (idElemSaisieFormulaire == "firstName") {
+        typeInput = "Prenom";
+        prenom = elemSaisieFormulaire.value;
+      } else {
+        typeInput = "Nom";
+        nom = elemSaisieFormulaire.value;
+      }
+
+      // Teste la saisie 'Prénom' ou 'Nom' avec la méthode regex
       compRegex = /(^[A-Z]{1})([a-z]*)(?![A-Z])\D$/g;
-      // Mémorise le Prenom ou le Nom
-      if (idElemSaisieFormulaire == "firstName") { prenom = elemSaisieFormulaire.value };
-      if (idElemSaisieFormulaire == "lastName") { nom = elemSaisieFormulaire.value };
-      valideSvtRegex(elemSaisieFormulaire, elemSaisieFormulaire.value, compRegex);
+      validOnResultRegex(elemSaisieFormulaire, elemSaisieFormulaire.value, compRegex);
+
       // Met à jour le message d'erreur correspondant à la saisie du formulaire
       if (ValidRegex == false && elemSaisieFormulaire.value != "") {
-        elemMessErrSaisie.innerText =
-          "Saisie du prénom incorrecte.Le prénom doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.";
-      } else {
-        elemMessErrSaisie.innerText = "";
+        elemerrorMessSaisie.innerText =
+          `Saisie du ${typeInput} incorrecte.Le ${typeInput} doit commencer par une lettre majuscule, puis ne doit contenir uniquement que des lettres minuscules.`;
       }
     } else if (idElemSaisieFormulaire == "address") {
-      // Saisie adresse
-      // Teste la saisie avec la méthode regex
+
+      // Teste la saisie adresse avec la méthode regex
       compRegex = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g;
-      // Mémorise l'adresse
       adresse = elemSaisieFormulaire.value;
-      valideSvtRegex(elemSaisieFormulaire, adresse, compRegex);
+      validOnResultRegex(elemSaisieFormulaire, adresse, compRegex);
+
       // Met à jour le message d'erreur correspondant à la saisie du formulaire
       if (ValidRegex == false && elemSaisieFormulaire.value != "") {
-        elemMessErrSaisie.innerText =
+        elemerrorMessSaisie.innerText =
           "Saisie adresse incorrecte.Eviter les caractéres spéciaux suivants : <>?%¤!$#²*§£µ€\^[]{}~";
-      } else {
-        // Sinon, efface le message d'erreur 
-        elemMessErrSaisie.innerText = "";
       }
     } else if (idElemSaisieFormulaire == "city") {
-      //Saisie Ville
-      // Teste la saisie avec la méthode regex
+
+      // Teste la saisie de la ville avec la méthode regex
       compRegex = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g;
-      // Mémorise la ville
       ville = elemSaisieFormulaire.value;
-      valideSvtRegex(elemSaisieFormulaire, ville, compRegex);
+      validOnResultRegex(elemSaisieFormulaire, ville, compRegex);
       if (ValidRegex == false && elemSaisieFormulaire.value != "") {
+
         //Si saisie 'Ville' non valide => Affiche le message d'erreur
-        elemMessErrSaisie.innerText =
+        elemerrorMessSaisie.innerText =
           "Saisie de la ville incorrecte.La ville doit commencer par son N° de code postal (5 chiffres),puis espace, puis le nom de la ville doit être du même type que 'Prénom' ou 'Nom";
-      } else {
-        // Sinon, efface le message d'erreur 
-        elemMessErrSaisie.innerText = "";
       }
     } else if (idElemSaisieFormulaire == "email") {
-      // Saisie email
-      // Teste la saisie avec la méthode regex
+
+      // Teste la saisie de l'email avec la méthode regex
       compRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-      // Mémorise l'email
       email = elemSaisieFormulaire.value;
-      valideSvtRegex(elemSaisieFormulaire, email, compRegex)
+      validOnResultRegex(elemSaisieFormulaire, email, compRegex)
       if (ValidRegex == false && elemSaisieFormulaire.value != "") {
+
         //Si saisie 'Email' non valide => Affiche le message d'erreur
-        elemMessErrSaisie.innerText =
+        elemerrorMessSaisie.innerText =
           "Saisie email incorrecte.Commence par 2 groupes de letrre et/ou chiffres contenant 1 ou des '.' non à suivre , séparés par '@', puis se termine avec '.' puis 2 ou 3 letrres.";
-      } else {
-        // Sinon, efface le message d'erreur 
-        elemMessErrSaisie.innerText = "";
-      }
+      };
     };
   };
 };
-// Controle les saisies dans les champs du formulaire
-function controlSaisieFormulaire() {
-  document.addEventListener("input", even => {
-    //Saisie d'un digit dans un element 'input'
-    even.preventDefault();
-    // Verification digit par digit de la saisie d'un champs du formulaire 
-    verifSaisieFormulaire(even.target);
-    affEtatBtnCdSvtProduitsEtFormulaire();
-  });
 
-}
-// affiche la saisie en cours en vert ou rouge selon la validité
-function valideSvtRegex(elem, contenuSaisie, compRegex) {
-  //Par défaut, efface le message d'erreur correspondant
-  elemMessErrSaisie = document.getElementById(elem.id + "ErrorMsg");
-  elemMessErrSaisie.innerText = "";
-  // Teste le caractere saisi
+// Controle chaque saisie du formulaire  en temps réel 
+function controlFormEntry() {
+  document.addEventListener("input", even => {
+    even.preventDefault();
+
+    // Verifie digit par digit 
+    verifSaisieFormulaire(even.target);
+    displayBtnorderAccordInputStatus();
+  });
+};
+
+//Validation de la saisie (vert = Ok, Rouge = Non Ok), en fonction du regex correspondant
+function validOnResultRegex(elem, contenuSaisie, compRegex) {
+
+  //Efface d'abord le message d'erreur correspondant
+  elemerrorMessSaisie = document.getElementById(elem.id + "ErrorMsg");
+  elemerrorMessSaisie.innerText = "";
+
+  // Si saisie ok et non vide
   if (compRegex.test(contenuSaisie) || contenuSaisie == "") {
-    // Si OK => Colore la saisie en vert
     elem.style.color = "green";
     return ValidRegex = true;
   } else {
+
     // Si non OK avec une saisie non vide => Colore la saisie en rouge
     elem.style.color = "red";
     return ValidRegex = false;
@@ -356,34 +347,32 @@ function modifqtProduct() {
         i++
       };
       saveCart();
-      affEtatBtnCdSvtProduitsEtFormulaire();
+      displayBtnorderAccordInputStatus();
       calcTotalQtPrices();
     });
   });
 };
-function styleBordureCouleur(couleur) {
-  // => Ajoute la bordure de l'image pour completer la modification du D.O.M
-  if (couleur.includes("/")) {
-    
-    // 1) Si 'couleur' contient '/' => Cas produit bicolor
-    // 1-1) Définition 1ére couleur
-    posiSep = couleur.indexOf("/");
-    premCouleur = couleur.substring(0, posiSep)
 
-    // 1-2) Définition couleur suivante
-    couleurSvt = couleur.substring(posiSep + 1, couleur.length)
-    defBordureImage = ` style= "border-style: solid; border-right-color: ` + premCouleur + `; border-left-color: ` + premCouleur + `;
-     border-top-color: `+ couleurSvt + `; border-bottom-color: ` + couleurSvt + `; border-width: 15px;"`
+// Definie la classe du type et de la ou les couleurs de bordure
+function classAndTypeEdgeColorProduct(colorProduct) {
+  if (colorProduct.includes("/")) {
+
+    // 1) Si 'colorProduct' contient '/' => Cas bordure bicolore
+    // 1-1) Définition firstColor puis secondColor
+    posiSep = colorProduct.indexOf("/");
+    firstColor = colorProduct.substring(0, posiSep)
+    secondColor = colorProduct.substring(posiSep + 1, colorProduct.length)
+    return ` class = "pictureEdge" style = "border-top-color: ${firstColor}; border-bottom-color: ${firstColor};
+    border-left-color : ${secondColor}; border-right-color: ${secondColor};"`
   } else {
 
-    // 2) bordure continue si couleur unique
-    defBordureImage = ` style= "border: solid ` + couleur + `; border-width: 15px;`
+    // 2) bordure continue si colorProduct unique
+    return ` class = "pictureEdge" style = "border-color :${colorProduct};"`
   }
-  return defBordureImage + ` padding: 10px;"`
 };
 
 // Supprime un produit
-function suppressionProduit() {
+function deleteProduct() {
   document.querySelectorAll('.deleteItem').forEach(item => {
     item.addEventListener("click", even => {
       even.preventDefault();
@@ -412,7 +401,7 @@ function suppressionProduit() {
         }
       };
       calcTotalQtPrices();
-      affEtatBtnCdSvtProduitsEtFormulaire();
+      displayBtnorderAccordInputStatus();
     });
   });
 };
@@ -454,34 +443,40 @@ function calcTotalQtPrices() {
   elemTotalPrix.innerHTML = totalPrix;
 }
 
-  // Affiche l'état du bouton de commande, suivant l'état de validité du formulaire.
-function affEtatBtnCdSvtProduitsEtFormulaire() {
-  if (SaisiePanierOk()) {
+// Affiche l'état du bouton de commande, suivant l'état de validité du formulaire.
+function displayBtnorderAccordInputStatus() {
+  if (inputSatusOk()) {
     btnCommande.classList = "yesHover";
-    btnCommande.style.backgroundColor = "#2c3e50";
     btnCommande.title = "Génére la commande"
+    btnCommande.enable = true;
   } else {
+
+    // Bouton de commande en grisé
     btnCommande.classList = "noHover";
-    btnCommande.style.backgroundColor = "grey";
+
     // Maj de l'infobulle en fonction des erreurs de saisie
-    if (messErrqtProductNul != "" || messErrProdObsolete != "") {
-      // Préviens d'abord si le produit et obsoléte et/ou si un produit contient une qt =0
+    if (errorMessQtNull != "" || errorMessObsolete != "") {
+
+      // Préviens si le produit et obsoléte et/ou si un produit contient une qt =0
       infoBulle = `*Attention* la commande ne pourra être validée`
-      if (messErrProdObsolete != "") {
+      if (errorMessObsolete != "") {
         infoBulle = `${infoBulle}\r
        - il existe un ou des produit(s) obosoléte(s).`
       }
-      if (messErrqtProductNul != "") {
+      if (errorMessQtNull != "") {
         infoBulle = `${infoBulle}\r
        - il existe un ou des produit(s) avec Qté = 0 .`
       }
     } else {
+
       // Sinon demande de mieux renseigner le formulaire
       infoBulle = "Finir de renseigner correctement le formulaire."
     };
     btnCommande.title = infoBulle;
   }
 };
+
+// Action du bouton de commande
 function actionBtnCd() {
   btnCommande.addEventListener("keypress", even => {
     even.preventDefault();
@@ -494,8 +489,12 @@ function actionBtnCd() {
     requeteInfoCd();
   });
 };
+
+// Envoie de la requête 'order'à l'API Fetch, et si ok récupére la réponse du serveur = 'orderID'
+// et appel le panier en transmettant 'orderID' via le lien de la page
 function requeteInfoCd() {
-  if (SaisiePanierOk()) {
+  if (inputSatusOk()) {
+
     // Création de l'objet 'Contact'
     contact = {
       "firstName": prenom,
@@ -540,58 +539,69 @@ function requeteInfoCd() {
       Merci pour votre comprehension.`)
       });
   } else {
-    alert(messErreur);
+    alert(errorMessage);
   };
 };
 
-function SaisiePanierOk() {
-  if (cartJson == undefined) {
-    return
-  }
-  // Renvoie l'etat de validation du formulaire
-  // => true si ok ou false si le formulaire n'est pas correctement renseigné
+// Renvoie l'etat de saisie du panier
+function inputSatusOk() {
+
   // Verifie qu'il n'y a pas de message d'erreur
-  elemMessErrFormulaire = document.querySelectorAll(".cart__order__form__question p");
-  messErrSaisieFormIncorrecte = ""; // Par défaut, on considére qu'il n'y a auncun message d'erreur
+  elemerrorMessFormulaire = document.querySelectorAll(".cart__order__form__question p");
+
+  // Par défaut, on considére qu'il n'y a auncun message d'erreur
+  errorMessInputStatus = "";
+
   // Vérifie si il existe un message d'erreur concernant une saisie de formulaire
-  elemMessErrFormulaire.forEach(even => {
+  elemerrorMessFormulaire.forEach(even => {
     if (even.innerText != "") {
       // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
-      messErrSaisieFormIncorrecte = "Il reste une/des saisie(s) non correctement renseignée(s)."
+      errorMessInputStatus = "Il reste une/des saisie(s) non correctement renseignée(s)."
     }
   });
 
   // Vérifie si il n'y a aucune saisie de renseignée
   champsSaisies = document.querySelectorAll(".cart__order__form__question input");
-  messErrSaisieVide = ""; // Par défaut, on considére que toutes les saisies sont faites.
+
+  // Par défaut, on considére que toutes les saisies sont faites.
+  errorMessInputEmpty = "";
   champsSaisies.forEach(even => {
+
+    // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
     if (even.value == '') {
-      // Si au moins un message est affiché => Les saisies du formulaire ne sont pas valides
-      messErrSaisieVide = "Il reste une/des saisie(s) à renseigner."
+      errorMessInputEmpty = "Il reste une/des saisie(s) à renseigner."
     }
   });
-  messErrProdObsolete = "";//Par défaut pas d'evolution avant verification
-  messErrqtProductNul = "";//Par défaut toutes les qt de produits sont >0
   cartJson.forEach(item => {
+
+    //Par défaut, on considére pas d'evolution avant verification
+    errorMessObsolete = "";
+
     // Vérifie si tous les produits sont encore d'actualité
     if (item.evolution != "Idem") {
-      messErrProdObsolete = "il existe un ou des produit(s) obosoléte(s)";
+      errorMessObsolete = "il existe un ou des produit(s) obosoléte(s)";
     }
+
+    //Par défaut toutes les qt de produits sont >0
+    errorMessQtNull = "";
+
     // Verifie que tous les produits ont une Qt > 0 
     if (item.qt == 0) {
-      messErrqtProductNul = "il existe un ou des qt de produit(s) = 0";
+      errorMessQtNull = "il existe un ou des qt de produit(s) = 0";
     }
   });
-  // Réponse en fonction des verifications
-  if (messErrProdObsolete == "" && messErrSaisieFormIncorrecte == "" && messErrSaisieVide == "" && messErrqtProductNul == "") {
+
+  // retourne vrai, si aucune erreur de rencontrée
+  if (errorMessObsolete == "" && errorMessInputStatus == "" && errorMessInputEmpty == "" && errorMessQtNull == "") {
     return true
   } else {
-    //Renseigne les erreurs rencontrées dans l'info bulle du bouton de commande
-    messErreur = "La commande ne peut-être envoyée car il reste encore une/des erreur(s) suivante(s):";
-    if (messErrProdObsolete != "") { messErreur += `\r- ${messErrProdObsolete}` };
-    if (messErrqtProductNul != "") { messErreur += `\r- ${messErrqtProductNul}` };
-    if (messErrSaisieFormIncorrecte != "") { messErreur += `\r- ${messErrSaisieFormIncorrecte}` };
-    if (messErrSaisieVide != "") { messErreur += `\r- ${messErrSaisieVide}` };
+
+    //Sinon, renseinge les erreurs trouvées, et retourne faux
+    errorMessage = "La commande ne peut-être envoyée car il reste encore une/des erreur(s) suivante(s):";
+    if (errorMessObsolete != "") { errorMessage += `\r- ${errorMessObsolete}` };
+    if (errorMessQtNull != "") { errorMessage += `\r- ${errorMessQtNull}` };
+    if (errorMessInputStatus != "") { errorMessage += `\r- ${errorMessInputStatus}` };
+    if (errorMessInputEmpty != "") { errorMessage += `\r- ${errorMessInputEmpty}` };
     return false
   }
 };
