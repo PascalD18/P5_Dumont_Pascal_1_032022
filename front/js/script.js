@@ -1,4 +1,3 @@
-
 //localStorage.removeItem("cart");
 ShowLinkCartIfItis();
 let dataProductsServer;
