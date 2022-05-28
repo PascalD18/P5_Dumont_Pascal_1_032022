@@ -57,13 +57,11 @@ function StatusBtnAddCart() {
     if (colorSelect && qtNoZero) {
 
         // Couleur bleu fonçé, si une couleur est selectionnée et Qt > 0
-        btnAddCart.style.backgroundColor = "#2c3e50";
         btnAddCart.classList = "yesHover";
         btnAddCart.title = "";
     } else {
 
         // Sinon en grisé, si la selection n'est pas compléte
-        btnAddCart.style.backgroundColor = "grey";
         btnAddCart.classList = "noHover";
 
         // Maj du message d'erreur en bulle info au survol de la souris 

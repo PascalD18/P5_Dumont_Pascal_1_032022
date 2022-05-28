@@ -46,7 +46,7 @@ function initialization() {
   // ***********************************************************************
   // SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER 
   //  dataProductsServer[1]._id = "1234";
-  //  dataProductsServer[2].colors[0] = "x";
+    dataProductsServer[2].colors[0] = "x";
   // ************************************************************************
 
   // Verifie si le produit du panier existe encore 'dataProductsServer'
