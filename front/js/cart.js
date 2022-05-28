@@ -29,7 +29,7 @@ fetch("http://localhost:3000/api/products/")
     Merci pour votre comprehension.`)
   });
 controlFormEntry();
-controlLossFocus();
+controlElemLossFocus();
 actionBtnCd();
 
 //////////////////////////////////////////////////////
@@ -178,20 +178,20 @@ function updateElemHtmlWithCart(item) {
 };
 
  // A chaque sortie de focus, vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
-function controlLossFocus() {
+function controlElemLossFocus() {
   document.addEventListener("focusout", even => {
     even.preventDefault();
     elemFocusPerdu = even.target;
     idElemFocusPerdu = even.target.id;
     if (idElemFocusPerdu != undefined && idElemFocusPerdu != '') {
-      verifSaisieFormulaire(even.target);
+      ChecksEveryInputForm(even.target);
     }
     displayBtnorderAccordInputStatus();
   });
 };
 
 //Vérifie la saisie du formulaire en cours
-function verifSaisieFormulaire(elemSaisieFormulaire) {
+function ChecksEveryInputForm(elemSaisieFormulaire) {
   idElemSaisieFormulaire = elemSaisieFormulaire.id;
   if (idElemSaisieFormulaire != undefined && idElemSaisieFormulaire != '') {
     if (idElemSaisieFormulaire == "firstName" || idElemSaisieFormulaire == "lastName") {
@@ -258,7 +258,7 @@ function controlFormEntry() {
     even.preventDefault();
 
     // Verifie digit par digit 
-    verifSaisieFormulaire(even.target);
+    ChecksEveryInputForm(even.target);
     displayBtnorderAccordInputStatus();
   });
 };

@@ -38,7 +38,7 @@ actionBtnAddCart();
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
 
-// initialisation de l'état de saisie, et recu^ération de l''id' avec l'URL envoyé par la page 'index.html'
+// initialisation de l'état de saisie, et recupération de l'id' avec l'URL envoyé par la page 'index.html'
 function initialization() {
     var queryString = window.location.search;
     urlParams = new URLSearchParams(queryString);
