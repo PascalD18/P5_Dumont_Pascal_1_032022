@@ -4,9 +4,6 @@ initCartIfIs();
 ShowLinkCartIfItis();
 StatusBtnAddCart();
 
-// Déclaration de 'ProductSelect'
-let productSelect;
-
 // Requete API d'un produit en fonction de son 'id'
 fetch("http://localhost:3000/api/products/" + id)
     .then(function (response) {
@@ -17,13 +14,13 @@ fetch("http://localhost:3000/api/products/" + id)
     .then(response => {
         if (response != undefined) {
 
-          // Mémorisation du produit dans 'producSelect'
-          productSelect = response;
-          UpdateElemsHtmlWithProducSelect();
-        // Sinon, affiche un message d'erreur, et retour à la page d'acceuil
+            // Mémorisation du produit selectionné dans 'producSelect'
+            productSelect = response;
+            UpdateElemsHtmlWithProducSelect();
+            // Sinon, affiche un message d'erreur, et retour à la page d'acceuil
         } else {
             alert(`La page 'products.html', ne peut-être ouverte directement.
-            Il faut avoir selectionner un produit avec la page d'acceuil.`)
+          Il faut avoir selectionner un produit avec la page d'acceuil.`)
             window.location.href = "../html/index.html"
         }
     })
@@ -40,9 +37,9 @@ ChooseColor();
 actionBtnAddCart();
 ////////////////////////////////////////}/////////////
 ////////////////////// FONCTIONS ////////////////////;
-function initialization() {
 
-    // Lecture du N° 'id' avec l'URL envoyé par la page 'index.html'
+// initialisation de l'état de saisie, et recu^ération de l''id' avec l'URL envoyé par la page 'index.html'
+function initialization() {
     var queryString = window.location.search;
     urlParams = new URLSearchParams(queryString);
     id = urlParams.get('id');
@@ -55,7 +52,7 @@ function initialization() {
     btnAddCart = document.getElementById("addToCart");
 }
 
-// Affiche couleur du bouton 'Ajouter au panier', seleon la selection couleur et/ou Qt
+// Affiche couleur du bouton 'Ajouter au panier', selon la selection couleur et/ou Qt
 function StatusBtnAddCart() {
     if (colorSelect && qtNoZero) {
 
@@ -138,20 +135,20 @@ function UpdateElemsHtmlWithProducSelect() {
     // MAJ de la description
     document.getElementById("description").innerHTML = productSelect.description;
 
-    // MAJ des options de couleur
+    // Récupére l'élément corresponadant à la sélection des couleurs
     colorsProductSelect = productSelect.colors;
 
     // 1ere option par défaut
-    elemsOptionColors="<option>--SVP, choisissez une couleur</option>";
-    
+    elemsOptionColors = "<option>--SVP, choisissez une couleur</option>";
+
     //Concaténe les options de selection des couleurs
     colorsProductSelect.forEach(color => {
-        elemsOptionColors+=`<option>${color}</option>`
+        elemsOptionColors += `<option>${color}</option>`
     });
 
     //Modification en dynamique de la liste en intégrant 'elemsOptionColors'
     parentElemColor = document.getElementById("colors");
-    parentElemColor.innerHTML=elemsOptionColors;
+    parentElemColor.innerHTML = elemsOptionColors;
 };
 
 // MAJ du panier en cliquant sur le bouton 'Ajouter au panier'
@@ -165,19 +162,19 @@ function actionBtnAddCart() {
 
             // Si le panier existe dans localStorage
             if (localStorage.cart != undefined) {
-                
+
                 // Et si le produit n'existe pas dans le panier => Ajoute le produit
                 if (productItisInCart() == false) {
-                  cartJson.push({ "codeArt": id, "color": color, "qt": qtProduct, "nameProd": nameProd });
+                    cartJson.push({ "codeArt": id, "color": color, "qt": qtProduct, "nameProd": nameProd });
 
-                // Et si le produit existe déjà dans le panier => MAJ qt uniquement
+                    // Et si le produit existe déjà dans le panier => MAJ qt uniquement
                 } else {
                     newQt = qtProduct + cartJson[itemProduit].qt;
                     cartJson[itemProduit].qt = newQt;
                 };
 
-            // Si panier inexistant => MAJ 1er data du panier
-            } else { 
+                // Si panier inexistant => MAJ 1er data du panier
+            } else {
                 cartJson = [{ "codeArt": id, "color": color, "qt": qtProduct, "nameProd": nameProd }]
             }
             saveCart();
@@ -188,7 +185,7 @@ function actionBtnAddCart() {
     });
 };
 
-// Classement et Sauvegarde du panier dans locaStorage
+// Classement et sauvegarde du panier 'cartJson' dans locaStorage
 function saveCart() {
 
     //Classe
@@ -208,7 +205,7 @@ function saveCart() {
 // Verifie si le produit exite déjà dans le panier
 function productItisInCart() {
     var i = 0;
-    
+
     // Par défaut, considére le produit inexistant dans panier
     productItIS = false;
     while (i < cartJson.length && productItIS == false) {
@@ -218,5 +215,9 @@ function productItisInCart() {
         };
         i++
     };
-    if (productItIS) { return true } else { return false };
+    if (productItIS) {
+        return true
+    } else {
+        return false
+    };
 };

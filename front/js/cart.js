@@ -1,9 +1,3 @@
-//Déclare l'ojet json  = Panier des produits
-let cartJson;
-
-// Déclare la validation par regex
-let ValidRegex;
-
 // Déclare l'élément correspondant comme bouton de commande 
 const btnCommande = document.getElementById("order");
 
@@ -55,7 +49,7 @@ function initialization() {
   //  dataProductsServer[2].colors[0] = "x";
   // ************************************************************************
 
-  // Verifie si le panier n'a pas de produits obsoletes par rapport à 'dataProductsServer'
+  // Verifie si le produit du panier existe encore 'dataProductsServer'
   cartJson.forEach(i => {
     idOk = false; colorOk = false;
     var j = 0; again = true;
@@ -69,7 +63,7 @@ function initialization() {
     };
     if (idOk) {
 
-      // Si le produit du panier existe bien dans 'dataProductsServer'
+      // Si le produit du panier existe bien encore dans 'dataProductsServer'
       // => Vérifie que la couleur existe encore
       var k = 0;
       again = true;
@@ -115,11 +109,10 @@ function UpdateElemsCartInHtml() {
     classElemEvolColorProduct = "";
     classAndTypeEdgeColorProduct(cartJson[item].color);
 
-    // Charge l'addresse Url de l'image, et le prix.
+    // Charge l'adresse Url de l'image, et le prix.
     picturePriceApiDepId(id);
 
-    // 1-2) MAJ du style et modification éventuelle des données d'origines précédentes 
-    //      en fonction de la proprieté 'evolution' 
+    // 1-2) MAJ du style et modification éventuelle des données d'origines précédentes, en fonction de la proprieté 'evolution' 
     if (cartJson[item].evolution == "Couleur OBSOLETE") {
 
       //   1-2-1) Cas ou il existe une évolution, uniquement sur la couleur
@@ -183,9 +176,9 @@ function updateElemHtmlWithCart(item) {
     </div>
   </article>`
 };
+
+ // A chaque sortie de focus, vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
 function controlLossFocus() {
-  // A chaque sortie de focus
-  // Vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
   document.addEventListener("focusout", even => {
     even.preventDefault();
     elemFocusPerdu = even.target;
@@ -289,8 +282,7 @@ function validOnResultRegex(elem, contenuSaisie, compRegex) {
   };
 };
 
-// Récupére 'pictureUrlProduct' et 'priceProduct' issus des datas des produits de l'API 'dataProductsServer'
-// correspondant à 'Id'
+// Récupére 'pictureUrlProduct' et 'priceProduct', correspondants à l'id issu du data des produits de l'API 'dataProductsServer'
 function picturePriceApiDepId(id) {
   var i = 0;
   idFound = false;
@@ -303,8 +295,8 @@ function picturePriceApiDepId(id) {
     i++
   }
   if (idFound == false) {
-    //Si 'id' n'a pas été trouvé
-    //=> Prends par défaut le logo comme image de canapé
+
+    // Si 'id' n'a pas été trouvé => Prends par défaut le logo comme image de canapé
     pictureUrlProduct = "../images/logo.png";
   };
 };
@@ -315,12 +307,14 @@ function modifqtProduct() {
   selectQt.forEach(item => {
     item.addEventListener("change", even => {
       even.preventDefault();
-      // Recherche de l'id 'idDOM' et de la couleur 'couleurODM' correspondants dans le D.O.M
-      // Recuperation de l'element du D.O.M contenant les 'data-id' et 'data-color'
+
+      // Recherche de l'id 'idDOM' et de la couleur 'colorODM' correspondants dans le D.O.M
       elemProdCorresondant = even.target.closest("section>article");
-      // Recupération de l'id et de la couleur depuis le D.O.M via le dataset 
+
+      // Recupération depuis le D.O.M via le dataset 
       idDOM = elemProdCorresondant.dataset.id;
       colorDom = elemProdCorresondant.dataset.color;
+
       //Pour chaqque produit du panier 'cartJson'
       var i = 0; again = true;
       qtProduct = item.valueAsNumber;
@@ -330,14 +324,17 @@ function modifqtProduct() {
       }
       while (i < cartJson.length && again) {
         if (cartJson[i].codeArt == idDOM && cartJson[i].color == colorDom) {
-          // si l'id et la couleur sont identiques => MAJ de la Qt dans le panier
+
+          // Si l'id et la couleur sont identiques => MAJ de la Qt dans le panier
           cartJson[i].qt = qtProduct
-          // MAJ de la Qt dans le HTML du D.O.M
+
           // Récupére l'élément parent contenant l'enfant <p>
           elem = even.target.closest("section>article>div>div>div");
+
           //Recherche l'enfant <p> contenu dans l'élément parent
           for (let enfant of elem.children) {
             if (enfant.nodeName = 'p') {
+
               // Maj de la Qt
               enfant.innerText = "Qté : " + qtProduct;
             }
@@ -376,15 +373,18 @@ function deleteProduct() {
   document.querySelectorAll('.deleteItem').forEach(item => {
     item.addEventListener("click", even => {
       even.preventDefault();
-      // Recherche de l'id 'idDOM' et de la couleur 'couleurODM' correspondants dans le D.O.M
+
       // Recuperation de l'element du D.O.M correspondant au produit à supprimer
       elemSuppr = even.target.closest("section>article");
+
       // Recupération de l'id et de la couleur depuis le D.O.M via le dataset 
       idDOM = elemSuppr.dataset.id;
       colorDom = elemSuppr.dataset.color;
+
       // Suppression de l'element dans le D.O.M
       elemSuppr.remove();
-      // Suppresion du produit corresondant dans 'cartJson'
+
+      // Suppresion du produit correspondant dans 'cartJson'
       var i = 0; again = true;
       while (i < cartJson.length && again) {
         if (cartJson[i].codeArt == idDOM && cartJson[i].color == colorDom) {
@@ -428,8 +428,10 @@ function delItemsNullInCart() {
 
 // Calcule et affiche les totaux des prix et Qt de tous les produits
 function calcTotalQtPrices() {
+
   // Calcul des totaux en bouclant avec 'cartJson'
-  let totalQt = 0; let totalPrix = 0;
+  let totalQt = 0;
+  let totalPrix = 0;
   cartJson.forEach(item => {
     totalQt = totalQt + item.qt;
     // Récupération du prix avec l'id ( = 'codeArt' dans 'dataProduits')
@@ -445,13 +447,14 @@ function calcTotalQtPrices() {
 
 // Affiche l'état du bouton de commande, suivant l'état de validité du formulaire.
 function displayBtnorderAccordInputStatus() {
+
   if (inputSatusOk()) {
     btnCommande.classList = "yesHover";
     btnCommande.title = "Génére la commande"
     btnCommande.enable = true;
   } else {
 
-    // Bouton de commande en grisé
+    // Si la saisie n'est pas validée => Bouton de commande en grisé
     btnCommande.classList = "noHover";
 
     // Maj de l'infobulle en fonction des erreurs de saisie
@@ -476,7 +479,7 @@ function displayBtnorderAccordInputStatus() {
   }
 };
 
-// Action du bouton de commande
+// Action du bouton de commande avec touche 'enter' ou click
 function actionBtnCd() {
   btnCommande.addEventListener("keypress", even => {
     even.preventDefault();
@@ -490,8 +493,8 @@ function actionBtnCd() {
   });
 };
 
-// Envoie de la requête 'order'à l'API Fetch, et si ok récupére la réponse du serveur = 'orderID'
-// et appel le panier en transmettant 'orderID' via le lien de la page
+// Si la saisie du panier est validé, envoie de la requête 'order'à l'API Fetch,
+// et si ok récupére la réponse du serveur = 'orderID', puis appelle la page 'confirmatiino' en transmettant 'orderID' via le lien
 function requeteInfoCd() {
   if (inputSatusOk()) {
 
@@ -532,8 +535,9 @@ function requeteInfoCd() {
         window.location.href = "../html/confirmation.html?orderID=" + orderID
       })
       .catch(function (err) {
-        // Affiche l'erreur de l'API
-        alert(`l'erreur` + err + ` est survenue sur le serveur.
+
+      // Affiche l'erreur de l'API
+      alert(`l'erreur` + err + ` est survenue sur le serveur.
       Nous faisons notre possible pour remédier à ce probléme.
       N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.
       Merci pour votre comprehension.`)
@@ -543,7 +547,7 @@ function requeteInfoCd() {
   };
 };
 
-// Renvoie l'etat de saisie du panier
+// Valide ou non l'état de saisie du panier
 function inputSatusOk() {
 
   // Verifie qu'il n'y a pas de message d'erreur
@@ -591,12 +595,12 @@ function inputSatusOk() {
     }
   });
 
-  // retourne vrai, si aucune erreur de rencontrée
+  // Retourne vrai, si aucune erreur n'est rencontrée
   if (errorMessObsolete == "" && errorMessInputStatus == "" && errorMessInputEmpty == "" && errorMessQtNull == "") {
     return true
   } else {
 
-    //Sinon, renseinge les erreurs trouvées, et retourne faux
+    //Sinon, renseigne les erreurs trouvées, et retourne faux
     errorMessage = "La commande ne peut-être envoyée car il reste encore une/des erreur(s) suivante(s):";
     if (errorMessObsolete != "") { errorMessage += `\r- ${errorMessObsolete}` };
     if (errorMessQtNull != "") { errorMessage += `\r- ${errorMessQtNull}` };

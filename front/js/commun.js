@@ -14,7 +14,7 @@ function sortDataProducts() {
   });
 };
 
-// Met 1ére lettre de la 2éme partie du nom de produit en majuscule
+// Met 1ére lettre de la 2éme partie du nom du produit en majuscule
 function firstLetterNameProduct(nameProduct) {
 
   // recherche la 1ére lettre 'firstLetterLowercase' à mettre en majuscule dans le nom 'Kanap [firstLetterLowercase]...'

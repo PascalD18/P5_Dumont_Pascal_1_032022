@@ -5,11 +5,11 @@ let dataProductsServer;
 fetch("http://localhost:3000/api/products/")
   .then(function (response) {
     if (response.ok) {
-     return response.json();
+      return response.json();
     }
   })
   .then(function (response) {
-    dataProductsServer=response;
+    dataProductsServer = response;
     sortDataProducts();
     addElemHtmlFromDataproducts();
   })
@@ -30,9 +30,9 @@ fetch("http://localhost:3000/api/products/")
 function addElemHtmlFromDataproducts() {
 
   // Mémorisation de tous les éléments de tous les produits concernant les items dans 'elemItems'
-  elemItems="";
+  elemItems = "";
   dataProductsServer.forEach(item => {
-     elemItems+= `
+    elemItems += `
      <a href="../html/product.html?id=${item._id}">
      <article>
       <img src="${item.imageUrl}" alt="${item.altTxt}">
@@ -43,6 +43,6 @@ function addElemHtmlFromDataproducts() {
      `
   });
 
-// Modification du Html avec l'élément 'elemItems'
-  document.getElementById("items").innerHTML=elemItems;
+  // Modification du Html avec l'élément 'elemItems'
+  document.getElementById("items").innerHTML = elemItems;
 };
