@@ -88,14 +88,14 @@ function ChooseColor() {
 
     // Initialise l'élement concernant la liste déroulante
     selectCouleur = document.getElementById("colors");
-
+     
     // A chaque modification de l'élément, lit la couleur selectionnée
     selectCouleur.addEventListener("change", function (event) {
         event.preventDefault();
         color = selectCouleur.value;
         nbCars = color.length;
         if (nbCars > 20) {
-            if (couleur.slice(0, 5) == "--SVP") {
+            if (color.slice(0, 5) == "--SVP") {
                 colorSelect = false;
             }
         } else {
