@@ -1,3 +1,8 @@
+if (localStorage.cart == undefined){
+  alert ("panier vide");
+  window.location.href = "../html/index.html";
+}
+
 // Déclare l'élément correspondant comme bouton de commande 
 const btnCommande = document.getElementById("order");
 
@@ -26,7 +31,7 @@ fetch("http://localhost:3000/api/products/")
     alert(`l'erreur` + err + ` est survenue sur le serveur.
     Nous faisons notre possible pour remédier à ce probléme.
     N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.
-    Merci pour votre comprehension.`)
+    Merci pour votre comprehension.`);
   });
 controlFormEntry();
 controlElemLossFocus();
@@ -40,16 +45,16 @@ actionBtnCd();
 function initialization() {
 
   // Récupération depuis locaStorage
-  cartLinear = localStorage.getItem("cart");
-  cartJson = JSON.parse(cartLinear);
+   cartLinear = localStorage.getItem("cart");
+   cartJson = JSON.parse(cartLinear);
 
   // ***********************************************************************
-  // SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVER 
-  //  dataProductsServer[1]._id = "1234";
-    dataProductsServer[2].colors[0] = "x";
+  // SIMULATION D'UNE EVOLUTION DES PRODUITS SUR LE SERVEUR 
+  // dataProductsServer[1]._id = "1234";
+  // dataProductsServer[2].colors[0] = "x";
   // ************************************************************************
 
-  // Verifie si le produit du panier existe encore 'dataProductsServer'
+  // Verifie si le produit du panier existe encore dans 'dataProductsServer'
   cartJson.forEach(i => {
     idOk = false; colorOk = false;
     var j = 0; again = true;
@@ -107,7 +112,6 @@ function UpdateElemsCartInHtml() {
     classElemSelectQtProd = `class = "itemQuantity"`;
     classElemNameProduct = "";
     classElemEvolColorProduct = "";
-    classAndTypeEdgeColorProduct(cartJson[item].color);
 
     // Charge l'adresse Url de l'image, et le prix.
     picturePriceApiDepId(id);
@@ -156,7 +160,7 @@ function updateElemHtmlWithCart(item) {
   elemsHtmlProducts +=
     `<article class="cart__item" data-id="${id}" data-color="${cartJson[item].color}">
     <div class="cart__item__img">
-     <img src="${pictureUrlProduct}" alt="${cartJson[item].nameProd}" ${classAndTypeEdgeColorProduct(cartJson[item].color)}>
+     <img src="${pictureUrlProduct}" alt="${altTextProduct}">
     </div>
     <div class="cart__item__content">
      <div class="cart__item__content__description">
@@ -177,7 +181,7 @@ function updateElemHtmlWithCart(item) {
   </article>`
 };
 
- // A chaque sortie de focus, vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
+// A chaque sortie de focus, vérifie la sasie des champs du formulaire, et si non ok, affiche un message d'erreur.
 function controlElemLossFocus() {
   document.addEventListener("focusout", even => {
     even.preventDefault();
@@ -197,10 +201,10 @@ function ChecksEveryInputForm(elemSaisieFormulaire) {
     if (idElemSaisieFormulaire == "firstName" || idElemSaisieFormulaire == "lastName") {
       if (idElemSaisieFormulaire == "firstName") {
         typeInput = "Prenom";
-        prenom = elemSaisieFormulaire.value;
+        firstName = elemSaisieFormulaire.value;
       } else {
         typeInput = "Nom";
-        nom = elemSaisieFormulaire.value;
+        lastName = elemSaisieFormulaire.value;
       }
 
       // Teste la saisie 'Prénom' ou 'Nom' avec la méthode regex
@@ -216,7 +220,7 @@ function ChecksEveryInputForm(elemSaisieFormulaire) {
 
       // Teste la saisie adresse avec la méthode regex
       compRegex = /^[0-9a-zA-Z\:,-]+[^<>?%¤!$#²*§£µ€\\\^\]\[\]\{\}~]+$/g;
-      adresse = elemSaisieFormulaire.value;
+      address = elemSaisieFormulaire.value;
       validOnResultRegex(elemSaisieFormulaire, adresse, compRegex);
 
       // Met à jour le message d'erreur correspondant à la saisie du formulaire
@@ -228,7 +232,7 @@ function ChecksEveryInputForm(elemSaisieFormulaire) {
 
       // Teste la saisie de la ville avec la méthode regex
       compRegex = /^[0-9]{5}\ [A-Z]([a-z]*\D)$/g;
-      ville = elemSaisieFormulaire.value;
+      city = elemSaisieFormulaire.value;
       validOnResultRegex(elemSaisieFormulaire, ville, compRegex);
       if (ValidRegex == false && elemSaisieFormulaire.value != "") {
 
@@ -282,14 +286,17 @@ function validOnResultRegex(elem, contenuSaisie, compRegex) {
   };
 };
 
-// Récupére 'pictureUrlProduct' et 'priceProduct', correspondants à l'id issu du data des produits de l'API 'dataProductsServer'
+// Récupére 'pictureUrlProduct', 'altTxt' et 'priceProduct', correspondants à l'id issu du data des produits de l'API 'dataProductsServer'
 function picturePriceApiDepId(id) {
-  var i = 0;
+  var i = 0
+
+
   idFound = false;
   while (i < dataProductsServer.length && idFound == false) {
     if (id == dataProductsServer[i]._id) {
       pictureUrlProduct = dataProductsServer[i].imageUrl;
       priceProduct = dataProductsServer[i].price;
+      altTextProduct = dataProductsServer[i].altTxt;
       idFound = true;
     }
     i++
@@ -298,6 +305,9 @@ function picturePriceApiDepId(id) {
 
     // Si 'id' n'a pas été trouvé => Prends par défaut le logo comme image de canapé
     pictureUrlProduct = "../images/logo.png";
+
+    // Par défaut Alt renseigné avec l'image non trouvée
+     altTextProduct ="Canapé non trouvé";
   };
 };
 
@@ -348,24 +358,6 @@ function modifqtProduct() {
       calcTotalQtPrices();
     });
   });
-};
-
-// Definie la classe du type et de la ou les couleurs de bordure
-function classAndTypeEdgeColorProduct(colorProduct) {
-  if (colorProduct.includes("/")) {
-
-    // 1) Si 'colorProduct' contient '/' => Cas bordure bicolore
-    // 1-1) Définition firstColor puis secondColor
-    posiSep = colorProduct.indexOf("/");
-    firstColor = colorProduct.substring(0, posiSep)
-    secondColor = colorProduct.substring(posiSep + 1, colorProduct.length)
-    return ` class = "pictureEdge" style = "border-top-color: ${firstColor}; border-bottom-color: ${firstColor};
-    border-left-color : ${secondColor}; border-right-color: ${secondColor};"`
-  } else {
-
-    // 2) bordure continue si colorProduct unique
-    return ` class = "pictureEdge" style = "border-color :${colorProduct};"`
-  }
 };
 
 // Supprime un produit
@@ -500,10 +492,10 @@ function requeteInfoCd() {
 
     // Création de l'objet 'Contact'
     contact = {
-      "firstName": prenom,
-      "lastName": nom,
-      "address": adresse,
-      "city": ville,
+      "firstName": firstName,
+      "lastName": lastName,
+      "address": address,
+      "city": city,
       "email": email
     }
     // Création du tableasu array 'products'
@@ -536,8 +528,8 @@ function requeteInfoCd() {
       })
       .catch(function (err) {
 
-      // Affiche l'erreur de l'API
-      alert(`l'erreur` + err + ` est survenue sur le serveur.
+        // Affiche l'erreur de l'API
+        alert(`l'erreur` + err + ` est survenue sur le serveur.
       Nous faisons notre possible pour remédier à ce probléme.
       N'hesitez pas à revenir plus tard sur le site, vous serez les bienvenus.
       Merci pour votre comprehension.`)
@@ -564,6 +556,8 @@ function inputSatusOk() {
     }
   });
 
+  // Vérifie tous les saisies
+
   // Vérifie si il n'y a aucune saisie de renseignée
   champsSaisies = document.querySelectorAll(".cart__order__form__question input");
 
@@ -576,18 +570,19 @@ function inputSatusOk() {
       errorMessInputEmpty = "Il reste une/des saisie(s) à renseigner."
     }
   });
+
+  // Vérifie toute les qt, et les états d'évolution du panier
+  //Par défaut toutes les qt de produits sont >0
+  errorMessQtNull = "";
+
+  //Par défaut, on considére pas d'evolution avant verification
+  errorMessObsolete = "";
   cartJson.forEach(item => {
 
-    //Par défaut, on considére pas d'evolution avant verification
-    errorMessObsolete = "";
-
-    // Vérifie si tous les produits sont encore d'actualité
-    if (item.evolution != "Idem") {
-      errorMessObsolete = "il existe un ou des produit(s) obosoléte(s)";
-    }
-
-    //Par défaut toutes les qt de produits sont >0
-    errorMessQtNull = "";
+  // Vérifie si tous les produits sont encore d'actualité
+  if (item.evolution != "Idem") {
+    errorMessObsolete = "il existe un ou des produit(s) obosoléte(s)";
+   }
 
     // Verifie que tous les produits ont une Qt > 0 
     if (item.qt == 0) {

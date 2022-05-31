@@ -1,4 +1,3 @@
-//localStorage.removeItem("cart");
 ShowLinkCartIfItis();
 let dataProductsServer;
 fetch("http://localhost:3000/api/products/")

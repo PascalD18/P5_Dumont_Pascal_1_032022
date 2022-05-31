@@ -40,7 +40,7 @@ function firstLetterNameProduct(nameProduct) {
   return nameProduct;
 };
 
- //Affiche ou non le lien du panier en fonction de son existance ou non dans localStorage
+//Affiche ou non le lien du panier en fonction de son existance ou non dans localStorage
 function ShowLinkCartIfItis() {
 
   // Récupére l'élément lien panier
@@ -48,6 +48,6 @@ function ShowLinkCartIfItis() {
   if (localStorage.cart == undefined) {
 
     // si le panier est inexistant => N'affiche pas le lien du panier => Ajoute l'id ="hidelink" pour que le lien soit masqué
-    elemCart[0].setAttribute('id',"hidelink");
+    elemCart[0].setAttribute('id', "hidelink");
   };
 };

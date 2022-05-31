@@ -1,4 +1,3 @@
-
 initialization();
 initCartIfIs();
 ShowLinkCartIfItis();
@@ -88,7 +87,7 @@ function ChooseColor() {
 
     // Initialise l'élement concernant la liste déroulante
     selectCouleur = document.getElementById("colors");
-     
+
     // A chaque modification de l'élément, lit la couleur selectionnée
     selectCouleur.addEventListener("change", function (event) {
         event.preventDefault();
@@ -127,13 +126,21 @@ function changeQt() {
 // Modification en dynamique du prix et de la description
 function UpdateElemsHtmlWithProducSelect() {
 
+    //Maj Image du produit
+    parent = document.getElementsByClassName("item__img");
+    parent[0].innerHTML = `<img src = "${productSelect.imageUrl}" alt = "${productSelect.altTxt}">`;
+
+    // MAJ du prix
+    nameProduct = firstLetterNameProduct(productSelect.name);
+    document.getElementById("title").innerHTML = nameProduct;
+
     // MAJ du prix
     document.getElementById("price").innerHTML = productSelect.price;
 
     // MAJ de la description
     document.getElementById("description").innerHTML = productSelect.description;
 
-    // Récupére l'élément corresponadant à la sélection des couleurs
+    // Récupére l'élément correspondant à la sélection des couleurs
     colorsProductSelect = productSelect.colors;
 
     // 1ere option par défaut
@@ -201,21 +208,35 @@ function saveCart() {
 };
 
 // Verifie si le produit exite déjà dans le panier
-function productItisInCart() {
-    var i = 0;
+//function productItisInCart() {
+//    var i = 0;
 
     // Par défaut, considére le produit inexistant dans panier
-    productItIS = false;
-    while (i < cartJson.length && productItIS == false) {
+//    productItIS = false;
+//    while (i < cartJson.length && productItIS == false) {
+ //       if (cartJson[i].codeArt == id && cartJson[i].color == color) {
+ //           itemProduit = i;
+ //           productItIS = true;
+//        };
+ //       i++
+ //   };
+ //   if (productItIS) {
+ //       return true
+ //   } else {
+ //       return false
+  //  };
+//};
+
+// Verifie si le produit exite déjà dans le panier
+function productItisInCart() {
+    var i = 0;
+    // Retourne faux si produit inexistant dans le panier 
+    while (i < cartJson.length) {
         if (cartJson[i].codeArt == id && cartJson[i].color == color) {
             itemProduit = i;
-            productItIS = true;
+            return true;
         };
         i++
     };
-    if (productItIS) {
-        return true
-    } else {
-        return false
-    };
-};
+    return false;
+ };
